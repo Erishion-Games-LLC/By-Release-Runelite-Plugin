@@ -1,2 +1,2 @@
-# Example
-An example greeter plugin
+# Sequentially
+Play Runescape as it released, through all its updates

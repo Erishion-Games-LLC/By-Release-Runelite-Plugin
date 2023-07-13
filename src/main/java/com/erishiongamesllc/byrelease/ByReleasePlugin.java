@@ -40,6 +40,7 @@ import net.runelite.api.QuestState;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -49,6 +50,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor
@@ -66,29 +68,49 @@ public class ByReleasePlugin extends Plugin
 	@Inject
 	private ClientThread clientThread;
 
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject
+	private ByReleaseOverlay overlay;
+
 	private ArrayList<ByReleaseQuest> questList;
 	private HashMap<String, List<Widget>> skillWidgets;
+	private boolean createdInitialQuestList = false;
 	private int currentDate;
 	private int previousDate;
+	private GameState currentGameState;
 
 
 	@Override
 	protected void startUp() throws Exception
 	{
+		overlayManager.add(overlay);
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
+		overlayManager.remove(overlay);
 	}
 
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
-		if(gameStateChanged != null)
+		if(gameStateChanged != null && !createdInitialQuestList)
 		{
-			if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
+			currentGameState = gameStateChanged.getGameState();
+		}
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick gameTick)
+	{
+		if (!createdInitialQuestList)
+		{
+			if (currentGameState == GameState.LOGGED_IN)
 			{
+				createdInitialQuestList = true;
 				clientThread.invokeLater(this::createQuestList);
 			}
 		}
@@ -100,7 +122,11 @@ public class ByReleasePlugin extends Plugin
 		questList.addAll(Arrays.asList(ByReleaseQuest.values()));
 		for (ByReleaseQuest byReleaseQuest: questList)
 		{
-			byReleaseQuest.setComplete(byReleaseQuest.getQuest().getState(client) == QuestState.FINISHED);
+			System.out.println("Quest: " + byReleaseQuest.getQuest() + " " + byReleaseQuest.getQuest().getState(client));
+			byReleaseQuest.setQuestState
+				(
+				byReleaseQuest.getQuest().getState(client)
+				);
 		}
 		updateCurrentDate();
 		if (previousDate < currentDate)
@@ -116,16 +142,21 @@ public class ByReleasePlugin extends Plugin
 		return currentDate >= quest.getReleaseDate();
 	}
 
-	private void updateCurrentDate() {
+	private void updateCurrentDate()
+	{
 		for (int i = 0; i < questList.size(); i++)
 		{
 			ByReleaseQuest quest = questList.get(i);
-			if (!quest.isComplete())
+			if (quest.getQuestState() != QuestState.FINISHED)
 			{
-				if (i > 0 && questList.get(i - 1).isComplete())
+				if (i > 0 && questList.get(i - 1).getQuestState() == QuestState.FINISHED)
 				{
 					previousDate = currentDate;
+					System.out.println("PREVIOUS DATE: " + previousDate);
 					currentDate = quest.getReleaseDate();
+					System.out.println("CURRENT DATE: " + currentDate);
+					System.out.println("DATE BASED ON: " + questList.get(i));
+					System.out.println(questList.get(i).getQuestState());
 				}
 				break;
 			}
@@ -138,6 +169,15 @@ public class ByReleasePlugin extends Plugin
 		if (widgetLoaded.getGroupId() == WidgetInfo.SKILLS_CONTAINER.getGroupId())
 		{
 			createSkillWidgets();
+		}
+	}
+
+	@Subscribe
+	public void onScriptPostFired(ScriptPostFired scriptPostFired) {
+		int clientScriptQuestListDrawID = 1340;
+		if(scriptPostFired.getScriptId() == clientScriptQuestListDrawID)
+		{
+			clientThread.invokeLater(this::createQuestList);
 		}
 	}
 
@@ -190,4 +230,10 @@ public class ByReleasePlugin extends Plugin
 		skillWidgetChildren.add(skillLevelWidget);
 		skillWidgets.put(skill.getName(), skillWidgetChildren);
 	}
+
+	public int getCurrentDate()
+	{
+		return currentDate;
+	}
+
 }

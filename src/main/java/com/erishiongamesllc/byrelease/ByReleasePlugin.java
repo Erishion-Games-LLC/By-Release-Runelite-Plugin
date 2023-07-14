@@ -31,14 +31,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.GameState;
 import net.runelite.api.QuestState;
-import net.runelite.api.Skill;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.WidgetLoaded;
@@ -74,12 +70,11 @@ public class ByReleasePlugin extends Plugin
 	@Inject
 	private ByReleaseOverlay overlay;
 
-	private ArrayList<ByReleaseQuest> questList;
-	private HashMap<String, List<Widget>> skillWidgets;
-	private boolean createdInitialQuestList = false;
+	private final ArrayList<ByReleaseQuest> questList = new ArrayList<>(Arrays.asList(ByReleaseQuest.values()));
+	private final HashMap<String, List<Widget>> skillWidgets = new HashMap<>();
+	private boolean setUpCompleted = false;
 	private int currentDate;
 	private int previousDate;
-	private GameState currentGameState;
 
 
 	@Override
@@ -95,31 +90,97 @@ public class ByReleasePlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameStateChanged(GameStateChanged gameStateChanged)
+	public void onGameTick(GameTick gameTick)
 	{
-		if(gameStateChanged != null && !createdInitialQuestList)
+		if (!setUpCompleted)
 		{
-			currentGameState = gameStateChanged.getGameState();
+			setUpCompleted = true;
+			clientThread.invokeLater(this::setUp);
 		}
 	}
 
 	@Subscribe
-	public void onGameTick(GameTick gameTick)
+	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
 	{
-		if (!createdInitialQuestList)
+		if (widgetLoaded.getGroupId() == WidgetInfo.SKILLS_CONTAINER.getGroupId())
 		{
-			if (currentGameState == GameState.LOGGED_IN)
-			{
-				createdInitialQuestList = true;
-				clientThread.invokeLater(this::createQuestList);
-			}
+			System.out.println("WIDGET LOADED");
+//			createSkillWidgets();
 		}
 	}
 
-	private void createQuestList()
+	@Subscribe
+	public void onScriptPostFired(ScriptPostFired scriptPostFired)
 	{
-		questList = new ArrayList<>();
-		questList.addAll(Arrays.asList(ByReleaseQuest.values()));
+		int clientScriptQuestListDrawID = 1340;
+		if(scriptPostFired.getScriptId() == clientScriptQuestListDrawID)
+		{
+			clientThread.invokeLater(this::update);
+		}
+	}
+
+	@Provides
+	ByReleaseConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(ByReleaseConfig.class);
+	}
+
+	//only call on client thread
+	private void setUp()
+	{
+		createSkillWidgets();
+		update();
+	}
+
+	private void createSkillWidgets()
+	{
+		for (ByReleaseSkill skill : ByReleaseSkill.values())
+		{
+			Widget skillWidget = client.getWidget(skill.getWidgetID());
+
+			if (skillWidget == null)
+			{
+				System.out.println("SKILL WIDGET NULL: " + skill);
+				return;
+			}
+
+			ArrayList<Widget> skillWidgetChildren = new ArrayList<>();
+
+			Widget skillIconWidget = skillWidget.createChild(-1, WidgetType.GRAPHIC);
+			Widget skillLevelWidget = skillWidget.createChild(-1, WidgetType.GRAPHIC);
+
+			skillIconWidget.setSpriteId(174);
+			skillIconWidget.setSize(36, 36);
+			skillIconWidget.setPos(-2, -2);
+			skillIconWidget.setOpacity(90);
+			skillIconWidget.setHidden(true);
+
+			skillLevelWidget.setSpriteId(176);
+			skillLevelWidget.setSize(36, 36);
+			skillLevelWidget.setPos(28, -2);
+			skillLevelWidget.setOpacity(90);
+			skillLevelWidget.setHidden(true);
+
+			skillWidgetChildren.add(skillIconWidget);
+			skillWidgetChildren.add(skillLevelWidget);
+			skillWidgets.put(skill.getSkill().getName(), skillWidgetChildren);
+		}
+	}
+
+	//only call on client thread
+	private void update()
+	{
+		updateQuestList();
+		updateCurrentDate();
+		if (previousDate < currentDate)
+		{
+			//this is where every thing would be updated.
+			updateSkillWidgets();
+		}
+	}
+
+	private void updateQuestList()
+	{
 		for (ByReleaseQuest byReleaseQuest: questList)
 		{
 			System.out.println("Quest: " + byReleaseQuest.getQuest() + " " + byReleaseQuest.getQuest().getState(client));
@@ -128,18 +189,6 @@ public class ByReleasePlugin extends Plugin
 				byReleaseQuest.getQuest().getState(client)
 				);
 		}
-		updateCurrentDate();
-		if (previousDate < currentDate)
-		{
-			//this is where every thing would be updated.
-			System.out.println("create skill widgets");
-			createSkillWidgets();
-		}
-	}
-
-	private boolean canStartQuest(ByReleaseQuest quest)
-	{
-		return currentDate >= quest.getReleaseDate();
 	}
 
 	private void updateCurrentDate()
@@ -152,10 +201,7 @@ public class ByReleasePlugin extends Plugin
 				if (i > 0 && questList.get(i - 1).getQuestState() == QuestState.FINISHED)
 				{
 					previousDate = currentDate;
-					System.out.println("PREVIOUS DATE: " + previousDate);
 					currentDate = quest.getReleaseDate();
-					System.out.println("CURRENT DATE: " + currentDate);
-					System.out.println("DATE BASED ON: " + questList.get(i));
 					System.out.println(questList.get(i).getQuestState());
 				}
 				break;
@@ -163,77 +209,24 @@ public class ByReleasePlugin extends Plugin
 		}
 	}
 
-	@Subscribe
-	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
+	private void updateSkillWidgets()
 	{
-		if (widgetLoaded.getGroupId() == WidgetInfo.SKILLS_CONTAINER.getGroupId())
+		for (ByReleaseSkill skill : ByReleaseSkill.values())
 		{
-			createSkillWidgets();
+			if (skill.getReleaseDate() > currentDate)
+			{
+				ArrayList<Widget> skillWidgetChildren = new ArrayList<>(skillWidgets.get(skill.getSkill().getName()));
+
+				for (Widget skillWidgetChild : skillWidgetChildren)
+				{
+					skillWidgetChild.setHidden(false);
+				}
+			}
 		}
-	}
-
-	@Subscribe
-	public void onScriptPostFired(ScriptPostFired scriptPostFired) {
-		int clientScriptQuestListDrawID = 1340;
-		if(scriptPostFired.getScriptId() == clientScriptQuestListDrawID)
-		{
-			clientThread.invokeLater(this::createQuestList);
-		}
-	}
-
-	@Provides
-	ByReleaseConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(ByReleaseConfig.class);
-	}
-
-	private void createSkillWidgets()
-	{
-		ArrayList<ByReleaseSkill> skillsList = new ArrayList<>(Arrays.asList(ByReleaseSkill.values()));
-		skillWidgets = new HashMap<>();
-
-		for (ByReleaseSkill skill : skillsList)
-		{
-			System.out.println("create skill widget: " + skill);
-			addSkillWidget(skill.getSkill(), skill.getReleaseDate(), skill.getWidgetID());
-		}
-	}
-
-	private void addSkillWidget(Skill skill, int releaseDate, int widgetID)
-	{
-		Widget skillWidget = client.getWidget(widgetID);
-
-		if (skillWidget == null)
-		{
-			return;
-		}
-
-		boolean isSkillUnlocked = releaseDate <= currentDate;
-		ArrayList<Widget> skillWidgetChildren = new ArrayList<>();
-
-		Widget skillIconWidget = skillWidget.createChild(-1, WidgetType.GRAPHIC);
-		Widget skillLevelWidget = skillWidget.createChild(-1, WidgetType.GRAPHIC);
-
-		skillLevelWidget.setSpriteId(176);
-		skillLevelWidget.setSize(36, 36);
-		skillLevelWidget.setPos(28, -2);
-		skillLevelWidget.setOpacity(90);
-		skillLevelWidget.setHidden(isSkillUnlocked);
-
-		skillIconWidget.setSpriteId(174);
-		skillIconWidget.setSize(36, 36);
-		skillIconWidget.setPos(-2, -2);
-		skillIconWidget.setOpacity(90);
-		skillIconWidget.setHidden(isSkillUnlocked);
-
-		skillWidgetChildren.add(skillIconWidget);
-		skillWidgetChildren.add(skillLevelWidget);
-		skillWidgets.put(skill.getName(), skillWidgetChildren);
 	}
 
 	public int getCurrentDate()
 	{
 		return currentDate;
 	}
-
 }

@@ -63,6 +63,7 @@ public enum ByReleaseSkill
 	@Getter
 	private final int widgetID;
 
+
 	ByReleaseSkill(Skill skill, int releaseDate, int widgetID)
 	{
 		this.skill = skill;

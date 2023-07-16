@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -81,9 +82,9 @@ public class ByReleasePlugin extends Plugin
 
 	private final ArrayList<ByReleaseQuest> questList = new ArrayList<>(Arrays.asList(ByReleaseQuest.values()));
 	private final HashMap<String, List<Widget>> skillWidgets = new HashMap<>();
-	private final HashMap<String, Widget> prayerWidgets = new HashMap<>();
 	private final ArrayList<ByReleasePrayer> prayersFromMagicRSC = new ArrayList<>(Arrays.asList(ByReleasePrayer.THICK_SKIN, ByReleasePrayer.BURST_OF_STRENGTH, ByReleasePrayer.ROCK_SKIN));
 	private final Set<String> nonReleasedPrayerNames = new HashSet<>();
+	private final Set<String> nonReleasedSkillNames = new HashSet<>();
 	private boolean setUpCompleted = false;
 	private boolean treatMeleePrayerAsParalyzeMonster = true;
 	private int currentDate = 20010104;
@@ -101,6 +102,12 @@ public class ByReleasePlugin extends Plugin
 	protected void shutDown() throws Exception
 	{
 		overlayManager.remove(overlay);
+		clientThread.invokeLater(this::removeSkillWidgets);
+		previousDate = 0;
+		setUpCompleted = false;
+		nonReleasedPrayerNames.clear();
+		currentDate = 20010104;
+		clientThread.invokeLater(this::restoreDefaultPrayerWidgets);
 	}
 
 	@Subscribe
@@ -174,8 +181,13 @@ public class ByReleasePlugin extends Plugin
 	private void setUp()
 	{
 		createSkillWidgets();
+
 		updateSkillWidgets();
+
 		update();
+
+		updatePrayerWidgets();
+
 		setUpCompleted = true;
 	}
 
@@ -192,8 +204,9 @@ public class ByReleasePlugin extends Plugin
 
 			ArrayList<Widget> skillWidgetChildren = new ArrayList<>();
 
-			Widget skillIconWidget = skillWidget.createChild(-1, WidgetType.GRAPHIC);
-			Widget skillLevelWidget = skillWidget.createChild(-1, WidgetType.GRAPHIC);
+			Widget skillIconWidget = skillWidget.createChild(50, WidgetType.GRAPHIC);
+			Widget skillLevelWidget = skillWidget.createChild(51, WidgetType.GRAPHIC);
+
 
 			skillIconWidget.setSpriteId(174);
 			skillIconWidget.setSize(36, 36);
@@ -222,9 +235,8 @@ public class ByReleasePlugin extends Plugin
 
 			if (individualPrayerWidgetContainer == null)
 			{
-				return;
+				continue;
 			}
-
 			//prayer is not released
 			if (prayer.getReleaseDate() > currentDate)
 			{
@@ -242,6 +254,7 @@ public class ByReleasePlugin extends Plugin
 			{
 				individualPrayerWidgetContainer.setHidden(false);
 				nonReleasedPrayerNames.remove(prayer.getName());
+
 			}
 			individualPrayerWidgetContainer.revalidate();
 		}
@@ -292,15 +305,51 @@ public class ByReleasePlugin extends Plugin
 
 	private void updateSkillWidgets()
 	{
+
 		for (ByReleaseSkill skill : ByReleaseSkill.values())
 		{
-			if (skill.getReleaseDate() > currentDate)
+			for (Widget skillWidgetChild : skillWidgets.get(skill.getSkill().getName()))
 			{
-				for (Widget skillWidgetChild : skillWidgets.get(skill.getSkill().getName()))
+				if (skill.getReleaseDate() > currentDate)
 				{
 					skillWidgetChild.setHidden(false);
+					nonReleasedSkillNames.add(skill.getSkill().getName());
+				}
+				else
+				{
+					skillWidgetChild.setHidden(true);
+					nonReleasedSkillNames.remove(skill.getSkill().getName());
 				}
 			}
+		}
+	}
+
+	private void removeSkillWidgets()
+	{
+		for (ByReleaseSkill skill : ByReleaseSkill.values())
+		{
+			Widget skillWidget = client.getWidget(skill.getWidgetID());
+			if (skillWidget == null)
+			{
+				System.out.println("IS NULL: " + skill);
+				continue;
+			}
+			skillWidget.deleteAllChildren();
+			client.createScriptEvent(skillWidget.getOnLoadListener()).setSource(skillWidget).run();
+		}
+		skillWidgets.clear();
+	}
+
+	private void restoreDefaultPrayerWidgets()
+	{
+		for (ByReleasePrayer prayer : ByReleasePrayer.values())
+		{
+			Widget widget = client.getWidget(35454976);
+			if (widget == null)
+			{
+				return;
+			}
+			client.createScriptEvent(widget.getOnLoadListener()).setSource(widget).run();
 		}
 	}
 

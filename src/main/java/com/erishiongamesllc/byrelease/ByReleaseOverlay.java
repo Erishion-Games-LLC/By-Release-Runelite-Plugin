@@ -45,7 +45,6 @@ public class ByReleaseOverlay extends OverlayPanel
 	@Inject
 	private ByReleaseOverlay()
 	{
-
 	}
 
 	@Override

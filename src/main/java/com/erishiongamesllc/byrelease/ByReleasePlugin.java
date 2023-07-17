@@ -27,13 +27,13 @@ package com.erishiongamesllc.byrelease;
 import com.erishiongamesllc.byrelease.data.ByReleasePrayer;
 import com.erishiongamesllc.byrelease.data.ByReleaseQuest;
 import com.erishiongamesllc.byrelease.data.ByReleaseSkill;
+import com.erishiongamesllc.byrelease.data.ByReleaseStandardSpell;
 import com.google.inject.Provides;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +54,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.prayer.PrayerPlugin;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
 
@@ -82,14 +81,17 @@ public class ByReleasePlugin extends Plugin
 
 	private final ArrayList<ByReleaseQuest> questList = new ArrayList<>(Arrays.asList(ByReleaseQuest.values()));
 	private final HashMap<String, List<Widget>> skillWidgets = new HashMap<>();
+	private boolean enablePrayersFromMagicRSC = true;
+	private boolean enableSpellsFromRSC = true;
 	private final ArrayList<ByReleasePrayer> prayersFromMagicRSC = new ArrayList<>(Arrays.asList(ByReleasePrayer.THICK_SKIN, ByReleasePrayer.BURST_OF_STRENGTH, ByReleasePrayer.ROCK_SKIN));
+	private final ArrayList<ByReleaseStandardSpell> spellsFromRSC = new ArrayList<>(Arrays.asList(ByReleaseStandardSpell.WIND_STRIKE, ByReleaseStandardSpell.CONFUSE, ByReleaseStandardSpell.WATER_STRIKE));
 	private final Set<String> nonReleasedPrayerNames = new HashSet<>();
 	private final Set<String> nonReleasedSkillNames = new HashSet<>();
+	private final Set<String> nonReleasedSpellNames = new HashSet<>();
 	private boolean setUpCompleted = false;
 	private boolean treatMeleePrayerAsParalyzeMonster = true;
 	private int currentDate = 20010104;
-	private int previousDate;
-	private boolean enablePrayersFromMagicRSC = true;
+	private int previousDate = 0;
 
 
 	@Override
@@ -106,8 +108,11 @@ public class ByReleasePlugin extends Plugin
 		previousDate = 0;
 		setUpCompleted = false;
 		nonReleasedPrayerNames.clear();
+		nonReleasedSkillNames.clear();
+		nonReleasedSpellNames.clear();
 		currentDate = 20010104;
 		clientThread.invokeLater(this::restoreDefaultPrayerWidgets);
+//		clientThread.invokeLater(this::restoreDefaultSpellWidgets);
 	}
 
 	@Subscribe
@@ -146,28 +151,60 @@ public class ByReleasePlugin extends Plugin
 
 		switch (scriptPostFired.getScriptId())
 		{
+			//quests
 			case clientScriptQuestListDrawID:
 			case ScriptID.QUESTLIST_INIT:
 				clientThread.invokeLater(this::update);
 				break;
+
+			//prayers
 			case 461:
 			case 2760:
 			case ScriptID.PRAYER_UPDATEBUTTON:
 			case ScriptID.PRAYER_REDRAW:
 			case ScriptID.QUICKPRAYER_INIT:
 				updatePrayerWidgets();
+				break;
+
+			//spells
+//			case 2262:
+//			case 2607:
+//			case 2609:
+//			case 2610:
+//			case 2617:
+//				updateSpellWidgets();
 		}
 	}
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
 	{
-		if (menuOptionClicked.getMenuOption().equals("Activate") || menuOptionClicked.getMenuOption().equals("Toggle"))
+		String menuOption = menuOptionClicked.getMenuOption();
+		String menuTarget = Text.removeTags(menuOptionClicked.getMenuTarget());
+
+		if ((menuOption.equals("Activate") || menuOption.equals("Toggle")) && nonReleasedPrayerNames.contains(menuTarget))
 		{
-			if (nonReleasedPrayerNames.contains(Text.removeTags(menuOptionClicked.getMenuTarget())))
-			{
-				menuOptionClicked.consume();
-			}
+			menuOptionClicked.consume();
+		}
+		else if (menuOption.equals("Cast") && nonReleasedSpellNames.contains(menuTarget))
+		{
+			menuOptionClicked.consume();
+		}
+		else if ((menuOption.equals("Seers'") && currentDate < 20150305) ||
+			(menuOption.equals("Outside") && currentDate < 20150910) ||
+			(menuOption.equals("Yanille") && currentDate < 20150305) ||
+			(menuOption.equals("Grand Exchange") && currentDate < 20150430))
+		{
+			menuOptionClicked.consume();
+		}
+	}
+
+	@Subscribe
+	public void onVarbitChanged(VarbitChanged varbitChanged)
+	{
+		if (varbitChanged.getVarbitId() == 4070)
+		{
+			updateSpellWidgets();
 		}
 	}
 
@@ -180,13 +217,17 @@ public class ByReleasePlugin extends Plugin
 	//only call on client thread
 	private void setUp()
 	{
+		updateQuestList();
+
+		updateCurrentDate();
+
 		createSkillWidgets();
 
 		updateSkillWidgets();
 
-		update();
-
 		updatePrayerWidgets();
+
+		updateSpellWidgets();
 
 		setUpCompleted = true;
 	}
@@ -227,39 +268,6 @@ public class ByReleasePlugin extends Plugin
 		}
 	}
 
-	private void updatePrayerWidgets()
-	{
-		for (ByReleasePrayer prayer : ByReleasePrayer.values())
-		{
-			Widget individualPrayerWidgetContainer = client.getWidget(prayer.getWidgetID());
-
-			if (individualPrayerWidgetContainer == null)
-			{
-				continue;
-			}
-			//prayer is not released
-			if (prayer.getReleaseDate() > currentDate)
-			{
-				if (enablePrayersFromMagicRSC && prayersFromMagicRSC.contains(prayer))
-				{
-					individualPrayerWidgetContainer.setHidden(false);
-					nonReleasedPrayerNames.remove(prayer.getName());
-				}
-				else
-				{
-					individualPrayerWidgetContainer.setHidden(true);
-					nonReleasedPrayerNames.add(prayer.getName());
-				}
-			} else
-			{
-				individualPrayerWidgetContainer.setHidden(false);
-				nonReleasedPrayerNames.remove(prayer.getName());
-
-			}
-			individualPrayerWidgetContainer.revalidate();
-		}
-	}
-
 	//only call on client thread
 	private void update()
 	{
@@ -271,6 +279,7 @@ public class ByReleasePlugin extends Plugin
 
 			updateSkillWidgets();
 			updatePrayerWidgets();
+			updateSpellWidgets();
 		}
 	}
 
@@ -324,6 +333,49 @@ public class ByReleasePlugin extends Plugin
 		}
 	}
 
+	private void updatePrayerWidgets()
+	{
+		for (ByReleasePrayer prayer : ByReleasePrayer.values())
+		{
+			Widget individualPrayerWidgetContainer = client.getWidget(prayer.getWidgetID());
+
+			if (individualPrayerWidgetContainer == null)
+			{
+				continue;
+			}
+			//prayer is not released
+			if (prayer.getReleaseDate() > currentDate)
+			{
+				if (enablePrayersFromMagicRSC && prayersFromMagicRSC.contains(prayer))
+				{
+					if (prayer == ByReleasePrayer.ROCK_SKIN && currentDate < 20010127)
+					{
+						System.out.println("HIDE ROCK SKIN: " + currentDate);
+						//prayer is rock skin, which was released Jan 27 2001.
+						individualPrayerWidgetContainer.setHidden(true);
+						nonReleasedPrayerNames.add(prayer.getName());
+					}
+					else
+					{
+						individualPrayerWidgetContainer.setHidden(false);
+						nonReleasedPrayerNames.remove(prayer.getName());
+					}
+				}
+				else
+				{
+					individualPrayerWidgetContainer.setHidden(true);
+					nonReleasedPrayerNames.add(prayer.getName());
+				}
+			} else
+			{
+				individualPrayerWidgetContainer.setHidden(false);
+				nonReleasedPrayerNames.remove(prayer.getName());
+
+			}
+			individualPrayerWidgetContainer.revalidate();
+		}
+	}
+
 	private void removeSkillWidgets()
 	{
 		for (ByReleaseSkill skill : ByReleaseSkill.values())
@@ -331,7 +383,6 @@ public class ByReleasePlugin extends Plugin
 			Widget skillWidget = client.getWidget(skill.getWidgetID());
 			if (skillWidget == null)
 			{
-				System.out.println("IS NULL: " + skill);
 				continue;
 			}
 			skillWidget.deleteAllChildren();
@@ -340,21 +391,94 @@ public class ByReleasePlugin extends Plugin
 		skillWidgets.clear();
 	}
 
+	//works, need to fix issue where spells are not being displayed properly if dont have runes but is past released date
 	private void restoreDefaultPrayerWidgets()
 	{
-		for (ByReleasePrayer prayer : ByReleasePrayer.values())
+		Widget widget = client.getWidget(35454976);
+		if (widget == null)
 		{
-			Widget widget = client.getWidget(35454976);
-			if (widget == null)
-			{
-				return;
-			}
-			client.createScriptEvent(widget.getOnLoadListener()).setSource(widget).run();
+			return;
 		}
+		client.createScriptEvent(widget.getOnLoadListener()).setSource(widget).run();
+	}
+
+	private void restoreDefaultSpellWidgets()
+	{
+		Widget widget = client.getWidget(14286848);
+		if (widget == null)
+		{
+			return;
+		}
+		client.createScriptEvent(widget.getOnLoadListener()).setSource(widget).run();
 	}
 
 	public int getCurrentDate()
 	{
 		return currentDate;
+	}
+
+	//Varbit 4070
+	//0 standard
+	//1 ancient
+	//2 lunar
+	//3 arceuus
+	private void updateSpellWidgets()
+	{
+		System.out.println("update spell widgets");
+		switch (client.getVarbitValue(4070))
+		{
+			case 0:
+				updateStandardSpellbook();
+				break;
+			case 1:
+				updateAncientSpellbook();
+				break;
+		}
+	}
+
+	private void updateStandardSpellbook()
+	{
+		System.out.println("updated standard spell book");
+		for (ByReleaseStandardSpell spell : ByReleaseStandardSpell.values())
+		{
+			Widget spellWidget = client.getWidget(spell.getWidgetID());
+			if (spellWidget == null)
+			{
+				System.out.println("spell widget is null for: " + spell.getName());
+				continue;
+			}
+			//spell is not released
+			if (spell.getReleaseDate() > currentDate)
+			{
+				if(enableSpellsFromRSC && spellsFromRSC.contains(spell))
+				{
+					if (spell == ByReleaseStandardSpell.WATER_STRIKE && currentDate < 20010127)
+					{
+//						spellWidget.setSpriteId(spell.getLockedSpriteID());
+						nonReleasedSpellNames.add(spell.getName());
+					}
+					else
+					{
+//						spellWidget.setSpriteId(spell.getUnlockedSpriteID());
+						nonReleasedSpellNames.remove(spell.getName());
+					}
+				}
+				else
+				{
+//					spellWidget.setSpriteId(spell.getLockedSpriteID());
+					nonReleasedSpellNames.add(spell.getName());
+				}
+			}
+			else
+			{
+//				spellWidget.setSpriteId(spell.getUnlockedSpriteID());
+				nonReleasedSpellNames.remove(spell.getName());
+			}
+		}
+	}
+
+	private void updateAncientSpellbook()
+	{
+		System.out.println("updated ancient spell book");
 	}
 }

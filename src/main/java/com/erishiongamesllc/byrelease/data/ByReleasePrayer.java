@@ -30,6 +30,7 @@ package com.erishiongamesllc.byrelease.data;
 import lombok.Getter;
 import net.runelite.api.Prayer;
 
+@Getter
 public enum ByReleasePrayer {
 	THICK_SKIN(Prayer.THICK_SKIN, 20010524, 35454985, "Thick Skin"),
 	BURST_OF_STRENGTH(Prayer.BURST_OF_STRENGTH, 20010524, 35454986, "Burst of Strength"),
@@ -61,13 +62,9 @@ public enum ByReleasePrayer {
 	RIGOUR(Prayer.RIGOUR, 20170105, 35455009, "Rigour"),
 	AUGURY(Prayer.AUGURY, 20170105, 35455012, "Augury");
 
-	@Getter
 	private final Prayer prayer;
-	@Getter
 	private final int releaseDate;
-	@Getter
 	private final int widgetID;
-	@Getter
 	private final String name;
 
 	ByReleasePrayer(Prayer prayer, int releaseDate, int widgetID, String name)

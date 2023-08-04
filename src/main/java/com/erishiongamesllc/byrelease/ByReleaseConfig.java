@@ -28,16 +28,39 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("example")
+@ConfigGroup(ByReleasePlugin.CONFIG_GROUP)
 public interface ByReleaseConfig extends Config
 {
-	@ConfigItem(
-		keyName = "greeting",
-		name = "Welcome Greeting",
-		description = "The message to show to the user when they login"
+	@ConfigItem
+	(
+		keyName = "spellsFromInitialRSC",
+		name = "Enable spells from initial RSC Spells",
+		description = "Spellbook was reworked on 24 May 2001. Mark this true to enable corrosponding magic, if not you can't use any spells until 24 May 2001"
 	)
-	default String greeting()
+	default boolean spellsFromInitialRSC()
 	{
-		return "Hello";
+		return true;
+	}
+
+	@ConfigItem
+	(
+		keyName = "prayersFromMagicRSC",
+		name = "Enable prayers from initial RSC Spells",
+		description = "Prayers did not exist until 24 May 2001. The original spellbook had spells that are equivalent to these prayers. "
+	)
+	default boolean prayersFromMagicRSC()
+	{
+		return true;
+	}
+
+	@ConfigItem
+	(
+		keyName = "enableAnvils",
+		name = "Filter anvils by release date",
+		description = "limit anvils available based on release date"
+	)
+	default boolean enableAnvils()
+	{
+		return true;
 	}
 }

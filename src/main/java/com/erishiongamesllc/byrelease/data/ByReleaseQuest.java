@@ -31,6 +31,7 @@ import lombok.Setter;
 import net.runelite.api.Quest;
 import net.runelite.api.QuestState;
 
+@Getter
 public enum ByReleaseQuest {
 	COOKS_ASSISTANT(Quest.COOKS_ASSISTANT, 20010104, QuestState.NOT_STARTED),
 	DEMON_SLAYER(Quest.DEMON_SLAYER, 20010104, QuestState.NOT_STARTED),
@@ -205,15 +206,13 @@ public enum ByReleaseQuest {
 	INTO_THE_TOMBS(Quest.INTO_THE_TOMBS, 20220824, QuestState.NOT_STARTED),
 	THE_GARDEN_OF_DEATH(Quest.THE_GARDEN_OF_DEATH, 20221130, QuestState.NOT_STARTED),
 	SECRETS_OF_THE_NORTH(Quest.SECRETS_OF_THE_NORTH, 20230111, QuestState.NOT_STARTED),
-	HIS_FAITHFUL_SERVANTS(Quest.SECRETS_OF_THE_NORTH, 20230614, QuestState.NOT_STARTED);
+	HIS_FAITHFUL_SERVANTS(Quest.SECRETS_OF_THE_NORTH, 20230614, QuestState.NOT_STARTED),
+	DESERT_TREASURE_II(Quest.DESERT_TREASURE_II__THE_FALLEN_EMPIRE, 20230726, QuestState.NOT_STARTED)
+	;
 
-	@Getter
 	private final Quest quest;
-
-	@Getter
 	private final int releaseDate;
-
-	@Getter @Setter
+	@Setter
 	private QuestState questState;
 
 	ByReleaseQuest(Quest quest, int releaseDate, QuestState questState) {

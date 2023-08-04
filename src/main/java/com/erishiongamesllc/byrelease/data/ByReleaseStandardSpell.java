@@ -25,12 +25,12 @@
  *
  */
 
-
 package com.erishiongamesllc.byrelease.data;
 
-	import lombok.Getter;
-	import net.runelite.api.SpriteID;
+import lombok.Getter;
+import net.runelite.api.SpriteID;
 
+@Getter
 public enum ByReleaseStandardSpell {
 	LUMBRIDGE_HOME_TELEPORT("Lumbridge Home Teleport", 20060927, 14286854, SpriteID.SPELL_LUMBRIDGE_HOME_TELEPORT, SpriteID.SPELL_LUMBRIDGE_HOME_TELEPORT_DISABLED),
 	WIND_STRIKE("Wind Strike", 20010524, 14286855, SpriteID.SPELL_WIND_STRIKE, SpriteID.SPELL_WIND_STRIKE_DISABLED),
@@ -103,15 +103,10 @@ public enum ByReleaseStandardSpell {
 	LVL_7_ENCHANT("Lvl-7 Enchant", 20160506, 14286922, SpriteID.SPELL_LVL_7_ENCHANT, SpriteID.SPELL_LVL_7_ENCHANT_DISABLED),
 	FIRE_SURGE("Fire Surge", 20180104, 14286923, SpriteID.SPELL_FIRE_SURGE, SpriteID.SPELL_FIRE_SURGE_DISABLED);
 
-	@Getter
 	private final String name;
-	@Getter
 	private final int releaseDate;
-	@Getter
 	private final int widgetID;
-	@Getter
 	private final int unlockedSpriteID;
-	@Getter
 	private final int lockedSpriteID;
 
 	ByReleaseStandardSpell(String name, int releaseDate, int widgetID, int unlockedSpriteID, int lockedSpriteID) {

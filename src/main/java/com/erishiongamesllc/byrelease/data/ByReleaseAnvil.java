@@ -33,16 +33,15 @@ import net.runelite.api.coords.WorldPoint;
 @Getter
 public enum ByReleaseAnvil
 {
-	//Horvik's anvils
-	VARROCK_ANVIL_1(new WorldPoint(3228, 3436, 0), 20090104),
-	VARROCK_ANVIL_2(new WorldPoint(3228, 3434, 0), 20090104),
+	VARROCK_WEST_BANK_ANVIL_1(new WorldPoint(3188, 3426, 0), 20010123),
+	VARROCK_WEST_BANK_ANVIL_2(new WorldPoint(3188, 3424, 0), 20010123),
+	VARROCK_WEST_BANK_ANVIL_3(new WorldPoint(3188, 3421, 0), 20010123),
 
-	//Varrock west bank anvils
-	VARROCK_ANVIL_3(new WorldPoint(3188, 3426, 0), 20010123),
-	VARROCK_ANVIL_4(new WorldPoint(3188, 3424, 0), 20010123),
-	VARROCK_ANVIL_5(new WorldPoint(3188, 3421, 0), 20010123),
+	VARROCK_EAST_BANK_ANVIL_1(new WorldPoint(3248, 3404, 0), 20010521),
+	VARROCK_EAST_BANK_ANVIL_2(new WorldPoint(3246, 3404, 0), 20010521),
 
-
+	GIANTS_PLATEAU_ANVIL(new WorldPoint(3360, 3155, 0), 20200716),
+	RUSTED_ANVIL(new WorldPoint(3227, 3250, 0), 20200709),
 	;
 
 	final WorldPoint location;

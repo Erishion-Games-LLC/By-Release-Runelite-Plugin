@@ -25,31 +25,31 @@
 package com.erishiongamesllc.byrelease;
 
 import static com.erishiongamesllc.byrelease.ByReleasePlugin.PLUGIN_NAME;
-import com.erishiongamesllc.byrelease.data.ByReleaseAnvil;
 import com.erishiongamesllc.byrelease.data.ByReleasePrayer;
 import com.erishiongamesllc.byrelease.data.ByReleaseQuest;
 import com.erishiongamesllc.byrelease.data.ByReleaseSkill;
 import com.erishiongamesllc.byrelease.data.ByReleaseStandardSpell;
-import com.erishiongamesllc.byrelease.data.ByReleaseTree;
-import com.erishiongamesllc.byrelease.data.MenuOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.QuestState;
 import net.runelite.api.ScriptID;
-import net.runelite.api.Tile;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
@@ -59,12 +59,12 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetType;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.util.Text;
 
 @Slf4j
 @PluginDescriptor
@@ -75,18 +75,22 @@ public class ByReleasePlugin extends Plugin
 {
 	@Inject
 	private Client client;
-
 	@Inject
 	private ByReleaseConfig config;
-
 	@Inject
 	private ClientThread clientThread;
-
 	@Inject
 	private OverlayManager overlayManager;
-
 	@Inject
 	private ByReleaseOverlay overlay;
+	@Inject
+	private ByReleaseItemOverlay itemOverlay;
+	@Inject
+	private MenuOptionClickedHandler menuOptionClickedHandler;
+	@Inject
+	private EventBus eventBus;
+	@Inject
+	private Gson gson;
 
 	public static final String PLUGIN_NAME = "By Release";
 	public static final String CONFIG_GROUP = "byrelease";
@@ -97,8 +101,11 @@ public class ByReleasePlugin extends Plugin
 	private final ArrayList<ByReleasePrayer> prayersFromMagicRSC = new ArrayList<>(Arrays.asList(ByReleasePrayer.THICK_SKIN, ByReleasePrayer.BURST_OF_STRENGTH, ByReleasePrayer.ROCK_SKIN));
 	private final ArrayList<ByReleaseStandardSpell> spellsFromInitialRSC = new ArrayList<>(Arrays.asList(ByReleaseStandardSpell.WIND_STRIKE, ByReleaseStandardSpell.CONFUSE, ByReleaseStandardSpell.WATER_STRIKE));
 
+	@Getter
 	private final Set<String> nonReleasedPrayerNames = new HashSet<>();
+	@Getter
 	private final Set<String> nonReleasedSkillNames = new HashSet<>();
+	@Getter
 	private final Set<String> nonReleasedSpellNames = new HashSet<>();
 
 	private boolean setUpCompleted = false;
@@ -113,13 +120,20 @@ public class ByReleasePlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
+		loadDefinitions();
+		eventBus.register(menuOptionClickedHandler);
 		overlayManager.add(overlay);
+		overlayManager.add(itemOverlay);
+		itemOverlay.invalidateCache();
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
+		eventBus.unregister(menuOptionClickedHandler);
 		overlayManager.remove(overlay);
+		overlayManager.remove(itemOverlay);
+		itemOverlay.invalidateCache();
 		clientThread.invokeLater(this::removeSkillWidgets);
 		previousDate = 0;
 		setUpCompleted = false;
@@ -193,64 +207,6 @@ public class ByReleasePlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
-	{
-		String menuOption = menuOptionClicked.getMenuOption();
-		String menuTarget = Text.removeTags(menuOptionClicked.getMenuTarget());
-		switch (menuOption)
-		{
-			case "Activate":
-			case "Toggle":
-				if (nonReleasedPrayerNames.contains(menuTarget))
-				{
-					createUnavailableMessage(menuTarget, MenuOptions.TOGGLE);
-					menuOptionClicked.consume();
-				}
-				break;
-			case "Cast":
-				if (nonReleasedSpellNames.contains(menuTarget))
-				{
-					createUnavailableMessage(menuTarget, MenuOptions.CAST);
-					menuOptionClicked.consume();
-				}
-				break;
-			case "Seers'":
-			case "Yanille":
-				if (currentDate < 20150305)
-				{
-					menuOptionClicked.consume();
-					client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-						"", menuOption + " teleport is unavailable until: " + 20150305, null);
-				}
-				break;
-			case "Grand Exchange":
-				if (currentDate < 20150430)
-				{
-					menuOptionClicked.consume();
-					client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-						"", "Grand Exchange teleport is unavailable until: " + 20150430, null);
-				}
-				break;
-			case "Smelt":
-				if (menuOptionClicked.getId() == 39620 && currentDate < 20200709)
-				{
-					createUnavailableMessage(menuTarget, MenuOptions.SMELT);
-					menuOptionClicked.consume();
-				}
-				break;
-			case "Chop down":
-				handleChopDown(menuTarget, menuOptionClicked);
-				break;
-			case "Smith":
-			{
-				System.out.println("HANDLE SMITH OUT");
-				handleSmith(menuTarget, menuOptionClicked);
-				break;
-			}
-		}
-	}
-
-	@Subscribe
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{
 		if (varbitChanged.getVarbitId() == 4070)
@@ -295,8 +251,6 @@ public class ByReleasePlugin extends Plugin
 		updatePrayerWidgets();
 
 		updateSpellWidgets();
-
-//		updateObjectsAvailability();
 
 		setUpCompleted = true;
 	}
@@ -349,7 +303,7 @@ public class ByReleasePlugin extends Plugin
 			updateSkillWidgets();
 			updatePrayerWidgets();
 			updateSpellWidgets();
-//			updateObjectsAvailability();
+			itemOverlay.invalidateCache();
 		}
 	}
 
@@ -547,74 +501,25 @@ public class ByReleasePlugin extends Plugin
 		System.out.println("updated ancient spell book");
 	}
 
-	private void createUnavailableMessage(String target, MenuOptions type)
+	//https://github.com/IdylRS/chrono-plugin/blob/main/src/main/java/com/chrono/ChronoPlugin.java#L171
+	private <T> T loadDefinitionResource(Type type, String resource)
 	{
-		switch (type)
-		{
-			case TOGGLE:
-				for (ByReleasePrayer prayer : ByReleasePrayer.values())
-				{
-					if (prayer.getName().equals(target))
-					{
-						client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-							"", prayer.getName() + " is unavailable until: " + prayer.getReleaseDate(), null);
-						break;
-					}
-				}
-				break;
-			case CAST:
-				for (ByReleaseStandardSpell spell : ByReleaseStandardSpell.values())
-				{
-					if (spell.getName().equals(target))
-					{
-						client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-							"", spell.getName() + " is unavailable until: " + spell.getReleaseDate(), null);
-						break;
-					}
-				}
-				break;
-			case CHOP_DOWN:
-				for (ByReleaseTree tree : ByReleaseTree.values())
-				{
-					if (tree.getName().equals(target))
-					{
-						client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-							"", tree.getName() + "is unavailable until: " + tree.getReleaseDate(), null);
-						break;
-					}
-				}
-				break;
-		}
+		// Load the resource as a stream and wrap it in a reader
+		InputStream resourceStream = ByReleasePlugin.class.getResourceAsStream(resource);
+		assert resourceStream != null;
+		InputStreamReader definitionReader = new InputStreamReader(resourceStream);
+
+		return gson.fromJson(definitionReader, type);
 	}
 
-	private void handleChopDown(String menuTarget, MenuOptionClicked menuOptionClicked)
+	private void loadDefinitions()
 	{
-		for (ByReleaseTree tree : ByReleaseTree.values())
-		{
-			if (tree.getName().equals(menuTarget) && tree.getReleaseDate() > currentDate)
-			{
-				menuOptionClicked.consume();
-				createUnavailableMessage(menuTarget, MenuOptions.CHOP_DOWN);
-			}
-		}
+		Type defMapType = new TypeToken<Map<Integer, EntityDefinition>>() {}.getType();
+		EntityDefinition.itemDefinitions = loadDefinitionResource(defMapType, "combined_items.json");
 	}
 
-	private void handleSmith(String menuTarget, MenuOptionClicked menuOptionClicked)
+	public boolean isItemUnlocked(int itemID) throws ParseException
 	{
-		if (menuTarget.equals("Anvil") && config.enableAnvils())
-		{
-			final Tile tile = client.getScene().getTiles()[client.getPlane()][menuOptionClicked.getParam0()][menuOptionClicked.getParam1()];
-			final WorldPoint location = tile.getWorldLocation();
-
-			for (ByReleaseAnvil anvil : ByReleaseAnvil.values())
-			{
-				if (location.equals(anvil.getLocation()) && anvil.getReleaseDate() > currentDate)
-				{
-					menuOptionClicked.consume();
-					client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-						"", "This anvil is unavailable until: " + anvil.getReleaseDate(), null);
-				}
-			}
-		}
+		return EntityDefinition.isItemUnlocked(itemID, currentDate);
 	}
 }

@@ -24,54 +24,37 @@
  */
 package com.erishiongamesllc.byrelease;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+import lombok.Getter;
 
-@ConfigGroup(ByReleasePlugin.CONFIG_GROUP)
-public interface ByReleaseConfig extends Config
+//https://github.com/IdylRS/chrono-plugin/blob/main/src/main/java/com/chrono/EntityDefinition.java
+@Getter
+public class EntityDefinition
 {
-	@ConfigItem
-	(
-		keyName = "spellsFromInitialRSC",
-		name = "Enable spells from initial RSC Spells",
-		description = "Spellbook was reworked on 24 May 2001. Mark this true to enable corrosponding magic, if not you can't use any spells until 24 May 2001"
-	)
-	default boolean spellsFromInitialRSC()
-	{
-		return true;
-	}
+	private int id;
+	private String name;
+	private String releaseDate;
+	private String errorCodes;
 
-	@ConfigItem
-	(
-		keyName = "prayersFromMagicRSC",
-		name = "Enable prayers from initial RSC Spells",
-		description = "Prayers did not exist until 24 May 2001. The original spellbook had spells that are equivalent to these prayers. "
-	)
-	default boolean prayersFromMagicRSC()
-	{
-		return true;
-	}
+	static Map<Integer, EntityDefinition> itemDefinitions;
 
-	@ConfigItem
-	(
-		keyName = "enableAnvils",
-		name = "Filter anvils by release date",
-		description = "limit anvils available based on release date"
-	)
-	default boolean enableAnvils()
+	public static boolean isItemUnlocked(int itemId, int currentDate) throws ParseException
 	{
-		return true;
-	}
+		EntityDefinition def = itemDefinitions.get(itemId);
 
-	@ConfigItem
-	(
-		keyName = "allowPickup",
-		name = "Enable pickup/withdraw",
-		description = "Allow you to pickup and withdraw items that are not released yet for future use"
-	)
-	default boolean allowPickup()
-	{
-		return true;
+		if (def == null) {
+			System.out.println("DEF == NULL");
+			return false;
+		}
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date releaseDate = dateFormat.parse(def.getReleaseDate());
+
+		// Convert releaseDate to an integer format (yyyyMMdd)
+		int releaseDateAsInt = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(releaseDate));
+		return releaseDateAsInt <= currentDate;
 	}
 }

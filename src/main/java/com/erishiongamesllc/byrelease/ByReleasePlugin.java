@@ -24,10 +24,14 @@
  */
 package com.erishiongamesllc.byrelease;
 
+import static com.erishiongamesllc.byrelease.ByReleasePlugin.PLUGIN_NAME;
+import com.erishiongamesllc.byrelease.data.ByReleaseAnvil;
 import com.erishiongamesllc.byrelease.data.ByReleasePrayer;
 import com.erishiongamesllc.byrelease.data.ByReleaseQuest;
 import com.erishiongamesllc.byrelease.data.ByReleaseSkill;
 import com.erishiongamesllc.byrelease.data.ByReleaseStandardSpell;
+import com.erishiongamesllc.byrelease.data.ByReleaseTree;
+import com.erishiongamesllc.byrelease.data.MenuOptions;
 import com.google.inject.Provides;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,10 +40,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.QuestState;
 import net.runelite.api.ScriptID;
+import net.runelite.api.Tile;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptPostFired;
@@ -52,6 +60,7 @@ import net.runelite.api.widgets.WidgetType;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -60,7 +69,7 @@ import net.runelite.client.util.Text;
 @Slf4j
 @PluginDescriptor
 	(
-	name = "ByRelease"
+	name = PLUGIN_NAME
 	)
 public class ByReleasePlugin extends Plugin
 {
@@ -79,19 +88,26 @@ public class ByReleasePlugin extends Plugin
 	@Inject
 	private ByReleaseOverlay overlay;
 
+	public static final String PLUGIN_NAME = "By Release";
+	public static final String CONFIG_GROUP = "byrelease";
+
 	private final ArrayList<ByReleaseQuest> questList = new ArrayList<>(Arrays.asList(ByReleaseQuest.values()));
 	private final HashMap<String, List<Widget>> skillWidgets = new HashMap<>();
-	private boolean enablePrayersFromMagicRSC = true;
-	private boolean enableSpellsFromRSC = true;
+
 	private final ArrayList<ByReleasePrayer> prayersFromMagicRSC = new ArrayList<>(Arrays.asList(ByReleasePrayer.THICK_SKIN, ByReleasePrayer.BURST_OF_STRENGTH, ByReleasePrayer.ROCK_SKIN));
-	private final ArrayList<ByReleaseStandardSpell> spellsFromRSC = new ArrayList<>(Arrays.asList(ByReleaseStandardSpell.WIND_STRIKE, ByReleaseStandardSpell.CONFUSE, ByReleaseStandardSpell.WATER_STRIKE));
+	private final ArrayList<ByReleaseStandardSpell> spellsFromInitialRSC = new ArrayList<>(Arrays.asList(ByReleaseStandardSpell.WIND_STRIKE, ByReleaseStandardSpell.CONFUSE, ByReleaseStandardSpell.WATER_STRIKE));
+
 	private final Set<String> nonReleasedPrayerNames = new HashSet<>();
 	private final Set<String> nonReleasedSkillNames = new HashSet<>();
 	private final Set<String> nonReleasedSpellNames = new HashSet<>();
+
 	private boolean setUpCompleted = false;
-	private boolean treatMeleePrayerAsParalyzeMonster = true;
+
+	@Getter
 	private int currentDate = 20010104;
 	private int previousDate = 0;
+
+
 
 
 	@Override
@@ -181,21 +197,56 @@ public class ByReleasePlugin extends Plugin
 	{
 		String menuOption = menuOptionClicked.getMenuOption();
 		String menuTarget = Text.removeTags(menuOptionClicked.getMenuTarget());
-
-		if ((menuOption.equals("Activate") || menuOption.equals("Toggle")) && nonReleasedPrayerNames.contains(menuTarget))
+		switch (menuOption)
 		{
-			menuOptionClicked.consume();
-		}
-		else if (menuOption.equals("Cast") && nonReleasedSpellNames.contains(menuTarget))
-		{
-			menuOptionClicked.consume();
-		}
-		else if ((menuOption.equals("Seers'") && currentDate < 20150305) ||
-			(menuOption.equals("Outside") && currentDate < 20150910) ||
-			(menuOption.equals("Yanille") && currentDate < 20150305) ||
-			(menuOption.equals("Grand Exchange") && currentDate < 20150430))
-		{
-			menuOptionClicked.consume();
+			case "Activate":
+			case "Toggle":
+				if (nonReleasedPrayerNames.contains(menuTarget))
+				{
+					createUnavailableMessage(menuTarget, MenuOptions.TOGGLE);
+					menuOptionClicked.consume();
+				}
+				break;
+			case "Cast":
+				if (nonReleasedSpellNames.contains(menuTarget))
+				{
+					createUnavailableMessage(menuTarget, MenuOptions.CAST);
+					menuOptionClicked.consume();
+				}
+				break;
+			case "Seers'":
+			case "Yanille":
+				if (currentDate < 20150305)
+				{
+					menuOptionClicked.consume();
+					client.addChatMessage(ChatMessageType.GAMEMESSAGE,
+						"", menuOption + " teleport is unavailable until: " + 20150305, null);
+				}
+				break;
+			case "Grand Exchange":
+				if (currentDate < 20150430)
+				{
+					menuOptionClicked.consume();
+					client.addChatMessage(ChatMessageType.GAMEMESSAGE,
+						"", "Grand Exchange teleport is unavailable until: " + 20150430, null);
+				}
+				break;
+			case "Smelt":
+				if (menuOptionClicked.getId() == 39620 && currentDate < 20200709)
+				{
+					createUnavailableMessage(menuTarget, MenuOptions.SMELT);
+					menuOptionClicked.consume();
+				}
+				break;
+			case "Chop down":
+				handleChopDown(menuTarget, menuOptionClicked);
+				break;
+			case "Smith":
+			{
+				System.out.println("HANDLE SMITH OUT");
+				handleSmith(menuTarget, menuOptionClicked);
+				break;
+			}
 		}
 	}
 
@@ -205,6 +256,22 @@ public class ByReleasePlugin extends Plugin
 		if (varbitChanged.getVarbitId() == 4070)
 		{
 			updateSpellWidgets();
+		}
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged configChanged)
+	{
+		if (configChanged.getGroup().equals(CONFIG_GROUP))
+		{
+			System.out.println("CONFIG HAS CHANGED");
+			switch (configChanged.getKey())
+			{
+				case "spellsFromInitialRSC":
+				case "prayersFromMagicRSC":
+					clientThread.invokeLater(this::setUp);
+					break;
+			}
 		}
 	}
 
@@ -228,6 +295,8 @@ public class ByReleasePlugin extends Plugin
 		updatePrayerWidgets();
 
 		updateSpellWidgets();
+
+//		updateObjectsAvailability();
 
 		setUpCompleted = true;
 	}
@@ -280,6 +349,7 @@ public class ByReleasePlugin extends Plugin
 			updateSkillWidgets();
 			updatePrayerWidgets();
 			updateSpellWidgets();
+//			updateObjectsAvailability();
 		}
 	}
 
@@ -305,8 +375,8 @@ public class ByReleasePlugin extends Plugin
 				{
 					previousDate = currentDate;
 					currentDate = quest.getReleaseDate();
+					return;
 				}
-				break;
 			}
 			previousQuest = quest;
 		}
@@ -346,7 +416,7 @@ public class ByReleasePlugin extends Plugin
 			//prayer is not released
 			if (prayer.getReleaseDate() > currentDate)
 			{
-				if (enablePrayersFromMagicRSC && prayersFromMagicRSC.contains(prayer))
+				if (config.prayersFromMagicRSC() && prayersFromMagicRSC.contains(prayer))
 				{
 					if (prayer == ByReleasePrayer.ROCK_SKIN && currentDate < 20010127)
 					{
@@ -391,7 +461,6 @@ public class ByReleasePlugin extends Plugin
 		skillWidgets.clear();
 	}
 
-	//works, need to fix issue where spells are not being displayed properly if dont have runes but is past released date
 	private void restoreDefaultPrayerWidgets()
 	{
 		Widget widget = client.getWidget(35454976);
@@ -402,6 +471,7 @@ public class ByReleasePlugin extends Plugin
 		client.createScriptEvent(widget.getOnLoadListener()).setSource(widget).run();
 	}
 
+	//works, need to fix issue where spells are not being displayed properly if dont have runes but is past released date
 	private void restoreDefaultSpellWidgets()
 	{
 		Widget widget = client.getWidget(14286848);
@@ -410,11 +480,6 @@ public class ByReleasePlugin extends Plugin
 			return;
 		}
 		client.createScriptEvent(widget.getOnLoadListener()).setSource(widget).run();
-	}
-
-	public int getCurrentDate()
-	{
-		return currentDate;
 	}
 
 	//Varbit 4070
@@ -450,7 +515,7 @@ public class ByReleasePlugin extends Plugin
 			//spell is not released
 			if (spell.getReleaseDate() > currentDate)
 			{
-				if(enableSpellsFromRSC && spellsFromRSC.contains(spell))
+				if(config.spellsFromInitialRSC() && spellsFromInitialRSC.contains(spell))
 				{
 					if (spell == ByReleaseStandardSpell.WATER_STRIKE && currentDate < 20010127)
 					{
@@ -480,5 +545,76 @@ public class ByReleasePlugin extends Plugin
 	private void updateAncientSpellbook()
 	{
 		System.out.println("updated ancient spell book");
+	}
+
+	private void createUnavailableMessage(String target, MenuOptions type)
+	{
+		switch (type)
+		{
+			case TOGGLE:
+				for (ByReleasePrayer prayer : ByReleasePrayer.values())
+				{
+					if (prayer.getName().equals(target))
+					{
+						client.addChatMessage(ChatMessageType.GAMEMESSAGE,
+							"", prayer.getName() + " is unavailable until: " + prayer.getReleaseDate(), null);
+						break;
+					}
+				}
+				break;
+			case CAST:
+				for (ByReleaseStandardSpell spell : ByReleaseStandardSpell.values())
+				{
+					if (spell.getName().equals(target))
+					{
+						client.addChatMessage(ChatMessageType.GAMEMESSAGE,
+							"", spell.getName() + " is unavailable until: " + spell.getReleaseDate(), null);
+						break;
+					}
+				}
+				break;
+			case CHOP_DOWN:
+				for (ByReleaseTree tree : ByReleaseTree.values())
+				{
+					if (tree.getName().equals(target))
+					{
+						client.addChatMessage(ChatMessageType.GAMEMESSAGE,
+							"", tree.getName() + "is unavailable until: " + tree.getReleaseDate(), null);
+						break;
+					}
+				}
+				break;
+		}
+	}
+
+	private void handleChopDown(String menuTarget, MenuOptionClicked menuOptionClicked)
+	{
+		for (ByReleaseTree tree : ByReleaseTree.values())
+		{
+			if (tree.getName().equals(menuTarget) && tree.getReleaseDate() > currentDate)
+			{
+				menuOptionClicked.consume();
+				createUnavailableMessage(menuTarget, MenuOptions.CHOP_DOWN);
+			}
+		}
+	}
+
+	private void handleSmith(String menuTarget, MenuOptionClicked menuOptionClicked)
+	{
+		if (menuTarget.equals("Anvil") && config.enableAnvils())
+		{
+			final Tile tile = client.getScene().getTiles()[client.getPlane()][menuOptionClicked.getParam0()][menuOptionClicked.getParam1()];
+			final WorldPoint location = tile.getWorldLocation();
+
+			for (ByReleaseAnvil anvil : ByReleaseAnvil.values())
+			{
+				if (location.equals(anvil.getLocation()) && anvil.getReleaseDate() > currentDate)
+				{
+					menuOptionClicked.consume();
+					client.addChatMessage(ChatMessageType.GAMEMESSAGE,
+						"", "This anvil is unavailable until: " + anvil.getReleaseDate(), null);
+				}
+			}
+		}
 	}
 }

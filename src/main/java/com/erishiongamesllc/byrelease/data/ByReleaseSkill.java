@@ -55,14 +55,9 @@ public enum ByReleaseSkill
 	FARMING(Skill.FARMING, 20050711, 20971543)
 	;
 
-
-	@Getter
 	private final Skill skill;
-	@Getter
 	private final int releaseDate;
-	@Getter
 	private final int widgetID;
-
 
 	ByReleaseSkill(Skill skill, int releaseDate, int widgetID)
 	{

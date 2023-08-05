@@ -74,4 +74,26 @@ public interface ByReleaseConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem
+	(
+		keyName = "enableFurnaces",
+		name = "Filter furnces by release date",
+		description = "limit furnaces available based on release date"
+	)
+	default boolean enableFurnces()
+	{
+		return true;
+	}
+
+	@ConfigItem
+	(
+		keyName = "enableDiaryTeleports",
+		name = "Enable diary teleports",
+		description = "limit diary teleports based on release date"
+	)
+	default boolean enableDiaryTeleports()
+	{
+		return true;
+	}
 }

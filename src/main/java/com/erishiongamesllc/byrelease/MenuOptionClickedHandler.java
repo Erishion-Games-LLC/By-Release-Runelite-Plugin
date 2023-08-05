@@ -1,12 +1,15 @@
 package com.erishiongamesllc.byrelease;
 
+import com.erishiongamesllc.byrelease.data.ByReleaseAchievementDiaryTeleports;
 import com.erishiongamesllc.byrelease.data.ByReleaseAnvil;
+import com.erishiongamesllc.byrelease.data.ByReleaseFurnace;
+import com.erishiongamesllc.byrelease.data.ByReleaseInfo;
+import com.erishiongamesllc.byrelease.data.ByReleaseItem;
 import com.erishiongamesllc.byrelease.data.ByReleasePrayer;
 import com.erishiongamesllc.byrelease.data.ByReleaseStandardSpell;
 import com.erishiongamesllc.byrelease.data.ByReleaseTree;
-import com.erishiongamesllc.byrelease.data.MenuOptions;
+import com.erishiongamesllc.byrelease.data.MenuOption;
 import java.text.ParseException;
-import java.util.Objects;
 import javax.inject.Inject;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -24,144 +27,214 @@ public class MenuOptionClickedHandler
 	private Client client;
 	@Inject
 	private ByReleaseConfig config;
+	private int itemID;
+	private MenuOptionClicked menuOptionClicked;
+	private String menuTarget;
+	private MenuOption option;
 
 	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked) throws ParseException
+	public void onMenuOptionClicked(MenuOptionClicked clicked) throws ParseException
 	{
-		String menuOption = menuOptionClicked.getMenuOption();
-		String menuTarget = Text.removeTags(menuOptionClicked.getMenuTarget());
-		int itemID = menuOptionClicked.getItemId();
+		menuOptionClicked = clicked;
+		option = getMenuOption(menuOptionClicked.getMenuOption());
 
-
-		if (itemID >= 0)
+		if (option == null)
 		{
-			if (config.allowPickup() && (Objects.equals(menuOption, "Take") || menuOption.contains("Withdraw") || menuOption.contains("Deposit") || menuOption.contains("Drop")))
-			{
-				return;
-			}
-			else if (!byReleasePlugin.isItemUnlocked(itemID))
-			{
-				System.out.println("CONSUME");
-				menuOptionClicked.consume();
-				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "This item was released after: " + byReleasePlugin.getCurrentDate(), null);
-				return;
-			}
-			else
-			{
-				System.out.println("Is not locked");
-			}
+			return;
 		}
-		switch (menuOption)
+
+		menuTarget = Text.removeTags(menuOptionClicked.getMenuTarget());
+		itemID = menuOptionClicked.getItemId();
+
+
+		switch (option)
 		{
-			case "Pickpocket":
+			//Item is leaving or exiting inventory
+			case TAKE:
+			case WITHDRAW:
+			case DEPOSIT:
+			case DROP:
+				handlePickupOrDrop();
+				break;
+
+
+			//Prayer and quick prayer
+			case ACTIVATE:
+			case TOGGLE:
+				if (byReleasePlugin.getNonReleasedPrayerNames().contains(menuTarget))
+				{
+					createUnavailableMessage();
+					menuOptionClicked.consume();
+				}
+				break;
+
+
+			case CAST:
+				if (byReleasePlugin.getNonReleasedSpellNames().contains(menuTarget))
+				{
+					createUnavailableMessage();
+					menuOptionClicked.consume();
+				}
+				break;
+
+
+			case SEERS:
+			case YANILLE:
+			case GRAND_EXCHANGE:
+				handleAlternateDiaryTeleports();
+				break;
+
+
+			case SMELT:
+				handleSmelt();
+				break;
+
+			case CHOP_DOWN:
+				handleChopDown();
+				break;
+			case SMITH:
+				handleSmith();
+				break;
+
+			case PICKPOCKET:
 				if (byReleasePlugin.getNonReleasedSkillNames().contains("Thieving"))
 				{
 					menuOptionClicked.consume();
 				}
 				break;
-			case "Activate":
-			case "Toggle":
-				if (byReleasePlugin.getNonReleasedPrayerNames().contains(menuTarget))
-				{
-					createUnavailableMessage(menuTarget, MenuOptions.TOGGLE);
-					menuOptionClicked.consume();
-				}
-				break;
-			case "Cast":
-				if (byReleasePlugin.getNonReleasedSpellNames().contains(menuTarget))
-				{
-					createUnavailableMessage(menuTarget, MenuOptions.CAST);
-					menuOptionClicked.consume();
-				}
-				break;
-			case "Seers'":
-			case "Yanille":
-				if (byReleasePlugin.getCurrentDate() < 20150305)
-				{
-					menuOptionClicked.consume();
-					client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-						"", menuOption + " teleport is unavailable until: " + 20150305, null);
-				}
-				break;
-			case "Grand Exchange":
-				if (byReleasePlugin.getCurrentDate() < 20150430)
-				{
-					menuOptionClicked.consume();
-					client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-						"", "Grand Exchange teleport is unavailable until: " + 20150430, null);
-				}
-				break;
-			case "Smelt":
-				if (menuOptionClicked.getId() == 39620 && byReleasePlugin.getCurrentDate() < 20200709)
-				{
-					createUnavailableMessage(menuTarget, MenuOptions.SMELT);
-					menuOptionClicked.consume();
-				}
-				break;
-			case "Chop down":
-				handleChopDown(menuTarget, menuOptionClicked);
-				break;
-			case "Smith":
+		}
+	}
+
+	private void handlePickupOrDrop() throws ParseException
+	{
+		if (itemID >= 0)
+		{
+			if (config.allowPickup())
 			{
-				handleSmith(menuTarget, menuOptionClicked);
+				return;
+			}
+			else if (!ByReleaseItem.isItemUnlocked(itemID, byReleasePlugin.getCurrentDate()))
+			{
+				menuOptionClicked.consume();
+				createUnavailableMessage();
+			}
+		}
+	}
+
+	public void createUnavailableMessage()
+	{
+		String unavailable = " is unavailable until: ";
+		ByReleaseInfo[] values = null;
+
+		switch (option)
+		{
+			case ACTIVATE:
+			case TOGGLE:
+				values = ByReleasePrayer.values();
+				break;
+
+			case CAST:
+				//only works with standard spellbook atm
+				values = ByReleaseStandardSpell.values();
+				break;
+
+			case CHOP_DOWN:
+				values = ByReleaseTree.values();
+				break;
+
+			//message will say varrock/camelot instead of seers etc
+			case SEERS:
+			case YANILLE:
+			case GRAND_EXCHANGE:
+				values = ByReleaseAchievementDiaryTeleports.values();
+				break;
+
+			case TAKE:
+			case DROP:
+			case DEPOSIT:
+			case WITHDRAW:
+				ByReleaseItem item = ByReleaseItem.itemDefinitions.get(itemID);
+				createMessage(item.getName() + unavailable + item.getReleaseDate());
+				break;
+		}
+
+		if (values == null)
+		{
+			return;
+		}
+
+		for (ByReleaseInfo value : values)
+		{
+			System.out.println(value.getName());
+			System.out.println(menuTarget);
+			if (value.getName().equals(menuTarget))
+			{
+				createMessage(value.getName() + unavailable + value.getReleaseDate());
 				break;
 			}
 		}
 	}
 
-	public void createUnavailableMessage(String target, MenuOptions type)
+
+	private void createUnavailableTileObjectMessage(ByReleaseInfo object)
 	{
-		switch (type)
+		String unavailable = " is unavailable until: ";
+		createMessage(object.getName() + unavailable + object.getReleaseDate());
+	}
+
+	private void handleAlternateDiaryTeleports()
+	{
+		if (!config.enableDiaryTeleports())
 		{
-			case TOGGLE:
-				for (ByReleasePrayer prayer : ByReleasePrayer.values())
-				{
-					if (prayer.getName().equals(target))
-					{
-						client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-							"", prayer.getName() + " is unavailable until: " + prayer.getReleaseDate(), null);
-						break;
-					}
-				}
-				break;
-			case CAST:
-				for (ByReleaseStandardSpell spell : ByReleaseStandardSpell.values())
-				{
-					if (spell.getName().equals(target))
-					{
-						client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-							"", spell.getName() + " is unavailable until: " + spell.getReleaseDate(), null);
-						break;
-					}
-				}
-				break;
-			case CHOP_DOWN:
-				for (ByReleaseTree tree : ByReleaseTree.values())
-				{
-					if (tree.getName().equals(target))
-					{
-						client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-							"", tree.getName() + "is unavailable until: " + tree.getReleaseDate(), null);
-						break;
-					}
-				}
-				break;
+			return;
+		}
+
+		int currentDate = byReleasePlugin.getCurrentDate();
+		ByReleaseAchievementDiaryTeleports diaryTeleport = ByReleaseAchievementDiaryTeleports.valueOf(option.name());
+
+
+		if (currentDate < diaryTeleport.getReleaseDate())
+		{
+			createUnavailableMessage();
+			menuOptionClicked.consume();
 		}
 	}
 
-	private void handleChopDown(String menuTarget, MenuOptionClicked menuOptionClicked)
+	private void handleSmelt()
+	{
+		if (menuTarget.equals("Furnace") && config.enableFurnces())
+		{
+			final Tile tile = client.getScene().getTiles()[client.getPlane()][menuOptionClicked.getParam0()][menuOptionClicked.getParam1()];
+			final WorldPoint location = tile.getWorldLocation();
+
+			for (ByReleaseFurnace furnace : ByReleaseFurnace.values())
+			{
+				//find the corrosponding furnace by its location, and check if its available
+				if (location.equals(furnace.getLocation()) && furnace.getReleaseDate() > byReleasePlugin.getCurrentDate())
+				{
+					menuOptionClicked.consume();
+					createUnavailableTileObjectMessage(furnace);
+				}
+			}
+		}
+	}
+
+	//loops through the tree enum twice, once here and once in create unavailable message
+	//need to fix that
+	private void handleChopDown()
 	{
 		for (ByReleaseTree tree : ByReleaseTree.values())
 		{
 			if (tree.getName().equals(menuTarget) && tree.getReleaseDate() > byReleasePlugin.getCurrentDate())
 			{
 				menuOptionClicked.consume();
-				createUnavailableMessage(menuTarget, MenuOptions.CHOP_DOWN);
+				createUnavailableMessage();
+				break;
 			}
 		}
 	}
 
-	private void handleSmith(String menuTarget, MenuOptionClicked menuOptionClicked)
+	private void handleSmith()
 	{
 		if (menuTarget.equals("Anvil") && config.enableAnvils())
 		{
@@ -170,13 +243,30 @@ public class MenuOptionClickedHandler
 
 			for (ByReleaseAnvil anvil : ByReleaseAnvil.values())
 			{
+				//find the corrosponding anvil by its location, and check if its available
 				if (location.equals(anvil.getLocation()) && anvil.getReleaseDate() > byReleasePlugin.getCurrentDate())
 				{
 					menuOptionClicked.consume();
-					client.addChatMessage(ChatMessageType.GAMEMESSAGE,
-						"", "This anvil is unavailable until: " + anvil.getReleaseDate(), null);
+					createUnavailableTileObjectMessage(anvil);
 				}
 			}
 		}
+	}
+
+	private MenuOption getMenuOption(String menuOption)
+	{
+		for (MenuOption option : MenuOption.values())
+		{
+			if (option.getMenuOption().equals(menuOption))
+			{
+				return option;
+			}
+		}
+		return null;
+	}
+
+	private void createMessage(String message)
+	{
+		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", message, null);
 	}
 }

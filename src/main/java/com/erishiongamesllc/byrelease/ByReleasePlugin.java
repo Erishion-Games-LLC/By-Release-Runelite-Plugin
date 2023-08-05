@@ -25,10 +25,13 @@
 package com.erishiongamesllc.byrelease;
 
 import static com.erishiongamesllc.byrelease.ByReleasePlugin.PLUGIN_NAME;
+import com.erishiongamesllc.byrelease.data.ByReleaseItem;
 import com.erishiongamesllc.byrelease.data.ByReleasePrayer;
 import com.erishiongamesllc.byrelease.data.ByReleaseQuest;
 import com.erishiongamesllc.byrelease.data.ByReleaseSkill;
 import com.erishiongamesllc.byrelease.data.ByReleaseStandardSpell;
+import com.erishiongamesllc.byrelease.overlay.ByReleaseItemOverlay;
+import com.erishiongamesllc.byrelease.overlay.ByReleaseOverlay;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
@@ -41,7 +44,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.Getter;
@@ -91,6 +93,7 @@ public class ByReleasePlugin extends Plugin
 	private EventBus eventBus;
 	@Inject
 	private Gson gson;
+
 
 	public static final String PLUGIN_NAME = "By Release";
 	public static final String CONFIG_GROUP = "byrelease";
@@ -514,12 +517,7 @@ public class ByReleasePlugin extends Plugin
 
 	private void loadDefinitions()
 	{
-		Type defMapType = new TypeToken<Map<Integer, EntityDefinition>>() {}.getType();
-		EntityDefinition.itemDefinitions = loadDefinitionResource(defMapType, "combined_items.json");
-	}
-
-	public boolean isItemUnlocked(int itemID) throws ParseException
-	{
-		return EntityDefinition.isItemUnlocked(itemID, currentDate);
+		Type defMapType = new TypeToken<HashMap<Integer, ByReleaseItem>>() {}.getType();
+		ByReleaseItem.itemDefinitions = loadDefinitionResource(defMapType, "combined_items.json");
 	}
 }

@@ -22,28 +22,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.erishiongamesllc.byrelease;
+package com.erishiongamesllc.byrelease.data;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
+import java.util.HashMap;
 import lombok.Getter;
 
 //https://github.com/IdylRS/chrono-plugin/blob/main/src/main/java/com/chrono/EntityDefinition.java
 @Getter
-public class EntityDefinition
+public class ByReleaseItem
 {
 	private int id;
 	private String name;
 	private String releaseDate;
-	private String errorCodes;
 
-	static Map<Integer, EntityDefinition> itemDefinitions;
+	public static HashMap<Integer, ByReleaseItem> itemDefinitions;
 
 	public static boolean isItemUnlocked(int itemId, int currentDate) throws ParseException
 	{
-		EntityDefinition def = itemDefinitions.get(itemId);
+		ByReleaseItem def = itemDefinitions.get(itemId);
 
 		if (def == null) {
 			System.out.println("DEF == NULL");

@@ -25,51 +25,32 @@
  *
  */
 
-package com.erishiongamesllc.byrelease;
+package com.erishiongamesllc.byrelease.data;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import javax.inject.Inject;
-import net.runelite.client.ui.overlay.OverlayPanel;
-import net.runelite.client.ui.overlay.components.TitleComponent;
+import lombok.Getter;
+import net.runelite.api.coords.WorldPoint;
 
-public class ByReleaseOverlay extends OverlayPanel
+@Getter
+public enum ByReleaseFurnace implements ByReleaseInfo
 {
-	@Inject
-	private ByReleasePlugin plugin;
+	//Only furnaces that were placed after the chunks they are in were released
+	EDGEVILLE_FURNACE(new WorldPoint(3110, 3499, 0), 20150305),
+	WILDERNESS_EAST_RUINS_FURNACE(new WorldPoint(3143, 3735, 0), 20020227),
 
-	@Inject
-	private ByReleaseConfig config;
+	;
 
-	@Inject
-	private ByReleaseOverlay()
+	final WorldPoint location;
+	final int releaseDate;
+
+	ByReleaseFurnace(WorldPoint location, int releaseDate)
 	{
+		this.location = location;
+		this.releaseDate = releaseDate;
 	}
 
 	@Override
-	public Dimension render(Graphics2D graphics2D)
+	public String getName()
 	{
-
-		String releaseDate = formatDate(plugin.getCurrentDate());
-
-		panelComponent.getChildren().add(TitleComponent.builder()
-			.text(releaseDate)
-			.color(Color.WHITE)
-			.build());
-
-		panelComponent.setPreferredSize(new Dimension(
-			graphics2D.getFontMetrics().stringWidth(releaseDate) + 10,
-			0));
-
-		return super.render(graphics2D);
-	}
-
-	private String formatDate(int releaseDate) {
-		String dateString = String.valueOf(releaseDate);
-		String year = dateString.substring(0, 4);
-		String month = dateString.substring(4, 6);
-		String day = dateString.substring(6, 8);
-		return year + "-" + month + "-" + day;
+		return "Furnace";
 	}
 }

@@ -28,7 +28,7 @@ import lombok.Getter;
 import net.runelite.api.Skill;
 
 @Getter
-public enum ByReleaseSkill
+public enum ByReleaseSkill implements ByReleaseInfo
 {
 	ATTACK(Skill.ATTACK, 20010104, 20971521),
 	STRENGTH(Skill.STRENGTH, 20010104, 20971522),
@@ -64,5 +64,11 @@ public enum ByReleaseSkill
 		this.skill = skill;
 		this.releaseDate = releaseDate;
 		this.widgetID = widgetID;
+	}
+
+	@Override
+	public String getName()
+	{
+		return skill.getName();
 	}
 }

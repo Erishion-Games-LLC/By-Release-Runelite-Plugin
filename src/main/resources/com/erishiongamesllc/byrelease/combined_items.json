@@ -47461,7 +47461,7 @@
     },
     "12776": {
         "id": "12776",
-        "name": "Carrallangar Teleport",
+        "name": "Carrallanger Teleport",
         "releaseDate": "2014-09-18",
         "errorCodes": ""
     },
@@ -70442,56 +70442,56 @@
     "25484": {
         "id": "25484",
         "name": "Soulreaper Axe",
-        "releaseDate": "2023-07-26",
-        "errorCodes": ""
+        "releaseDate": null,
+        "errorCodes": "Api_data is empty for Item 25484"
     },
     "25485": {
         "id": "25485",
         "name": "Ultor Ring",
-        "releaseDate": "2023-07-26",
-        "errorCodes": ""
+        "releaseDate": null,
+        "errorCodes": "Api_data is empty for Item 25485"
     },
     "25486": {
         "id": "25486",
         "name": "Magus Ring",
-        "releaseDate": "2023-07-26",
-        "errorCodes": ""
+        "releaseDate": null,
+        "errorCodes": "Api_data is empty for Item 25486"
     },
     "25487": {
         "id": "25487",
-        "name": "Ventor Ring",
-        "releaseDate": "2023-07-26",
-        "errorCodes": ""
+        "name": "Venator Ring",
+        "releaseDate": null,
+        "errorCodes": "Api_data is empty for Item 25487"
     },
     "25488": {
         "id": "25488",
         "name": "Bellator Ring",
-        "releaseDate": "2023-07-26",
-        "errorCodes": ""
+        "releaseDate": null,
+        "errorCodes": "Api_data is empty for Item 25488"
     },
     "25489": {
         "id": "25489",
         "name": "Blood Ancient Sceptre",
-        "releaseDate": "2023-07-26",
-        "errorCodes": ""
+        "releaseDate": null,
+        "errorCodes": "Api_data is empty for Item 25489"
     },
     "25490": {
         "id": "25490",
         "name": "Ice Ancient Sceptre",
-        "releaseDate": "2023-07-26",
-        "errorCodes": ""
+        "releaseDate": null,
+        "errorCodes": "Api_data is empty for Item 25490"
     },
     "25491": {
         "id": "25491",
         "name": "Smoke Ancient Sceptre",
-        "releaseDate": "2023-07-26",
-        "errorCodes": ""
+        "releaseDate": null,
+        "errorCodes": "Api_data is empty for Item 25491"
     },
     "25492": {
         "id": "25492",
         "name": "Shadow Ancient Sceptre",
-        "releaseDate": "2023-07-26",
-        "errorCodes": ""
+        "releaseDate": null,
+        "errorCodes": "Api_data is empty for Item 25492"
     },
     "25493": {
         "id": "25493",
@@ -79761,6 +79761,1056 @@
         "id": "28237",
         "name": "Beaver",
         "releaseDate": "2023-06-28",
+        "errorCodes": ""
+    },
+    "28238": {
+        "id": "28238",
+        "name": "Blood Ancient Sceptre Broken",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28240": {
+        "id": "28240",
+        "name": "Smoke Ancient Sceptre Broken",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28242": {
+        "id": "28242",
+        "name": "Ice Ancient Sceptre Broken",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28244": {
+        "id": "28244",
+        "name": "Shadow Ancient Sceptre Broken",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28246": {
+        "id": "28246",
+        "name": "Wisp",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28248": {
+        "id": "28248",
+        "name": "Butch",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28250": {
+        "id": "28250",
+        "name": "Baron",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28252": {
+        "id": "28252",
+        "name": "Lilviathan",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28254": {
+        "id": "28254",
+        "name": "Sanguine Torva Full Helm",
+        "releaseDate": "2023-07-28",
+        "errorCodes": ""
+    },
+    "28256": {
+        "id": "28256",
+        "name": "Sanguine Torva Platebody",
+        "releaseDate": "2023-07-28",
+        "errorCodes": ""
+    },
+    "28258": {
+        "id": "28258",
+        "name": "Sanguine Torva Platelegs",
+        "releaseDate": "2023-07-28",
+        "errorCodes": ""
+    },
+    "28260": {
+        "id": "28260",
+        "name": "Blood Ancient Sceptre",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28262": {
+        "id": "28262",
+        "name": "Ice Ancient Sceptre",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28264": {
+        "id": "28264",
+        "name": "Smoke Ancient Sceptre",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28266": {
+        "id": "28266",
+        "name": "Shadow Ancient Sceptre",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28268": {
+        "id": "28268",
+        "name": "Blood Quartz",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28270": {
+        "id": "28270",
+        "name": "Ice Quartz",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28272": {
+        "id": "28272",
+        "name": "Shadow Quartz",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28274": {
+        "id": "28274",
+        "name": "Smoke Quartz",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28276": {
+        "id": "28276",
+        "name": "Chromium Ingot",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28279": {
+        "id": "28279",
+        "name": "Bellator Vestige",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28281": {
+        "id": "28281",
+        "name": "Magus Vestige",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28283": {
+        "id": "28283",
+        "name": "Venator Vestige",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28285": {
+        "id": "28285",
+        "name": "Ultor Vestige",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28287": {
+        "id": "28287",
+        "name": "Ultor Icon",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28289": {
+        "id": "28289",
+        "name": "Venator Icon",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28291": {
+        "id": "28291",
+        "name": "Magus Icon",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28293": {
+        "id": "28293",
+        "name": "Bellator Icon",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28295": {
+        "id": "28295",
+        "name": "Berserker Icon",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28298": {
+        "id": "28298",
+        "name": "Archer Icon",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28301": {
+        "id": "28301",
+        "name": "Warrior Icon",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28304": {
+        "id": "28304",
+        "name": "Seers Icon",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28307": {
+        "id": "28307",
+        "name": "Ultor Ring",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28310": {
+        "id": "28310",
+        "name": "Venator Ring",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28313": {
+        "id": "28313",
+        "name": "Magus Ring",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28316": {
+        "id": "28316",
+        "name": "Bellator Ring",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28319": {
+        "id": "28319",
+        "name": "Executioners Axe Head",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28321": {
+        "id": "28321",
+        "name": "Eye Of The Duke",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28323": {
+        "id": "28323",
+        "name": "Sirens Staff",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28325": {
+        "id": "28325",
+        "name": "Leviathans Lure",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28327": {
+        "id": "28327",
+        "name": "Ring Of Shadows",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28329": {
+        "id": "28329",
+        "name": "Ring Of Shadows Uncharged",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28330": {
+        "id": "28330",
+        "name": "Strangled Tablet",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28331": {
+        "id": "28331",
+        "name": "Sirenic Tablet",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28332": {
+        "id": "28332",
+        "name": "Scarred Tablet",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28333": {
+        "id": "28333",
+        "name": "Frozen Tablet",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28334": {
+        "id": "28334",
+        "name": "Awakeners Orb",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28336": {
+        "id": "28336",
+        "name": "Ancient Blood Ornament Kit",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28338": {
+        "id": "28338",
+        "name": "Soulreaper Axe",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28341": {
+        "id": "28341",
+        "name": "Musca Mushroom",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28342": {
+        "id": "28342",
+        "name": "Musca Powder",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28343": {
+        "id": "28343",
+        "name": "Holos Mushroom",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28344": {
+        "id": "28344",
+        "name": "Holos Powder",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28345": {
+        "id": "28345",
+        "name": "Arder Mushroom",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28346": {
+        "id": "28346",
+        "name": "Arder Powder",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28347": {
+        "id": "28347",
+        "name": "Resper Mushroom",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28348": {
+        "id": "28348",
+        "name": "Resper Powder",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28349": {
+        "id": "28349",
+        "name": "Salax Salt",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28350": {
+        "id": "28350",
+        "name": "Muscaholos Poison",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28351": {
+        "id": "28351",
+        "name": "Ardermusca Poison",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28352": {
+        "id": "28352",
+        "name": "Muscaresper Poison",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28353": {
+        "id": "28353",
+        "name": "Holosarder Poison",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28354": {
+        "id": "28354",
+        "name": "Resperholos Poison",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28355": {
+        "id": "28355",
+        "name": "Arderresper Poison",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28356": {
+        "id": "28356",
+        "name": "Blackstone Fragment",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28357": {
+        "id": "28357",
+        "name": "Blackstone Fragment",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28360": {
+        "id": "28360",
+        "name": "Strange Icon",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28361": {
+        "id": "28361",
+        "name": "Icon Segment",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28362": {
+        "id": "28362",
+        "name": "Icon Segment",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28363": {
+        "id": "28363",
+        "name": "Very Long Rope",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28364": {
+        "id": "28364",
+        "name": "Basic Shadow Torch",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28365": {
+        "id": "28365",
+        "name": "Superior Shadow Torch",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28366": {
+        "id": "28366",
+        "name": "Perfected Shadow Torch",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28367": {
+        "id": "28367",
+        "name": "Shadow Blocker",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28368": {
+        "id": "28368",
+        "name": "Revitalising Idol",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28369": {
+        "id": "28369",
+        "name": "Anima Portal",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28370": {
+        "id": "28370",
+        "name": "Shadow Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28371": {
+        "id": "28371",
+        "name": "Shadow Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28372": {
+        "id": "28372",
+        "name": "Shadow Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28373": {
+        "id": "28373",
+        "name": "Shadow Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28374": {
+        "id": "28374",
+        "name": "Shadow Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28375": {
+        "id": "28375",
+        "name": "Anima Portal Schematic",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28376": {
+        "id": "28376",
+        "name": "Revitalising Idol Schematic",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28377": {
+        "id": "28377",
+        "name": "Shadow Blocker Schematic",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28378": {
+        "id": "28378",
+        "name": "Basic Shadow Torch Schematic",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28379": {
+        "id": "28379",
+        "name": "Superior Shadow Torch Schematic",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28380": {
+        "id": "28380",
+        "name": "Perfected Shadow Torch Schematic",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28381": {
+        "id": "28381",
+        "name": "Perfected Shadow Torch Schematic",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28382": {
+        "id": "28382",
+        "name": "Potion Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28383": {
+        "id": "28383",
+        "name": "Strange Potion",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28384": {
+        "id": "28384",
+        "name": "Korbal Herb",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28385": {
+        "id": "28385",
+        "name": "Argian Berries",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28386": {
+        "id": "28386",
+        "name": "Unfinished Serum",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28387": {
+        "id": "28387",
+        "name": "Unfinished Serum",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28388": {
+        "id": "28388",
+        "name": "Strangler Serum",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28389": {
+        "id": "28389",
+        "name": "Temple Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28390": {
+        "id": "28390",
+        "name": "Barricade",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28392": {
+        "id": "28392",
+        "name": "Satchel",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28393": {
+        "id": "28393",
+        "name": "Detonator",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28394": {
+        "id": "28394",
+        "name": "Tatty Page",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28395": {
+        "id": "28395",
+        "name": "Tatty Page",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28396": {
+        "id": "28396",
+        "name": "Tatty Page",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28397": {
+        "id": "28397",
+        "name": "Tatty Page",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28398": {
+        "id": "28398",
+        "name": "Tatty Page",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28399": {
+        "id": "28399",
+        "name": "Tatty Page",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28400": {
+        "id": "28400",
+        "name": "Tatty Page",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28401": {
+        "id": "28401",
+        "name": "Mucky Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28402": {
+        "id": "28402",
+        "name": "Uncharged Cell",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28403": {
+        "id": "28403",
+        "name": "Charged Cell",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28404": {
+        "id": "28404",
+        "name": "Vardorvis Medallion",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28405": {
+        "id": "28405",
+        "name": "Perseriyas Medallion",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28406": {
+        "id": "28406",
+        "name": "Sucellus Medallion",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28407": {
+        "id": "28407",
+        "name": "Whisperers Medallion",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28408": {
+        "id": "28408",
+        "name": "Hair Clip",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28409": {
+        "id": "28409",
+        "name": "Ancient Lamp",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28410": {
+        "id": "28410",
+        "name": "Dr Banikan",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28412": {
+        "id": "28412",
+        "name": "Prisoners Letter",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28413": {
+        "id": "28413",
+        "name": "Knife",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28414": {
+        "id": "28414",
+        "name": "Chisel",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28415": {
+        "id": "28415",
+        "name": "Lockpick",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28416": {
+        "id": "28416",
+        "name": "Sapphire Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28417": {
+        "id": "28417",
+        "name": "Emerald Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28418": {
+        "id": "28418",
+        "name": "Ruby Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28419": {
+        "id": "28419",
+        "name": "Diamond Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28420": {
+        "id": "28420",
+        "name": "Dragonstone Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28421": {
+        "id": "28421",
+        "name": "Onyx Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28422": {
+        "id": "28422",
+        "name": "Rations",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28423": {
+        "id": "28423",
+        "name": "Requisition Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28424": {
+        "id": "28424",
+        "name": "Grid Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28425": {
+        "id": "28425",
+        "name": "Code Converter",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28426": {
+        "id": "28426",
+        "name": "Magic Lantern",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28427": {
+        "id": "28427",
+        "name": "Strange Slider",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28428": {
+        "id": "28428",
+        "name": "Library Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28429": {
+        "id": "28429",
+        "name": "Warning Letter",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28430": {
+        "id": "28430",
+        "name": "Odd Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28431": {
+        "id": "28431",
+        "name": "Orders Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28432": {
+        "id": "28432",
+        "name": "Refugees Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28433": {
+        "id": "28433",
+        "name": "Request Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28434": {
+        "id": "28434",
+        "name": "Prayer Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28435": {
+        "id": "28435",
+        "name": "Thank You Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28436": {
+        "id": "28436",
+        "name": "Protest Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28437": {
+        "id": "28437",
+        "name": "Evacuation Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28438": {
+        "id": "28438",
+        "name": "Old Tablet",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28439": {
+        "id": "28439",
+        "name": "Damp Tablet",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28440": {
+        "id": "28440",
+        "name": "Damp Tablet",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28441": {
+        "id": "28441",
+        "name": "Slimy Key",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28442": {
+        "id": "28442",
+        "name": "Gunpowder",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28443": {
+        "id": "28443",
+        "name": "Scarred Scraps",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28444": {
+        "id": "28444",
+        "name": "Withered Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28445": {
+        "id": "28445",
+        "name": "Earth Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28446": {
+        "id": "28446",
+        "name": "Water Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28447": {
+        "id": "28447",
+        "name": "Fire Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28448": {
+        "id": "28448",
+        "name": "Air Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28449": {
+        "id": "28449",
+        "name": "Mind Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28450": {
+        "id": "28450",
+        "name": "Soul Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28451": {
+        "id": "28451",
+        "name": "Nature Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28452": {
+        "id": "28452",
+        "name": "Smoke Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28453": {
+        "id": "28453",
+        "name": "Blood Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28454": {
+        "id": "28454",
+        "name": "Law Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28455": {
+        "id": "28455",
+        "name": "Cosmic Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28456": {
+        "id": "28456",
+        "name": "Astral Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28457": {
+        "id": "28457",
+        "name": "Wrath Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28458": {
+        "id": "28458",
+        "name": "Dust Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28459": {
+        "id": "28459",
+        "name": "Steam Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28460": {
+        "id": "28460",
+        "name": "Lava Nerve",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28461": {
+        "id": "28461",
+        "name": "Abyssal Observations",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28462": {
+        "id": "28462",
+        "name": "Crimson Fibre",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28463": {
+        "id": "28463",
+        "name": "Radiant Fibre",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28464": {
+        "id": "28464",
+        "name": "Illuminating Lure",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28465": {
+        "id": "28465",
+        "name": "Slimy Tablet",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28466": {
+        "id": "28466",
+        "name": "Slimy Tablet",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28467": {
+        "id": "28467",
+        "name": "Slimy Tablet",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28468": {
+        "id": "28468",
+        "name": "Gooey Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28469": {
+        "id": "28469",
+        "name": "Gooey Note",
+        "releaseDate": "2023-07-26",
+        "errorCodes": ""
+    },
+    "28470": {
+        "id": "28470",
+        "name": "Gooey Note",
+        "releaseDate": "2023-07-26",
         "errorCodes": ""
     }
 }

@@ -23,12 +23,13 @@
  *  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- */package com.erishiongamesllc.byrelease.data;
+ */
+package com.erishiongamesllc.byrelease.data;
 
 import lombok.Getter;
 
 @Getter
-public enum ByReleaseTree
+public enum ByReleaseTree implements ByReleaseInfo
 {
 	TREE("Tree", 20010104),
 	//Real release date is 20070529. No reason to treat this tree special

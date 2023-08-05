@@ -25,37 +25,53 @@
  *
  */
 
-package com.erishiongamesllc.byrelease.data;
+package com.erishiongamesllc.byrelease.overlay;
 
-import lombok.Getter;
-import net.runelite.api.coords.WorldPoint;
+import com.erishiongamesllc.byrelease.ByReleaseConfig;
+import com.erishiongamesllc.byrelease.ByReleasePlugin;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import javax.inject.Inject;
+import net.runelite.client.ui.overlay.OverlayPanel;
+import net.runelite.client.ui.overlay.components.TitleComponent;
 
-@Getter
-public enum ByReleaseAnvil implements ByReleaseInfo
+public class ByReleaseOverlay extends OverlayPanel
 {
-	VARROCK_WEST_BANK_ANVIL_1(new WorldPoint(3188, 3426, 0), 20010123),
-	VARROCK_WEST_BANK_ANVIL_2(new WorldPoint(3188, 3424, 0), 20010123),
-	VARROCK_WEST_BANK_ANVIL_3(new WorldPoint(3188, 3421, 0), 20010123),
+	@Inject
+	private ByReleasePlugin plugin;
 
-	VARROCK_EAST_BANK_ANVIL_1(new WorldPoint(3248, 3404, 0), 20010521),
-	VARROCK_EAST_BANK_ANVIL_2(new WorldPoint(3246, 3404, 0), 20010521),
+	@Inject
+	private ByReleaseConfig config;
 
-	GIANTS_PLATEAU_ANVIL(new WorldPoint(3360, 3155, 0), 20200716),
-	RUSTED_ANVIL(new WorldPoint(3227, 3250, 0), 20200709),
-	;
-
-	final WorldPoint location;
-	final int releaseDate;
-
-	ByReleaseAnvil(WorldPoint location, int releaseDate)
+	@Inject
+	private ByReleaseOverlay()
 	{
-		this.location = location;
-		this.releaseDate = releaseDate;
 	}
 
 	@Override
-	public String getName()
+	public Dimension render(Graphics2D graphics2D)
 	{
-		return "Anvil";
+
+		String releaseDate = formatDate(plugin.getCurrentDate());
+
+		panelComponent.getChildren().add(TitleComponent.builder()
+			.text(releaseDate)
+			.color(Color.WHITE)
+			.build());
+
+		panelComponent.setPreferredSize(new Dimension(
+			graphics2D.getFontMetrics().stringWidth(releaseDate) + 10,
+			0));
+
+		return super.render(graphics2D);
+	}
+
+	private String formatDate(int releaseDate) {
+		String dateString = String.valueOf(releaseDate);
+		String year = dateString.substring(0, 4);
+		String month = dateString.substring(4, 6);
+		String day = dateString.substring(6, 8);
+		return year + "-" + month + "-" + day;
 	}
 }

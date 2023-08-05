@@ -32,7 +32,8 @@ import net.runelite.api.Quest;
 import net.runelite.api.QuestState;
 
 @Getter
-public enum ByReleaseQuest {
+public enum ByReleaseQuest implements ByReleaseInfo
+{
 	COOKS_ASSISTANT(Quest.COOKS_ASSISTANT, 20010104, QuestState.NOT_STARTED),
 	DEMON_SLAYER(Quest.DEMON_SLAYER, 20010104, QuestState.NOT_STARTED),
 	THE_RESTLESS_GHOST(Quest.THE_RESTLESS_GHOST, 20010104, QuestState.NOT_STARTED),
@@ -219,5 +220,11 @@ public enum ByReleaseQuest {
 		this.quest = quest;
 		this.releaseDate = releaseDate;
 		this.questState = questState;
+	}
+
+	@Override
+	public String getName()
+	{
+		return quest.getName();
 	}
 }

@@ -31,7 +31,8 @@ import lombok.Getter;
 import net.runelite.api.Prayer;
 
 @Getter
-public enum ByReleasePrayer {
+public enum ByReleasePrayer implements ByReleaseInfo
+{
 	THICK_SKIN(Prayer.THICK_SKIN, 20010524, 35454985, "Thick Skin"),
 	BURST_OF_STRENGTH(Prayer.BURST_OF_STRENGTH, 20010524, 35454986, "Burst of Strength"),
 	CLARITY_OF_THOUGHT(Prayer.CLARITY_OF_THOUGHT, 20010524, 35454987, "Clarity of Thought"),

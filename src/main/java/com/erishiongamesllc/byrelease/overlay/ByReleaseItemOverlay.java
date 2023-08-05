@@ -22,8 +22,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.erishiongamesllc.byrelease;
+package com.erishiongamesllc.byrelease.overlay;
 
+import com.erishiongamesllc.byrelease.ByReleasePlugin;
+import com.erishiongamesllc.byrelease.data.ByReleaseItem;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.awt.Color;
@@ -41,7 +43,7 @@ import net.runelite.client.util.ImageUtil;
 //https://github.com/IdylRS/chrono-plugin/blob/main/src/main/java/com/chrono/ChronoItemOverlay.java
 public class ByReleaseItemOverlay extends WidgetItemOverlay
 {
-	private ByReleasePlugin byReleasePlugin;
+	private final ByReleasePlugin byReleasePlugin;
 	private final ItemManager itemManager;
 	private final Cache<Long, Image> imageCache;
 
@@ -65,7 +67,7 @@ public class ByReleaseItemOverlay extends WidgetItemOverlay
 	{
 		try
 		{
-			if (!byReleasePlugin.isItemUnlocked(itemId))
+			if (!ByReleaseItem.isItemUnlocked(itemId, byReleasePlugin.getCurrentDate()))
 			{
 				Rectangle bounds = widgetItem.getCanvasBounds();
 				final Image image = createFillImage(itemId, widgetItem.getQuantity());
@@ -92,7 +94,7 @@ public class ByReleaseItemOverlay extends WidgetItemOverlay
 		return image;
 	}
 
-	void invalidateCache()
+	public void invalidateCache()
 	{
 		imageCache.invalidateAll();
 	}

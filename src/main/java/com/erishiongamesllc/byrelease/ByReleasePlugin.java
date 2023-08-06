@@ -231,8 +231,6 @@ public class ByReleasePlugin extends Plugin
 		setUpCompleted = true;
 	}
 
-
-
 	//only call on client thread
 	private void update()
 	{
@@ -275,7 +273,6 @@ public class ByReleasePlugin extends Plugin
 			previousQuest = quest;
 		}
 	}
-
 
 	//https://github.com/IdylRS/chrono-plugin/blob/main/src/main/java/com/chrono/ChronoPlugin.java#L171
 	private <T> T loadDefinitionResource(Type type, String resource)

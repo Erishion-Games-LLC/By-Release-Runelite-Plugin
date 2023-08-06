@@ -57,15 +57,15 @@ public class WidgetHandler
 
 	public void setUp()
 	{
-		createSkillWidgets();
-		updateSkillWidgets();
+		createHiddenSkillWidgets();
+		updateSkillWidgetsVisibility();
 		updatePrayerWidgets();
 		updateSpellWidgets();
 	}
 
 	public void update()
 	{
-		updateSkillWidgets();
+		updateSkillWidgetsVisibility();
 		updatePrayerWidgets();
 		updateSpellWidgets();
 	}
@@ -77,7 +77,7 @@ public class WidgetHandler
 		nonReleasedSpellNames.clear();
 	}
 
-	private void createSkillWidgets()
+	private void createHiddenSkillWidgets()
 	{
 		for (ByReleaseSkill skill : ByReleaseSkill.values())
 		{
@@ -90,47 +90,51 @@ public class WidgetHandler
 
 			ArrayList<Widget> skillWidgetChildren = new ArrayList<>();
 
-			Widget skillIconWidget = skillWidget.createChild(50, WidgetType.GRAPHIC);
-			Widget skillLevelWidget = skillWidget.createChild(51, WidgetType.GRAPHIC);
-
-
-			skillIconWidget.setSpriteId(174);
-			skillIconWidget.setSize(36, 36);
-			skillIconWidget.setPos(-2, -2);
-			skillIconWidget.setOpacity(90);
-			skillIconWidget.setHidden(true);
-
-			skillLevelWidget.setSpriteId(176);
-			skillLevelWidget.setSize(36, 36);
-			skillLevelWidget.setPos(28, -2);
-			skillLevelWidget.setOpacity(90);
-			skillLevelWidget.setHidden(true);
+			Widget skillIconWidget = createWidget(skillWidget, 50, 174, -2, -2,36, 36, 90, true);
+			Widget skillLevelWidget = createWidget(skillWidget, 51, 176, 28, -2,36, 36, 90, true);
 
 			skillWidgetChildren.add(skillIconWidget);
 			skillWidgetChildren.add(skillLevelWidget);
 
-			skillWidgets.put(skill.getSkill().getName(), skillWidgetChildren);
+			skillWidgets.put(skill.getName(), skillWidgetChildren);
 		}
 	}
 
-	private void updateSkillWidgets()
+	private Widget createWidget(Widget parent, int index, int spriteId, int posX, int posY, int size1, int size2, int opacity, boolean hidden)
 	{
+		Widget childWidget = parent.createChild(index, WidgetType.GRAPHIC);
+		childWidget.setSpriteId(spriteId);
+		childWidget.setSize(size1, size2);
+		childWidget.setPos(posX, posY);
+		childWidget.setOpacity(opacity);
+		childWidget.setHidden(hidden);
+		return childWidget;
+	}
+
+	private void updateSkillWidgetsVisibility()
+	{
+		int currentDate = byReleasePlugin.getCurrentDate();
 
 		for (ByReleaseSkill skill : ByReleaseSkill.values())
 		{
-			for (Widget skillWidgetChild : skillWidgets.get(skill.getSkill().getName()))
+			boolean isReleased = skill.getReleaseDate() <= currentDate;
+
+			for (Widget skillWidgetChild : skillWidgets.get(skill.getName()))
 			{
-				if (skill.getReleaseDate() > byReleasePlugin.getCurrentDate())
-				{
-					skillWidgetChild.setHidden(false);
-					nonReleasedSkillNames.add(skill.getSkill().getName());
-				}
-				else
-				{
-					skillWidgetChild.setHidden(true);
-					nonReleasedSkillNames.remove(skill.getSkill().getName());
-				}
+				skillWidgetChild.setHidden(!isReleased);
+				updateNonReleasedSkillNames(skill.getName(), isReleased);
 			}
+		}
+	}
+
+	private void updateNonReleasedSkillNames(String skillName, boolean isReleased)
+	{
+		if (isReleased)
+		{
+			nonReleasedSkillNames.remove(skillName);
+		} else
+		{
+			nonReleasedSkillNames.add(skillName);
 		}
 	}
 
@@ -149,9 +153,11 @@ public class WidgetHandler
 		skillWidgets.clear();
 	}
 
+
 	public void updatePrayerWidgets()
 	{
 		int currentDate = byReleasePlugin.getCurrentDate();
+
 		for (ByReleasePrayer prayer : ByReleasePrayer.values())
 		{
 			Widget individualPrayerWidgetContainer = client.getWidget(prayer.getWidgetID());
@@ -160,36 +166,38 @@ public class WidgetHandler
 			{
 				continue;
 			}
-			//prayer is not released
-			if (prayer.getReleaseDate() > currentDate)
-			{
-				if (config.prayersFromMagicRSC() && prayersFromMagicRSC.contains(prayer))
-				{
-					if (prayer == ByReleasePrayer.ROCK_SKIN && currentDate < 20010127)
-					{
-						System.out.println("HIDE ROCK SKIN: " + currentDate);
-						//prayer is rock skin, which was released Jan 27 2001.
-						individualPrayerWidgetContainer.setHidden(true);
-						nonReleasedPrayerNames.add(prayer.getName());
-					}
-					else
-					{
-						individualPrayerWidgetContainer.setHidden(false);
-						nonReleasedPrayerNames.remove(prayer.getName());
-					}
-				}
-				else
-				{
-					individualPrayerWidgetContainer.setHidden(true);
-					nonReleasedPrayerNames.add(prayer.getName());
-				}
-			} else
-			{
-				individualPrayerWidgetContainer.setHidden(false);
-				nonReleasedPrayerNames.remove(prayer.getName());
 
-			}
+			boolean isReleased = prayer.getReleaseDate() <= currentDate;
+
+			updatePrayerVisibility(individualPrayerWidgetContainer, prayer, isReleased);
+
 			individualPrayerWidgetContainer.revalidate();
+		}
+	}
+
+	private void updatePrayerVisibility(Widget prayerWidget, ByReleasePrayer prayer, boolean isReleased)
+	{
+		String name = prayer.getName();
+
+		if (isReleased)
+		{
+			prayerWidget.setHidden(false);
+			nonReleasedPrayerNames.remove(name);
+		}
+		else if (!config.prayersFromMagicRSC())
+		{
+			prayerWidget.setHidden(true);
+			nonReleasedPrayerNames.add(name);
+		}
+		else if (prayersFromMagicRSC.contains(prayer) && !(prayer == ByReleasePrayer.ROCK_SKIN && byReleasePlugin.getCurrentDate() < 20010127))
+		{
+			prayerWidget.setHidden(false);
+			nonReleasedPrayerNames.remove(name);
+		}
+		else
+		{
+			prayerWidget.setHidden(true);
+			nonReleasedPrayerNames.add(name);
 		}
 	}
 
@@ -279,5 +287,4 @@ public class WidgetHandler
 	{
 		System.out.println("updated ancient spell book");
 	}
-
 }

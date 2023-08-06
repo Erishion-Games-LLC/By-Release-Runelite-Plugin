@@ -90,6 +90,8 @@ public class ByReleasePlugin extends Plugin
 	@Inject
 	private MenuOptionClickedHandler menuOptionClickedHandler;
 	@Inject
+	private WidgetHandler widgetHandler;
+	@Inject
 	private EventBus eventBus;
 	@Inject
 	private Gson gson;
@@ -99,17 +101,7 @@ public class ByReleasePlugin extends Plugin
 	public static final String CONFIG_GROUP = "byrelease";
 
 	private final ArrayList<ByReleaseQuest> questList = new ArrayList<>(Arrays.asList(ByReleaseQuest.values()));
-	private final HashMap<String, List<Widget>> skillWidgets = new HashMap<>();
 
-	private final ArrayList<ByReleasePrayer> prayersFromMagicRSC = new ArrayList<>(Arrays.asList(ByReleasePrayer.THICK_SKIN, ByReleasePrayer.BURST_OF_STRENGTH, ByReleasePrayer.ROCK_SKIN));
-	private final ArrayList<ByReleaseStandardSpell> spellsFromInitialRSC = new ArrayList<>(Arrays.asList(ByReleaseStandardSpell.WIND_STRIKE, ByReleaseStandardSpell.CONFUSE, ByReleaseStandardSpell.WATER_STRIKE));
-
-	@Getter
-	private final Set<String> nonReleasedPrayerNames = new HashSet<>();
-	@Getter
-	private final Set<String> nonReleasedSkillNames = new HashSet<>();
-	@Getter
-	private final Set<String> nonReleasedSpellNames = new HashSet<>();
 
 	private boolean setUpCompleted = false;
 
@@ -125,6 +117,7 @@ public class ByReleasePlugin extends Plugin
 	{
 		loadDefinitions();
 		eventBus.register(menuOptionClickedHandler);
+		eventBus.register(widgetHandler);
 		overlayManager.add(overlay);
 		overlayManager.add(itemOverlay);
 		itemOverlay.invalidateCache();
@@ -134,17 +127,18 @@ public class ByReleasePlugin extends Plugin
 	protected void shutDown() throws Exception
 	{
 		eventBus.unregister(menuOptionClickedHandler);
+		eventBus.unregister(widgetHandler);
 		overlayManager.remove(overlay);
 		overlayManager.remove(itemOverlay);
 		itemOverlay.invalidateCache();
-		clientThread.invokeLater(this::removeSkillWidgets);
+		clientThread.invokeLater(widgetHandler::removeSkillWidgets);
 		previousDate = 0;
 		setUpCompleted = false;
-		nonReleasedPrayerNames.clear();
-		nonReleasedSkillNames.clear();
-		nonReleasedSpellNames.clear();
+
+		widgetHandler.shutDown();
+
 		currentDate = 20010104;
-		clientThread.invokeLater(this::restoreDefaultPrayerWidgets);
+		clientThread.invokeLater(widgetHandler::restoreDefaultPrayerWidgets);
 //		clientThread.invokeLater(this::restoreDefaultSpellWidgets);
 	}
 
@@ -154,21 +148,6 @@ public class ByReleasePlugin extends Plugin
 		if (!setUpCompleted)
 		{
 			clientThread.invokeLater(this::setUp);
-		}
-	}
-
-	@Subscribe
-	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
-	{
-		if (widgetLoaded.getGroupId() == WidgetInfo.RESIZABLE_VIEWPORT_PRAYER_TAB.getGroupId() || widgetLoaded.getGroupId() == WidgetInfo.FIXED_VIEWPORT_PRAYER_TAB.getGroupId())
-		{
-			updatePrayerWidgets();
-		}
-		if (widgetLoaded.getGroupId() == WidgetID.PRAYER_GROUP_ID)
-		{
-			Widget temp = client.getWidget(WidgetID.PRAYER_GROUP_ID, 3);
-			assert temp != null;
-			updatePrayerWidgets();
 		}
 	}
 
@@ -196,7 +175,7 @@ public class ByReleasePlugin extends Plugin
 			case ScriptID.PRAYER_UPDATEBUTTON:
 			case ScriptID.PRAYER_REDRAW:
 			case ScriptID.QUICKPRAYER_INIT:
-				updatePrayerWidgets();
+				widgetHandler.updatePrayerWidgets();
 				break;
 
 			//spells
@@ -214,7 +193,7 @@ public class ByReleasePlugin extends Plugin
 	{
 		if (varbitChanged.getVarbitId() == 4070)
 		{
-			updateSpellWidgets();
+			widgetHandler.updateSpellWidgets();
 		}
 	}
 
@@ -247,52 +226,12 @@ public class ByReleasePlugin extends Plugin
 
 		updateCurrentDate();
 
-		createSkillWidgets();
-
-		updateSkillWidgets();
-
-		updatePrayerWidgets();
-
-		updateSpellWidgets();
+		widgetHandler.setUp();
 
 		setUpCompleted = true;
 	}
 
-	private void createSkillWidgets()
-	{
-		for (ByReleaseSkill skill : ByReleaseSkill.values())
-		{
-			Widget skillWidget = client.getWidget(skill.getWidgetID());
 
-			if (skillWidget == null)
-			{
-				return;
-			}
-
-			ArrayList<Widget> skillWidgetChildren = new ArrayList<>();
-
-			Widget skillIconWidget = skillWidget.createChild(50, WidgetType.GRAPHIC);
-			Widget skillLevelWidget = skillWidget.createChild(51, WidgetType.GRAPHIC);
-
-
-			skillIconWidget.setSpriteId(174);
-			skillIconWidget.setSize(36, 36);
-			skillIconWidget.setPos(-2, -2);
-			skillIconWidget.setOpacity(90);
-			skillIconWidget.setHidden(true);
-
-			skillLevelWidget.setSpriteId(176);
-			skillLevelWidget.setSize(36, 36);
-			skillLevelWidget.setPos(28, -2);
-			skillLevelWidget.setOpacity(90);
-			skillLevelWidget.setHidden(true);
-
-			skillWidgetChildren.add(skillIconWidget);
-			skillWidgetChildren.add(skillLevelWidget);
-
-			skillWidgets.put(skill.getSkill().getName(), skillWidgetChildren);
-		}
-	}
 
 	//only call on client thread
 	private void update()
@@ -303,9 +242,7 @@ public class ByReleasePlugin extends Plugin
 		{
 			//this is where every thing would be updated.
 
-			updateSkillWidgets();
-			updatePrayerWidgets();
-			updateSpellWidgets();
+			widgetHandler.update();
 			itemOverlay.invalidateCache();
 		}
 	}
@@ -339,170 +276,6 @@ public class ByReleasePlugin extends Plugin
 		}
 	}
 
-	private void updateSkillWidgets()
-	{
-
-		for (ByReleaseSkill skill : ByReleaseSkill.values())
-		{
-			for (Widget skillWidgetChild : skillWidgets.get(skill.getSkill().getName()))
-			{
-				if (skill.getReleaseDate() > currentDate)
-				{
-					skillWidgetChild.setHidden(false);
-					nonReleasedSkillNames.add(skill.getSkill().getName());
-				}
-				else
-				{
-					skillWidgetChild.setHidden(true);
-					nonReleasedSkillNames.remove(skill.getSkill().getName());
-				}
-			}
-		}
-	}
-
-	private void updatePrayerWidgets()
-	{
-		for (ByReleasePrayer prayer : ByReleasePrayer.values())
-		{
-			Widget individualPrayerWidgetContainer = client.getWidget(prayer.getWidgetID());
-
-			if (individualPrayerWidgetContainer == null)
-			{
-				continue;
-			}
-			//prayer is not released
-			if (prayer.getReleaseDate() > currentDate)
-			{
-				if (config.prayersFromMagicRSC() && prayersFromMagicRSC.contains(prayer))
-				{
-					if (prayer == ByReleasePrayer.ROCK_SKIN && currentDate < 20010127)
-					{
-						System.out.println("HIDE ROCK SKIN: " + currentDate);
-						//prayer is rock skin, which was released Jan 27 2001.
-						individualPrayerWidgetContainer.setHidden(true);
-						nonReleasedPrayerNames.add(prayer.getName());
-					}
-					else
-					{
-						individualPrayerWidgetContainer.setHidden(false);
-						nonReleasedPrayerNames.remove(prayer.getName());
-					}
-				}
-				else
-				{
-					individualPrayerWidgetContainer.setHidden(true);
-					nonReleasedPrayerNames.add(prayer.getName());
-				}
-			} else
-			{
-				individualPrayerWidgetContainer.setHidden(false);
-				nonReleasedPrayerNames.remove(prayer.getName());
-
-			}
-			individualPrayerWidgetContainer.revalidate();
-		}
-	}
-
-	private void removeSkillWidgets()
-	{
-		for (ByReleaseSkill skill : ByReleaseSkill.values())
-		{
-			Widget skillWidget = client.getWidget(skill.getWidgetID());
-			if (skillWidget == null)
-			{
-				continue;
-			}
-			skillWidget.deleteAllChildren();
-			client.createScriptEvent(skillWidget.getOnLoadListener()).setSource(skillWidget).run();
-		}
-		skillWidgets.clear();
-	}
-
-	private void restoreDefaultPrayerWidgets()
-	{
-		Widget widget = client.getWidget(35454976);
-		if (widget == null)
-		{
-			return;
-		}
-		client.createScriptEvent(widget.getOnLoadListener()).setSource(widget).run();
-	}
-
-	//works, need to fix issue where spells are not being displayed properly if dont have runes but is past released date
-	private void restoreDefaultSpellWidgets()
-	{
-		Widget widget = client.getWidget(14286848);
-		if (widget == null)
-		{
-			return;
-		}
-		client.createScriptEvent(widget.getOnLoadListener()).setSource(widget).run();
-	}
-
-	//Varbit 4070
-	//0 standard
-	//1 ancient
-	//2 lunar
-	//3 arceuus
-	private void updateSpellWidgets()
-	{
-		System.out.println("update spell widgets");
-		switch (client.getVarbitValue(4070))
-		{
-			case 0:
-				updateStandardSpellbook();
-				break;
-			case 1:
-				updateAncientSpellbook();
-				break;
-		}
-	}
-
-	private void updateStandardSpellbook()
-	{
-		System.out.println("updated standard spell book");
-		for (ByReleaseStandardSpell spell : ByReleaseStandardSpell.values())
-		{
-			Widget spellWidget = client.getWidget(spell.getWidgetID());
-			if (spellWidget == null)
-			{
-				System.out.println("spell widget is null for: " + spell.getName());
-				continue;
-			}
-			//spell is not released
-			if (spell.getReleaseDate() > currentDate)
-			{
-				if(config.spellsFromInitialRSC() && spellsFromInitialRSC.contains(spell))
-				{
-					if (spell == ByReleaseStandardSpell.WATER_STRIKE && currentDate < 20010127)
-					{
-//						spellWidget.setSpriteId(spell.getLockedSpriteID());
-						nonReleasedSpellNames.add(spell.getName());
-					}
-					else
-					{
-//						spellWidget.setSpriteId(spell.getUnlockedSpriteID());
-						nonReleasedSpellNames.remove(spell.getName());
-					}
-				}
-				else
-				{
-//					spellWidget.setSpriteId(spell.getLockedSpriteID());
-					nonReleasedSpellNames.add(spell.getName());
-				}
-			}
-			else
-			{
-//				spellWidget.setSpriteId(spell.getUnlockedSpriteID());
-				nonReleasedSpellNames.remove(spell.getName());
-			}
-		}
-	}
-
-	private void updateAncientSpellbook()
-	{
-		System.out.println("updated ancient spell book");
-	}
 
 	//https://github.com/IdylRS/chrono-plugin/blob/main/src/main/java/com/chrono/ChronoPlugin.java#L171
 	private <T> T loadDefinitionResource(Type type, String resource)

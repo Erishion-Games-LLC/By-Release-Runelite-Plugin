@@ -27,6 +27,9 @@ public class MenuOptionClickedHandler
 	private Client client;
 	@Inject
 	private ByReleaseConfig config;
+	@Inject
+	private WidgetHandler widgetHandler;
+
 	private int itemID;
 	private MenuOptionClicked menuOptionClicked;
 	private String menuTarget;
@@ -61,7 +64,7 @@ public class MenuOptionClickedHandler
 			//Prayer and quick prayer
 			case ACTIVATE:
 			case TOGGLE:
-				if (byReleasePlugin.getNonReleasedPrayerNames().contains(menuTarget))
+				if (widgetHandler.getNonReleasedPrayerNames().contains(menuTarget))
 				{
 					createUnavailableMessage();
 					menuOptionClicked.consume();
@@ -70,7 +73,7 @@ public class MenuOptionClickedHandler
 
 
 			case CAST:
-				if (byReleasePlugin.getNonReleasedSpellNames().contains(menuTarget))
+				if (widgetHandler.getNonReleasedSpellNames().contains(menuTarget))
 				{
 					createUnavailableMessage();
 					menuOptionClicked.consume();
@@ -97,7 +100,7 @@ public class MenuOptionClickedHandler
 				break;
 
 			case PICKPOCKET:
-				if (byReleasePlugin.getNonReleasedSkillNames().contains("Thieving"))
+				if (widgetHandler.getNonReleasedSkillNames().contains("Thieving"))
 				{
 					menuOptionClicked.consume();
 				}

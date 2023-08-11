@@ -22,9 +22,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gpu;
+package com.erishiongamesllc.gpu;
 
-import com.gpu.template.Template;
+import com.erishiongamesllc.gpu.template.Template;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
@@ -88,8 +88,8 @@ class OpenCLManager
 	private static final String KERNEL_NAME_LARGE = "computeLarge";
 
 	private static final int MIN_WORK_GROUP_SIZE = 256;
-	private static final int SMALL_SIZE = RegionLockerGpuPlugin.SMALL_TRIANGLE_COUNT;
-	private static final int LARGE_SIZE = RegionLockerGpuPlugin.MAX_TRIANGLE;
+	private static final int SMALL_SIZE = ByReleaseGpuPlugin.SMALL_TRIANGLE_COUNT;
+	private static final int LARGE_SIZE = ByReleaseGpuPlugin.MAX_TRIANGLE;
 	//  struct shared_data {
 	//      int totalNum[12];
 	//      int totalDistance[12];

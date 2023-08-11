@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gpu;
+package com.erishiongamesllc.gpu;
 
 import com.google.common.primitives.Ints;
 import com.google.inject.Provides;
@@ -62,9 +62,9 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginInstantiationException;
 import net.runelite.client.plugins.PluginManager;
-import com.gpu.config.AntiAliasingMode;
-import com.gpu.config.UIScalingMode;
-import com.gpu.template.Template;
+import com.erishiongamesllc.gpu.config.AntiAliasingMode;
+import com.erishiongamesllc.gpu.config.UIScalingMode;
+import com.erishiongamesllc.gpu.template.Template;
 import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.OSType;
@@ -79,17 +79,18 @@ import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.Configuration;
 
-@PluginDescriptor(
-	name = "Region Locker GPU",
-	description = "GPU plugin with unique shader for locked chunks",
+@PluginDescriptor
+	(
+	name = "By Release GPU",
+	description = "GPU plugin with unique shader for unreleased chunks",
 	enabledByDefault = false,
 	tags = {"fog", "draw distance", "chunk", "locker"},
 	conflicts = "GPU",
 	loadInSafeMode = false,
-	configName = "RegionGpuPlugin"
-)
+	configName = "ByReleaseGpuPlugin"
+	)
 @Slf4j
-public class RegionLockerGpuPlugin extends Plugin implements DrawCallbacks
+public class ByReleaseGpuPlugin extends Plugin implements DrawCallbacks
 {
 	// This is the maximum number of triangles the compute shaders support
 	static final int MAX_TRIANGLE = 6144;
@@ -561,7 +562,7 @@ public class RegionLockerGpuPlugin extends Plugin implements DrawCallbacks
 			}
 			return null;
 		});
-		template.addInclude(RegionLockerGpuPlugin.class);
+		template.addInclude(ByReleaseGpuPlugin.class);
 		return template;
 	}
 

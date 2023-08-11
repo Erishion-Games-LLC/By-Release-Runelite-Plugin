@@ -32,6 +32,9 @@ import com.erishiongamesllc.byrelease.data.ByReleaseSkill;
 import com.erishiongamesllc.byrelease.data.ByReleaseStandardSpell;
 import com.erishiongamesllc.byrelease.overlay.ByReleaseItemOverlay;
 import com.erishiongamesllc.byrelease.overlay.ByReleaseOverlay;
+import com.erishiongamesllc.regionlocker.RegionBorderOverlay;
+import com.erishiongamesllc.regionlocker.RegionLocker;
+import com.erishiongamesllc.regionlocker.RegionLockerOverlay;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
@@ -47,6 +50,7 @@ import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.QuestState;
@@ -88,6 +92,11 @@ public class ByReleasePlugin extends Plugin
 	@Inject
 	private ByReleaseItemOverlay itemOverlay;
 	@Inject
+	private RegionLockerOverlay regionLockerOverlay;
+	@Inject
+	private RegionBorderOverlay regionBorderOverlay;
+
+	@Inject
 	private MenuOptionClickedHandler menuOptionClickedHandler;
 	@Inject
 	private WidgetHandler widgetHandler;
@@ -95,10 +104,16 @@ public class ByReleasePlugin extends Plugin
 	private EventBus eventBus;
 	@Inject
 	private Gson gson;
+	@Inject
+	private ConfigManager configManager;
+	@Inject
+	private QuestRegions questRegions;
 
 
 	public static final String PLUGIN_NAME = "By Release";
 	public static final String CONFIG_GROUP = "byrelease";
+	private RegionLocker regionLocker;
+
 
 	private final ArrayList<ByReleaseQuest> questList = new ArrayList<>(Arrays.asList(ByReleaseQuest.values()));
 
@@ -115,11 +130,14 @@ public class ByReleasePlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
+		regionLocker = new RegionLocker(config);
 		loadDefinitions();
 		eventBus.register(menuOptionClickedHandler);
 		eventBus.register(widgetHandler);
 		overlayManager.add(overlay);
 		overlayManager.add(itemOverlay);
+		overlayManager.add(regionLockerOverlay);
+		overlayManager.add(regionBorderOverlay);
 		itemOverlay.invalidateCache();
 	}
 
@@ -130,6 +148,8 @@ public class ByReleasePlugin extends Plugin
 		eventBus.unregister(widgetHandler);
 		overlayManager.remove(overlay);
 		overlayManager.remove(itemOverlay);
+		overlayManager.remove(regionLockerOverlay);
+		overlayManager.remove(regionBorderOverlay);
 		itemOverlay.invalidateCache();
 		clientThread.invokeLater(widgetHandler::removeSkillWidgets);
 		previousDate = 0;
@@ -202,6 +222,8 @@ public class ByReleasePlugin extends Plugin
 	{
 		if (configChanged.getGroup().equals(CONFIG_GROUP))
 		{
+			regionLocker.readConfig();
+			updateCurrentDate();
 			System.out.println("CONFIG HAS CHANGED");
 			switch (configChanged.getKey())
 			{
@@ -258,6 +280,32 @@ public class ByReleasePlugin extends Plugin
 
 	private void updateCurrentDate()
 	{
+		if (config.overrideDate())
+		{
+			currentDate = config.date();
+
+
+			ByReleaseQuest temp = null;
+			for (ByReleaseQuest quest : questList)
+			{
+				if (quest.getReleaseDate() <= currentDate)
+				{
+					temp = quest;
+				}
+				else
+				{
+					break;
+				}
+			}
+			if (temp != null)
+			{
+				System.out.println(temp.getName());
+				previousDate = currentDate;
+				QuestRegions.updateReleasedRegions(currentDate);
+				return;
+			}
+			return;
+		}
 		ByReleaseQuest previousQuest = null;
 		for (ByReleaseQuest quest : questList)
 		{
@@ -267,6 +315,7 @@ public class ByReleasePlugin extends Plugin
 				{
 					previousDate = currentDate;
 					currentDate = quest.getReleaseDate();
+					QuestRegions.updateReleasedRegions(currentDate);
 					return;
 				}
 			}
@@ -290,4 +339,7 @@ public class ByReleasePlugin extends Plugin
 		Type defMapType = new TypeToken<HashMap<Integer, ByReleaseItem>>() {}.getType();
 		ByReleaseItem.itemDefinitions = loadDefinitionResource(defMapType, "combined_items.json");
 	}
+
+
+
 }

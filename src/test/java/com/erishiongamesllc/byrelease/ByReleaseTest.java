@@ -24,6 +24,7 @@
  */
 package com.erishiongamesllc.byrelease;
 
+import com.erishiongamesllc.gpu.ByReleaseGpuPlugin;
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
@@ -31,7 +32,7 @@ public class ByReleaseTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(ByReleasePlugin.class);
+		ExternalPluginManager.loadBuiltin(ByReleasePlugin.class, ByReleaseGpuPlugin.class);
 		RuneLite.main(args);
 	}
 }

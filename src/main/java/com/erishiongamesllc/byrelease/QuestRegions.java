@@ -24,45 +24,35 @@
  *  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+package com.erishiongamesllc.byrelease;
 
-package com.erishiongamesllc.byrelease.overlay;
+import com.erishiongamesllc.byrelease.data.ByReleaseQuest;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.erishiongamesllc.byrelease.ByReleasePlugin;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import javax.inject.Inject;
-import net.runelite.client.ui.overlay.OverlayPanel;
-import net.runelite.client.ui.overlay.components.TitleComponent;
-
-public class ByReleaseOverlay extends OverlayPanel
+public class QuestRegions
 {
-	@Inject
-	private ByReleasePlugin plugin;
+	private static Set<Integer> releasedRegions = new HashSet<>(ByReleaseQuest.COOKS_ASSISTANT.getRegions().getRegions());
 
-	@Override
-	public Dimension render(Graphics2D graphics2D)
+
+	public static void updateReleasedRegions(int currentDate)
 	{
-		String releaseDate = formatDate(plugin.getCurrentDate());
-
-		panelComponent.getChildren().add(TitleComponent.builder()
-			.text(releaseDate)
-			.color(Color.WHITE)
-			.build());
-
-		panelComponent.setPreferredSize(new Dimension(
-			graphics2D.getFontMetrics().stringWidth(releaseDate) + 10,
-			0));
-
-		return super.render(graphics2D);
+		releasedRegions.clear();
+		for (ByReleaseQuest quest: ByReleaseQuest.values())
+		{
+			if (quest.getReleaseDate() <= currentDate)
+			{
+				releasedRegions.addAll(quest.getRegions().getRegions());
+			}
+		}
 	}
-
-	private String formatDate(int releaseDate)
+	public static Set<Integer> getReleasedRegions()
 	{
-		String dateString = String.valueOf(releaseDate);
-		String year = dateString.substring(0, 4);
-		String month = dateString.substring(4, 6);
-		String day = dateString.substring(6, 8);
-		return year + "-" + month + "-" + day;
+		if (releasedRegions == null)
+		{
+			return new HashSet<>();
+		}
+		return Collections.unmodifiableSet(releasedRegions);
 	}
 }

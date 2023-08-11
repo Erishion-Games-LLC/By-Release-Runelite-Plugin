@@ -11,26 +11,31 @@ uniform int lockedRegions[LOCKED_REGIONS_SIZE];
 in float vGrayAmount[];
 out float grayAmount;
 
-int toRegionId(int x, int y) {
+int toRegionId(int x, int y)
+{
   return (x >> 13 << 8) + (y >> 13);
 }
 
-float b_convert(float n) {
+float b_convert(float n)
+{
   return clamp(abs(n), 0.0, 1.0);
 }
 
-float isLocked(int x, int y) {
+float isLocked(int x, int y)
+{
   x = x + baseX;
   y = y + baseY;
   float result = 1.0;
-  for (int i = 0; i < LOCKED_REGIONS_SIZE; ++i) {
+  for (int i = 0; i < LOCKED_REGIONS_SIZE; ++i)
+  {
     int region = toRegionId(x, y);
     result = result * (lockedRegions[i] - region);
   }
   return b_convert(result);
 }
 
-void regionLockerGeomVertex(int i) {
+void regionLockerGeomVertex(int i)
+{
   ivec3 center = (gVertex[0] + gVertex[1] + gVertex[2]) / 3;
   float locked = useGray * isLocked(center.x, center.z);
 

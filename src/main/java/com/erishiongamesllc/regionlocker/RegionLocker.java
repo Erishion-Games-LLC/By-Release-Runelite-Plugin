@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019, Slay to Stay <https://github.com/slaytostay>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,17 +22,35 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.erishiongamesllc.gpu;
+package com.erishiongamesllc.regionlocker;
 
-class GLBuffer
+import com.erishiongamesllc.byrelease.ByReleaseConfig;
+import com.erishiongamesllc.byrelease.QuestRegions;
+import java.awt.Color;
+import java.util.*;
+import lombok.Getter;
+import net.runelite.client.config.ConfigManager;
+
+public class RegionLocker
 {
-	String name;
-	int glBufferId = -1;
-	int size = -1;
-	long clBuffer = -1;
+	private final ByReleaseConfig config;
 
-	GLBuffer(String name)
+	public static boolean renderLockedRegions;
+	public static Color grayColor = new Color(0, 31, 77, 204);
+	public static int grayAmount;
+	public static boolean hardBorder;
+
+	public RegionLocker(ByReleaseConfig config)
 	{
-		this.name = name;
+		this.config = config;
+		readConfig();
+	}
+
+	public void readConfig()
+	{
+		renderLockedRegions = config.renderLockedRegions();
+		grayColor = config.shaderGrayColor();
+		grayAmount = config.shaderGrayAmount().getAlpha();
+		hardBorder = config.hardBorder();
 	}
 }

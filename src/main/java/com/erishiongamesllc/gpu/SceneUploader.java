@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gpu;
+package com.erishiongamesllc.gpu;
 
 import com.google.common.base.Stopwatch;
 import java.util.Arrays;
@@ -383,7 +383,7 @@ class SceneUploader
 
 	public int pushModel(Model model, GpuIntBuffer vertexBuffer, GpuFloatBuffer uvBuffer)
 	{
-		final int triangleCount = Math.min(model.getFaceCount(), RegionLockerGpuPlugin.MAX_TRIANGLE);
+		final int triangleCount = Math.min(model.getFaceCount(), ByReleaseGpuPlugin.MAX_TRIANGLE);
 
 		vertexBuffer.ensureCapacity(triangleCount * 12);
 		uvBuffer.ensureCapacity(triangleCount * 12);

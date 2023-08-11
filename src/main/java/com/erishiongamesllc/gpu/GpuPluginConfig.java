@@ -22,23 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gpu;
+package com.erishiongamesllc.gpu;
 
-import com.gpu.config.ColorBlindMode;
+import com.erishiongamesllc.gpu.config.ColorBlindMode;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Range;
-import com.gpu.config.AntiAliasingMode;
-import com.gpu.config.UIScalingMode;
+import com.erishiongamesllc.gpu.config.AntiAliasingMode;
+import com.erishiongamesllc.gpu.config.UIScalingMode;
 
 @ConfigGroup(GpuPluginConfig.GROUP)
 public interface GpuPluginConfig extends Config
 {
-	String GROUP = "region-locker-gpu";
-
+	String GROUP = "byrelease-gpu";
 	@Range(
-		max = RegionLockerGpuPlugin.MAX_DISTANCE
+		max = ByReleaseGpuPlugin.MAX_DISTANCE
 	)
 	@ConfigItem(
 		keyName = "drawDistance",
@@ -85,7 +84,7 @@ public interface GpuPluginConfig extends Config
 	}
 
 	@Range(
-		max = RegionLockerGpuPlugin.MAX_FOG_DEPTH
+		max = ByReleaseGpuPlugin.MAX_FOG_DEPTH
 	)
 	@ConfigItem(
 		keyName = "fogDepth",
@@ -131,7 +130,7 @@ public interface GpuPluginConfig extends Config
 		description = "Adjusts colors to account for colorblindness",
 		position = 8
 	)
-	default com.gpu.config.ColorBlindMode colorBlindMode()
+	default com.erishiongamesllc.gpu.config.ColorBlindMode colorBlindMode()
 	{
 		return ColorBlindMode.NONE;
 	}

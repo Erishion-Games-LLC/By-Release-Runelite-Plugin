@@ -24,12 +24,12 @@
  */
 package com.erishiongamesllc.byrelease;
 
+import com.erishiongamesllc.groundmarker.GroundMarkerHandler;
+import com.erishiongamesllc.groundmarker.GroundMarkerMinimapOverlay;
+import com.erishiongamesllc.groundmarker.GroundMarkerOverlay;
 import static com.erishiongamesllc.byrelease.ByReleasePlugin.PLUGIN_NAME;
 import com.erishiongamesllc.byrelease.data.ByReleaseItem;
-import com.erishiongamesllc.byrelease.data.ByReleasePrayer;
 import com.erishiongamesllc.byrelease.data.ByReleaseQuest;
-import com.erishiongamesllc.byrelease.data.ByReleaseSkill;
-import com.erishiongamesllc.byrelease.data.ByReleaseStandardSpell;
 import com.erishiongamesllc.byrelease.overlay.ByReleaseItemOverlay;
 import com.erishiongamesllc.byrelease.overlay.ByReleaseOverlay;
 import com.erishiongamesllc.regionlocker.RegionBorderOverlay;
@@ -41,16 +41,9 @@ import com.google.inject.Provides;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import javax.inject.Inject;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.QuestState;
@@ -58,11 +51,6 @@ import net.runelite.api.ScriptID;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.VarbitChanged;
-import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.api.widgets.WidgetType;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
@@ -95,6 +83,8 @@ public class ByReleasePlugin extends Plugin
 	private RegionLockerOverlay regionLockerOverlay;
 	@Inject
 	private RegionBorderOverlay regionBorderOverlay;
+	@Inject
+	private GroundMarkerHandler groundMarkerHandler;
 
 	@Inject
 	private MenuOptionClickedHandler menuOptionClickedHandler;
@@ -108,15 +98,15 @@ public class ByReleasePlugin extends Plugin
 	private ConfigManager configManager;
 	@Inject
 	private QuestRegions questRegions;
+	@Inject
+	private GroundMarkerOverlay groundMarkerOverlay;
+	@Inject
+	private GroundMarkerMinimapOverlay groundMarkerMinimapOverlay;
 
 
 	public static final String PLUGIN_NAME = "By Release";
 	public static final String CONFIG_GROUP = "byrelease";
 	private RegionLocker regionLocker;
-
-
-	private final ArrayList<ByReleaseQuest> questList = new ArrayList<>(Arrays.asList(ByReleaseQuest.values()));
-
 
 	private boolean setUpCompleted = false;
 
@@ -132,12 +122,20 @@ public class ByReleasePlugin extends Plugin
 	{
 		regionLocker = new RegionLocker(config);
 		loadDefinitions();
+
 		eventBus.register(menuOptionClickedHandler);
 		eventBus.register(widgetHandler);
+		eventBus.register(groundMarkerHandler);
+
+		groundMarkerHandler.loadPoints();
+
 		overlayManager.add(overlay);
 		overlayManager.add(itemOverlay);
 		overlayManager.add(regionLockerOverlay);
 		overlayManager.add(regionBorderOverlay);
+		overlayManager.add(groundMarkerOverlay);
+		overlayManager.add(groundMarkerMinimapOverlay);
+
 		itemOverlay.invalidateCache();
 	}
 
@@ -146,10 +144,15 @@ public class ByReleasePlugin extends Plugin
 	{
 		eventBus.unregister(menuOptionClickedHandler);
 		eventBus.unregister(widgetHandler);
+		eventBus.unregister(groundMarkerHandler);
+
 		overlayManager.remove(overlay);
 		overlayManager.remove(itemOverlay);
 		overlayManager.remove(regionLockerOverlay);
 		overlayManager.remove(regionBorderOverlay);
+		overlayManager.remove(groundMarkerOverlay);
+		overlayManager.remove(groundMarkerMinimapOverlay);
+
 		itemOverlay.invalidateCache();
 		clientThread.invokeLater(widgetHandler::removeSkillWidgets);
 		previousDate = 0;
@@ -160,6 +163,8 @@ public class ByReleasePlugin extends Plugin
 		currentDate = 20010104;
 		clientThread.invokeLater(widgetHandler::restoreDefaultPrayerWidgets);
 //		clientThread.invokeLater(this::restoreDefaultSpellWidgets);
+
+		groundMarkerHandler.clearPoints();
 	}
 
 	@Subscribe
@@ -269,7 +274,7 @@ public class ByReleasePlugin extends Plugin
 
 	private void updateQuestList()
 	{
-		for (ByReleaseQuest byReleaseQuest: questList)
+		for (ByReleaseQuest byReleaseQuest: ByReleaseQuest.values())
 		{
 			byReleaseQuest.setQuestState
 				(
@@ -286,7 +291,7 @@ public class ByReleasePlugin extends Plugin
 
 
 			ByReleaseQuest temp = null;
-			for (ByReleaseQuest quest : questList)
+			for (ByReleaseQuest quest : ByReleaseQuest.values())
 			{
 				if (quest.getReleaseDate() <= currentDate)
 				{
@@ -307,7 +312,7 @@ public class ByReleasePlugin extends Plugin
 			return;
 		}
 		ByReleaseQuest previousQuest = null;
-		for (ByReleaseQuest quest : questList)
+		for (ByReleaseQuest quest : ByReleaseQuest.values())
 		{
 			if (quest.getQuestState() != QuestState.FINISHED)
 			{

@@ -26,7 +26,6 @@
 package com.erishiongamesllc.regionlocker;
 
 import com.erishiongamesllc.byrelease.ByReleaseConfig;
-import com.erishiongamesllc.byrelease.QuestRegions;
 import com.google.inject.Inject;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -117,7 +116,7 @@ public class RegionLockerOverlay extends Overlay
 				FontMetrics fm = graphics.getFontMetrics();
 				Rectangle2D textBounds = fm.getStringBounds(regionText, graphics);
 
-				if (!QuestRegions.getReleasedRegions().contains(regionID))
+				if (!RegionLocker.getReleasedRegions().contains(regionID))
 				{
 					Color color = config.mapOverlayColor();
 

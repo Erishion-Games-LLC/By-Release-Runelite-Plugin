@@ -65,7 +65,10 @@ public class RegionBorderOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (config.renderRegionBorders()) renderMapSquares(graphics);
+		if (config.renderRegionBorders())
+		{
+			renderMapSquares(graphics);
+		}
 
 		return null;
 	}

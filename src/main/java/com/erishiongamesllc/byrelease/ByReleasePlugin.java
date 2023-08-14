@@ -306,7 +306,7 @@ public class ByReleasePlugin extends Plugin
 			{
 				System.out.println(temp.getName());
 				previousDate = currentDate;
-				QuestRegions.updateReleasedRegions(currentDate);
+				RegionLocker.updateReleasedRegions(currentDate);
 				return;
 			}
 			return;
@@ -320,7 +320,7 @@ public class ByReleasePlugin extends Plugin
 				{
 					previousDate = currentDate;
 					currentDate = quest.getReleaseDate();
-					QuestRegions.updateReleasedRegions(currentDate);
+					RegionLocker.updateReleasedRegions(currentDate);
 					return;
 				}
 			}

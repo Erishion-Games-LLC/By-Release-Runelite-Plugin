@@ -25,15 +25,14 @@
 package com.erishiongamesllc.regionlocker;
 
 import com.erishiongamesllc.byrelease.ByReleaseConfig;
-import com.erishiongamesllc.byrelease.QuestRegions;
+import com.erishiongamesllc.byrelease.data.ByReleaseRegions;
 import java.awt.Color;
 import java.util.*;
-import lombok.Getter;
-import net.runelite.client.config.ConfigManager;
 
 public class RegionLocker
 {
 	private final ByReleaseConfig config;
+	private static Set<Integer> releasedRegions = new HashSet<>(ByReleaseRegions.RSC_RELEASE_010104.getRegions());
 
 	public static boolean renderLockedRegions;
 	public static Color grayColor = new Color(0, 31, 77, 204);
@@ -52,5 +51,26 @@ public class RegionLocker
 		grayColor = config.shaderGrayColor();
 		grayAmount = config.shaderGrayAmount().getAlpha();
 		hardBorder = config.hardBorder();
+	}
+
+	public static void updateReleasedRegions(int currentDate)
+	{
+		releasedRegions.clear();
+		for (ByReleaseRegions region : ByReleaseRegions.values())
+		{
+			if (region.getReleaseDate() <= currentDate)
+			{
+				releasedRegions.addAll(region.getRegions());
+			}
+		}
+	}
+
+	public static Set<Integer> getReleasedRegions()
+	{
+		if (releasedRegions == null)
+		{
+			return new HashSet<>();
+		}
+		return Collections.unmodifiableSet(releasedRegions);
 	}
 }

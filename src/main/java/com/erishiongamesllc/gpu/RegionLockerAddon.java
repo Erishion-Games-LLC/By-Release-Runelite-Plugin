@@ -1,6 +1,5 @@
 package com.erishiongamesllc.gpu;
 
-import com.erishiongamesllc.byrelease.QuestRegions;
 import com.erishiongamesllc.regionlocker.RegionLocker;
 import java.util.Arrays;
 import javax.inject.Inject;
@@ -40,7 +39,7 @@ public class RegionLockerAddon
 			for (int i = 0; i < client.getMapRegions().length; i++)
 			{
 				int region = client.getMapRegions()[i];
-				if (QuestRegions.getReleasedRegions().contains(region))
+				if (RegionLocker.getReleasedRegions().contains(region))
 				{
 					return true;
 				}
@@ -78,7 +77,7 @@ public class RegionLockerAddon
 			{
 				int region = client.getMapRegions()[i];
 
-				if (QuestRegions.getReleasedRegions().contains(region))
+				if (RegionLocker.getReleasedRegions().contains(region))
 				{
 					loadedLockedRegions[i] = region;
 				}

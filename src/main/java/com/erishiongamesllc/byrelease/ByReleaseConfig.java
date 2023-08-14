@@ -31,6 +31,7 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Keybind;
+import net.runelite.client.config.Range;
 
 @ConfigGroup(ByReleasePlugin.CONFIG_GROUP)
 public interface ByReleaseConfig extends Config
@@ -126,6 +127,45 @@ public interface ByReleaseConfig extends Config
 
 
 
+
+	//Ground Marker Settings
+	@ConfigItem(
+		keyName = "borderWidth",
+		name = "Border Width",
+		description = "Width of the marked tile border"
+	)
+	default double borderWidth()
+	{
+		return 2;
+	}
+
+	@ConfigItem(
+		keyName = "drawOnMinimap",
+		name = "Draw tiles on minimap",
+		description = "Configures whether marked tiles should be drawn on minimap"
+	)
+	default boolean drawTileOnMinimmap()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "fillOpacity",
+		name = "Fill Opacity",
+		description = "Opacity of the tile fill color"
+	)
+	@Range(
+		max = 255
+	)
+	default int fillOpacity()
+	{
+		return 50;
+	}
+
+
+
+
+	//Region Locker Settings
 	@ConfigSection(
 		name = "Environment Looks",
 		description = "Settings relating to locked regions look",

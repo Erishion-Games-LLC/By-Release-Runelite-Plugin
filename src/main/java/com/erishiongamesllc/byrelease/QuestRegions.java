@@ -33,7 +33,7 @@ import java.util.Set;
 
 public class QuestRegions
 {
-	private static Set<Integer> releasedRegions = new HashSet<>(ByReleaseQuest.COOKS_ASSISTANT.getRegions().getRegions());
+	private static Set<Integer> releasedRegions = new HashSet<>(ByReleaseQuest.COOKS_ASSISTANT.getByReleaseRegions().getRegions());
 
 
 	public static void updateReleasedRegions(int currentDate)
@@ -43,7 +43,7 @@ public class QuestRegions
 		{
 			if (quest.getReleaseDate() <= currentDate)
 			{
-				releasedRegions.addAll(quest.getRegions().getRegions());
+				releasedRegions.addAll(quest.getByReleaseRegions().getRegions());
 			}
 		}
 	}

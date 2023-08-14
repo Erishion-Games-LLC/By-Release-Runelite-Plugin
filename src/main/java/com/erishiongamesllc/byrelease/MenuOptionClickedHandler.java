@@ -2,6 +2,8 @@ package com.erishiongamesllc.byrelease;
 
 import com.erishiongamesllc.byrelease.data.ByReleaseAchievementDiaryTeleports;
 import com.erishiongamesllc.byrelease.data.ByReleaseAnvil;
+import com.erishiongamesllc.byrelease.data.ByReleaseBank;
+import com.erishiongamesllc.byrelease.data.ByReleaseEntrance;
 import com.erishiongamesllc.byrelease.data.ByReleaseFurnace;
 import com.erishiongamesllc.byrelease.data.ByReleaseInfo;
 import com.erishiongamesllc.byrelease.data.ByReleaseItem;
@@ -10,6 +12,7 @@ import com.erishiongamesllc.byrelease.data.ByReleaseStandardSpell;
 import com.erishiongamesllc.byrelease.data.ByReleaseTree;
 import com.erishiongamesllc.byrelease.data.MenuOption;
 import java.text.ParseException;
+import java.util.Objects;
 import javax.inject.Inject;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -52,6 +55,19 @@ public class MenuOptionClickedHandler
 
 		switch (option)
 		{
+			case COLLECT:
+			case BANK:
+				handleBank();
+				break;
+
+			case TALK_TO:
+				handleTalkTo();
+				break;
+
+			case OPEN:
+				handleOpen();
+				break;
+
 			//Item is leaving or exiting inventory
 			case TAKE:
 			case WITHDRAW:
@@ -105,6 +121,59 @@ public class MenuOptionClickedHandler
 					menuOptionClicked.consume();
 				}
 				break;
+		}
+	}
+
+	private void handleOpen()
+	{
+		if (menuTarget.equals("Map"))
+		{
+			System.out.println("Opened Map Link");
+			return;
+		}
+		final Tile tile = client.getScene().getTiles()[client.getPlane()][menuOptionClicked.getParam0()][menuOptionClicked.getParam1()];
+		final WorldPoint location = tile.getWorldLocation();
+
+		for (ByReleaseEntrance entrance : ByReleaseEntrance.values())
+		{
+			if (location.equals(entrance.getLocation()) && entrance.getReleaseDate() > byReleasePlugin.getCurrentDate())
+			{
+				menuOptionClicked.consume();
+				createUnavailableTileObjectMessage(entrance);
+				break;
+			}
+		}
+	}
+
+	private void handleBank()
+	{
+		WorldPoint location;
+		if (menuTarget.equals("Banker"))
+		{
+			location = Objects.requireNonNull(menuOptionClicked.getMenuEntry().getNpc()).getWorldLocation();
+		}
+		else
+		{
+			final Tile tile = client.getScene().getTiles()[client.getPlane()][menuOptionClicked.getParam0()][menuOptionClicked.getParam1()];
+			location = tile.getWorldLocation();
+		}
+
+		for (ByReleaseBank bank : ByReleaseBank.values())
+		{
+			if (location.equals(bank.getLocation()) && bank.getReleaseDate() > byReleasePlugin.getCurrentDate())
+			{
+				menuOptionClicked.consume();
+				createUnavailableTileObjectMessage(bank);
+				break;
+			}
+		}
+	}
+
+	private void handleTalkTo()
+	{
+		if (menuTarget.equals("Banker"))
+		{
+			handleBank();
 		}
 	}
 
@@ -178,7 +247,6 @@ public class MenuOptionClickedHandler
 		}
 	}
 
-
 	private void createUnavailableTileObjectMessage(ByReleaseInfo object)
 	{
 		String unavailable = " is unavailable until: ";
@@ -217,6 +285,7 @@ public class MenuOptionClickedHandler
 				{
 					menuOptionClicked.consume();
 					createUnavailableTileObjectMessage(furnace);
+					break;
 				}
 			}
 		}
@@ -251,6 +320,7 @@ public class MenuOptionClickedHandler
 				{
 					menuOptionClicked.consume();
 					createUnavailableTileObjectMessage(anvil);
+					break;
 				}
 			}
 		}

@@ -62,8 +62,8 @@ public enum ByReleaseQuest implements ByReleaseInfo
 	MERLINS_CRYSTAL(Quest.MERLINS_CRYSTAL, 20020227, QuestState.NOT_STARTED, ByReleaseRegions.RSC_UPDATE_020227),
 	HEROES_QUEST(Quest.HEROES_QUEST, 20020227, QuestState.NOT_STARTED, ByReleaseRegions.RSC_UPDATE_020227),
 
-	ALFRED_GRIMHANDS_BARCRAWL(Quest.ALFRED_GRIMHANDS_BARCRAWL, 20020325, QuestState.NOT_STARTED, ByReleaseRegions.RSC_UPDATE_020325),
-	SCORPION_CATCHER(Quest.SCORPION_CATCHER, 20020325, QuestState.NOT_STARTED, ByReleaseRegions.RSC_UPDATE_020325),
+	ALFRED_GRIMHANDS_BARCRAWL(Quest.ALFRED_GRIMHANDS_BARCRAWL, 20020325, QuestState.NOT_STARTED, ByReleaseRegions.RSC_UPDATE_ALFRED),
+	SCORPION_CATCHER(Quest.SCORPION_CATCHER, 20020325, QuestState.NOT_STARTED, ByReleaseRegions.RSC_UPDATE_ALFRED),
 
 	FAMILY_CREST(Quest.FAMILY_CREST, 20020409, QuestState.NOT_STARTED, ByReleaseRegions.RSC_UPDATE_020409),
 
@@ -243,14 +243,14 @@ public enum ByReleaseQuest implements ByReleaseInfo
 	private final int releaseDate;
 	@Setter
 	private QuestState questState;
-	private final ByReleaseRegions regions;
+	private final ByReleaseRegions byReleaseRegions;
 
-	ByReleaseQuest(Quest quest, int releaseDate, QuestState questState, ByReleaseRegions regions)
+	ByReleaseQuest(Quest quest, int releaseDate, QuestState questState, ByReleaseRegions byReleaseRegions)
 	{
 		this.quest = quest;
 		this.releaseDate = releaseDate;
 		this.questState = questState;
-		this.regions = regions;
+		this.byReleaseRegions = byReleaseRegions;
 	}
 	@Override
 	public String getName()

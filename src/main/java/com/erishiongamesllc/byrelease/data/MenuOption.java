@@ -19,6 +19,11 @@ public enum MenuOption
 	WITHDRAW("Withdraw"),
 	DEPOSIT("Deposit"),
 	DROP("Drop"),
+	OPEN("Open"),
+	BANK("Bank"),
+	TALK_TO("Talk-to"),
+	COLLECT("Collect"),
+
 
 	;
 

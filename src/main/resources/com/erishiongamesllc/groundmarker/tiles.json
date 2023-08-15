@@ -1,20 +1,30 @@
-[
-  {
-    "regionId": 12954,
-    "regionX": 10,
-    "regionY": 44,
-    "z": 0,
-    "label": "TEST",
-    "releaseDate": 20010104,
-    "removalDate": 20010105
-  },
-  {
-  "regionId": 12954,
-  "regionX": 10,
-  "regionY": 43,
-  "z": 0,
-  "label": "TEST",
-  "releaseDate": 20010105,
-  "removalDate": 20010106
-  }
-]
+{
+    "20010104": [{
+        "regionId": 12954,
+        "regionX": 10,
+        "regionY": 44,
+        "z": 0,
+        "label": "TEST",
+        "releaseDate": 20010104,
+        "removalDate": 20010105
+    },
+      {
+        "regionId": 12954,
+        "regionX": 10,
+        "regionY": 45,
+        "z": 0,
+        "label": "TEST",
+        "releaseDate": 20010104,
+        "removalDate": 20010105
+      }
+    ],
+    "20010105": [{
+        "regionId": 12954,
+        "regionX": 10,
+        "regionY": 43,
+        "z": 0,
+        "label": "TEST",
+        "releaseDate": 20010105,
+        "removalDate": 20010106
+    }]
+}

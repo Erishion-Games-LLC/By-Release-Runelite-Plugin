@@ -31,7 +31,7 @@ import static com.erishiongamesllc.byrelease.ByReleasePlugin.PLUGIN_NAME;
 import com.erishiongamesllc.byrelease.data.ByReleaseItem;
 import com.erishiongamesllc.byrelease.data.ByReleaseQuest;
 import com.erishiongamesllc.byrelease.overlay.ByReleaseItemOverlay;
-import com.erishiongamesllc.byrelease.overlay.ByReleaseOverlay;
+import com.erishiongamesllc.byrelease.overlay.ByReleaseDateOverlay;
 import com.erishiongamesllc.regionlocker.RegionBorderOverlay;
 import com.erishiongamesllc.regionlocker.RegionLocker;
 import com.erishiongamesllc.regionlocker.RegionLockerOverlay;
@@ -75,8 +75,9 @@ public class ByReleasePlugin extends Plugin
 	private ClientThread clientThread;
 	@Inject
 	private OverlayManager overlayManager;
+
 	@Inject
-	private ByReleaseOverlay overlay;
+	private ByReleaseDateOverlay dateOverlay;
 	@Inject
 	private ByReleaseItemOverlay itemOverlay;
 	@Inject
@@ -84,24 +85,20 @@ public class ByReleasePlugin extends Plugin
 	@Inject
 	private RegionBorderOverlay regionBorderOverlay;
 	@Inject
-	private GroundMarkerHandler groundMarkerHandler;
+	private GroundMarkerOverlay groundMarkerOverlay;
+	@Inject
+	private GroundMarkerMinimapOverlay groundMarkerMinimapOverlay;
 
 	@Inject
 	private MenuOptionClickedHandler menuOptionClickedHandler;
+	@Inject
+	private GroundMarkerHandler groundMarkerHandler;
 	@Inject
 	private WidgetHandler widgetHandler;
 	@Inject
 	private EventBus eventBus;
 	@Inject
 	private Gson gson;
-	@Inject
-	private ConfigManager configManager;
-	@Inject
-	private QuestRegions questRegions;
-	@Inject
-	private GroundMarkerOverlay groundMarkerOverlay;
-	@Inject
-	private GroundMarkerMinimapOverlay groundMarkerMinimapOverlay;
 
 
 	public static final String PLUGIN_NAME = "By Release";
@@ -113,7 +110,6 @@ public class ByReleasePlugin extends Plugin
 	@Getter
 	private int currentDate = 20010104;
 	private int previousDate = 0;
-
 
 
 
@@ -129,14 +125,7 @@ public class ByReleasePlugin extends Plugin
 
 		groundMarkerHandler.loadPoints();
 
-		overlayManager.add(overlay);
-		overlayManager.add(itemOverlay);
-		overlayManager.add(regionLockerOverlay);
-		overlayManager.add(regionBorderOverlay);
-		overlayManager.add(groundMarkerOverlay);
-		overlayManager.add(groundMarkerMinimapOverlay);
-
-		itemOverlay.invalidateCache();
+		addOverlays();
 	}
 
 	@Override
@@ -146,14 +135,8 @@ public class ByReleasePlugin extends Plugin
 		eventBus.unregister(widgetHandler);
 		eventBus.unregister(groundMarkerHandler);
 
-		overlayManager.remove(overlay);
-		overlayManager.remove(itemOverlay);
-		overlayManager.remove(regionLockerOverlay);
-		overlayManager.remove(regionBorderOverlay);
-		overlayManager.remove(groundMarkerOverlay);
-		overlayManager.remove(groundMarkerMinimapOverlay);
+		removeOverlays();
 
-		itemOverlay.invalidateCache();
 		clientThread.invokeLater(widgetHandler::removeSkillWidgets);
 		previousDate = 0;
 		setUpCompleted = false;
@@ -165,6 +148,29 @@ public class ByReleasePlugin extends Plugin
 //		clientThread.invokeLater(this::restoreDefaultSpellWidgets);
 
 		groundMarkerHandler.clearPoints();
+	}
+
+	private void addOverlays()
+	{
+		overlayManager.add(dateOverlay);
+		overlayManager.add(itemOverlay);
+		overlayManager.add(regionLockerOverlay);
+		overlayManager.add(regionBorderOverlay);
+		overlayManager.add(groundMarkerOverlay);
+		overlayManager.add(groundMarkerMinimapOverlay);
+		itemOverlay.invalidateCache();
+	}
+
+	private void removeOverlays()
+	{
+		overlayManager.remove(dateOverlay);
+		overlayManager.remove(itemOverlay);
+		overlayManager.remove(regionLockerOverlay);
+		overlayManager.remove(regionBorderOverlay);
+		overlayManager.remove(groundMarkerOverlay);
+		overlayManager.remove(groundMarkerMinimapOverlay);
+
+		itemOverlay.invalidateCache();
 	}
 
 	@Subscribe
@@ -344,7 +350,4 @@ public class ByReleasePlugin extends Plugin
 		Type defMapType = new TypeToken<HashMap<Integer, ByReleaseItem>>() {}.getType();
 		ByReleaseItem.itemDefinitions = loadDefinitionResource(defMapType, "combined_items.json");
 	}
-
-
-
 }

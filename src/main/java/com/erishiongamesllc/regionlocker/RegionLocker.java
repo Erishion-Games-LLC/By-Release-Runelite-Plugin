@@ -25,14 +25,13 @@
 package com.erishiongamesllc.regionlocker;
 
 import com.erishiongamesllc.byrelease.ByReleaseConfig;
-import com.erishiongamesllc.byrelease.data.ByReleaseRegions;
 import java.awt.Color;
 import java.util.*;
 
 public class RegionLocker
 {
 	private final ByReleaseConfig config;
-	private static Set<Integer> releasedRegions = new HashSet<>(ByReleaseRegions.RSC_RELEASE_010104.getRegions());
+	private static Set<Integer> releasedRegions = new HashSet<>(Regions.RSC_RELEASE_010104.getRegions());
 
 	public static boolean renderLockedRegions;
 	public static Color grayColor = new Color(0, 31, 77, 204);
@@ -56,7 +55,7 @@ public class RegionLocker
 	public static void updateReleasedRegions(int currentDate)
 	{
 		releasedRegions.clear();
-		for (ByReleaseRegions region : ByReleaseRegions.values())
+		for (Regions region : Regions.values())
 		{
 			if (region.getReleaseDate() <= currentDate)
 			{

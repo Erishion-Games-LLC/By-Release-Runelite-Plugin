@@ -35,7 +35,7 @@ import javax.inject.Inject;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 
-public class ByReleaseOverlay extends OverlayPanel
+public class ByReleaseDateOverlay extends OverlayPanel
 {
 	@Inject
 	private ByReleasePlugin plugin;

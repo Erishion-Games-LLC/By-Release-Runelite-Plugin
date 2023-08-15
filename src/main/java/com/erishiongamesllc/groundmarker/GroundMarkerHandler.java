@@ -99,6 +99,7 @@ public class GroundMarkerHandler
 				for (JsonElement pointElement : pointsArray)
 				{
 					GroundMarkerPoint point = new Gson().fromJson(pointElement, GroundMarkerPoint.class);
+					point.setLabel(String.valueOf(point.getRemovalDate()));
 					loadedPoints.add(point);
 				}
 			}

@@ -25,19 +25,18 @@
  */
 package com.erishiongamesllc.groundmarker;
 
-import javax.annotation.Nullable;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.Data;
+import lombok.Setter;
 
-@Value
-@EqualsAndHashCode(exclude = {"label"})
+@Data
 public class GroundMarkerPoint
 {
 	int regionId;
 	int regionX;
 	int regionY;
 	int z;
-	@Nullable
+
+	@Setter
 	String label;
 	int releaseDate;
 	int removalDate;

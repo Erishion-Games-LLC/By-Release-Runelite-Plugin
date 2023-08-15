@@ -23,7 +23,7 @@ public enum MenuOption
 	BANK("Bank"),
 	TALK_TO("Talk-to"),
 	COLLECT("Collect"),
-
+	TRADE("Trade"),
 
 	;
 

@@ -30,7 +30,6 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
-import net.runelite.client.config.Keybind;
 import net.runelite.client.config.Range;
 
 @ConfigGroup(ByReleasePlugin.CONFIG_GROUP)
@@ -70,15 +69,28 @@ public interface ByReleaseConfig extends Config
 
 	@ConfigItem
 	(
-		keyName = "enableAnvils",
+		keyName = "filterAnvils",
 		name = "Filter anvils by release date",
 		description = "limit anvils available based on release date",
 		section = releaseSettings
 	)
-	default boolean enableAnvils()
+	default boolean filterAnvils()
 	{
 		return true;
 	}
+
+	@ConfigItem
+	(
+		keyName = "filterShops",
+		name = "Filter shops by release date",
+		description = "",
+		section = releaseSettings
+	)
+	default boolean filterShops()
+	{
+		return true;
+	}
+
 
 	@ConfigItem
 	(
@@ -94,24 +106,24 @@ public interface ByReleaseConfig extends Config
 
 	@ConfigItem
 	(
-		keyName = "enableFurnaces",
+		keyName = "filterFurnaces",
 		name = "Filter furnces by release date",
 		description = "limit furnaces available based on release date",
 		section = releaseSettings
 	)
-	default boolean enableFurnces()
+	default boolean filterFurnaces()
 	{
 		return true;
 	}
 
 	@ConfigItem
 	(
-		keyName = "enableDiaryTeleports",
+		keyName = "filterDiaryTeleports",
 		name = "Enable diary teleports",
 		description = "limit diary teleports based on release date",
 		section = releaseSettings
 	)
-	default boolean enableDiaryTeleports()
+	default boolean filterDiaryTeleports()
 	{
 		return true;
 	}
@@ -139,6 +151,10 @@ public interface ByReleaseConfig extends Config
 	{
 		return 20010104;
 	}
+
+
+
+
 
 
 

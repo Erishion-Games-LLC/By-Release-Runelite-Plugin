@@ -1,27 +1,89 @@
 {
-    "20010104": [{
-        "regionId": 12954,
-        "regionX": 10,
-        "regionY": 44,
-        "z": 0,
-        "releaseDate": 20010104,
-        "removalDate": 20010105
-    },
+    "20010104":
+    [
       {
-        "regionId": 12954,
-        "regionX": 10,
-        "regionY": 45,
+        "regionId": 12597,
+        "regionX": 46,
+        "regionY": 40,
         "z": 0,
         "releaseDate": 20010104,
-        "removalDate": 20010105
+        "removalDate": 20010123,
+        "comment": "Varrock west bank south door"
+      },
+      {
+        "regionId": 12597,
+        "regionX": 47,
+        "regionY": 40,
+        "z": 0,
+        "releaseDate": 20010104,
+        "removalDate": 20010123,
+        "comment": "Varrock west bank south door"
+      },
+      {
+        "regionId": 12597,
+        "regionX": 47,
+        "regionY": 56,
+        "z": 0,
+        "releaseDate": 20010104,
+        "removalDate": 20010123,
+        "comment": "Varrock west bank north door"
+      },
+      {
+        "regionId": 12597,
+        "regionX": 46,
+        "regionY": 56,
+        "z": 0,
+        "releaseDate": 20010104,
+        "removalDate": 20010123,
+        "comment": "Varrock west bank north door"
+      },
+      {
+        "regionId": 12597,
+        "regionX": 52,
+        "regionY": 34,
+        "z": 0,
+        "releaseDate": 20010104,
+        "removalDate": 20010123,
+        "comment": "Varrock west anvils"
+      },
+      {
+        "regionId": 12597,
+        "regionX": 52,
+        "regionY": 32,
+        "z": 0,
+        "releaseDate": 20010104,
+        "removalDate": 20010123,
+        "comment": "Varrock west anvils"
+      },
+      {
+        "regionId": 12597,
+        "regionX": 52,
+        "regionY": 30,
+        "z": 0,
+        "releaseDate": 20010104,
+        "removalDate": 20010123,
+        "comment": "Varrock west anvils"
+      },
+      {
+        "regionId": 12596,
+        "regionX": 55,
+        "regionY": 35,
+        "z": 0,
+        "releaseDate": 20010104,
+        "removalDate": 20010213,
+        "comment": "Champions guild entrance"
       }
     ],
-    "20010105": [{
+    "20010105":
+    [
+      {
         "regionId": 12954,
         "regionX": 10,
         "regionY": 43,
         "z": 0,
         "releaseDate": 20010105,
-        "removalDate": 20010106
-    }]
+        "removalDate": 20010106,
+        "comment": ""
+      }
+    ]
 }

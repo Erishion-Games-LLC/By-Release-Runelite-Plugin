@@ -8,6 +8,7 @@ import com.erishiongamesllc.byrelease.data.ByReleaseFurnace;
 import com.erishiongamesllc.byrelease.data.ByReleaseInfo;
 import com.erishiongamesllc.byrelease.data.ByReleaseItem;
 import com.erishiongamesllc.byrelease.data.ByReleasePrayer;
+import com.erishiongamesllc.byrelease.data.ByReleaseShop;
 import com.erishiongamesllc.byrelease.data.ByReleaseStandardSpell;
 import com.erishiongamesllc.byrelease.data.ByReleaseTree;
 import com.erishiongamesllc.byrelease.data.MenuOption;
@@ -55,6 +56,10 @@ public class MenuOptionClickedHandler
 
 		switch (option)
 		{
+			case TRADE:
+				handleTrade();
+				break;
+
 			case COLLECT:
 			case BANK:
 				handleBank();
@@ -124,6 +129,21 @@ public class MenuOptionClickedHandler
 		}
 	}
 
+	private void handleTrade()
+	{
+		int currentDate = byReleasePlugin.getCurrentDate();
+
+		for (ByReleaseShop shop : ByReleaseShop.values())
+		{
+			if (shop.getOwner().equals(menuTarget) && shop.getReleaseDate() > currentDate)
+			{
+				menuOptionClicked.consume();
+				createUnavailableMessage();
+				break;
+			}
+		}
+	}
+
 	private void handleOpen()
 	{
 		if (menuTarget.equals("Map"))
@@ -174,7 +194,10 @@ public class MenuOptionClickedHandler
 		if (menuTarget.equals("Banker"))
 		{
 			handleBank();
+			return;
 		}
+		//make a collection of every shop owner name and say if menuTarget is in that collection, then handle trade
+		handleTrade();
 	}
 
 	private void handlePickupOrDrop() throws ParseException
@@ -255,7 +278,7 @@ public class MenuOptionClickedHandler
 
 	private void handleAlternateDiaryTeleports()
 	{
-		if (!config.enableDiaryTeleports())
+		if (!config.filterDiaryTeleports())
 		{
 			return;
 		}
@@ -273,7 +296,7 @@ public class MenuOptionClickedHandler
 
 	private void handleSmelt()
 	{
-		if (menuTarget.equals("Furnace") && config.enableFurnces())
+		if (menuTarget.equals("Furnace") && config.filterFurnaces())
 		{
 			final Tile tile = client.getScene().getTiles()[client.getPlane()][menuOptionClicked.getParam0()][menuOptionClicked.getParam1()];
 			final WorldPoint location = tile.getWorldLocation();
@@ -308,7 +331,7 @@ public class MenuOptionClickedHandler
 
 	private void handleSmith()
 	{
-		if (menuTarget.equals("Anvil") && config.enableAnvils())
+		if (menuTarget.equals("Anvil") && config.filterAnvils())
 		{
 			final Tile tile = client.getScene().getTiles()[client.getPlane()][menuOptionClicked.getParam0()][menuOptionClicked.getParam1()];
 			final WorldPoint location = tile.getWorldLocation();

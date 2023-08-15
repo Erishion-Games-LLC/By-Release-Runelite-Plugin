@@ -69,6 +69,7 @@ public class MenuOptionClickedHandler
 				handleTalkTo();
 				break;
 
+			case CLIMB_DOWN:
 			case OPEN:
 				handleOpen();
 				break;

@@ -130,7 +130,7 @@ public class GroundMarkerHandler
 	private ColorTileMarker translateToColorTileMarker(GroundMarkerPoint point)
 	{
 		return new ColorTileMarker(WorldPoint.fromRegion(point.getRegionId(), point.getRegionX(), point.getRegionY(), point.getZ()),
-			Color.RED, point.getLabel(), point.getReleaseDate(), point.getRemovalDate());
+			Color.RED, point.getLabel(), point.getRemovalDate());
 	}
 
 	public void clearPoints()
@@ -155,7 +155,7 @@ public class GroundMarkerHandler
 			{
 				for (ColorTileMarker point : regionPoints)
 				{
-					if (point.getReleaseDate() <= currentDate && point.getRemovalDate() > currentDate)
+					if (point.getRemovalDate() > currentDate)
 					{
 						filteredPoints.add(point);
 					}

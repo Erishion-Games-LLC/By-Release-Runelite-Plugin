@@ -33,6 +33,11 @@ import lombok.Getter;
 public enum ByReleaseShop implements ByReleaseInfo
 {
 	SCAVVO_RUNE_STORE(20010726, "Scavvo"),
+	FORTUNATO(20060410, "Fortunato"),
+	DIANGO(20040401, "Diango"),
+	DRAYNOR_SEED_MARKET(20050606, "Olivia"),
+
+
 	;
 
 	private final int releaseDate;

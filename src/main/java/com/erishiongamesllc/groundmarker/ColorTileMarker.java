@@ -38,6 +38,5 @@ public class ColorTileMarker
 	Color color;
 	@Nullable
 	String label;
-	int releaseDate;
 	int removalDate;
 }

@@ -38,6 +38,5 @@ public class GroundMarkerPoint
 
 	@Setter
 	String label;
-	int releaseDate;
 	int removalDate;
 }

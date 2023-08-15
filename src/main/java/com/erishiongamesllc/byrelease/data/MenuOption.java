@@ -24,6 +24,7 @@ public enum MenuOption
 	TALK_TO("Talk-to"),
 	COLLECT("Collect"),
 	TRADE("Trade"),
+	CLIMB_DOWN("Climb-down"),
 
 	;
 

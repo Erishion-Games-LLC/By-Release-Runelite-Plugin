@@ -1,89 +1,247 @@
 {
-    "20010104":
-    [
-      {
-        "regionId": 12597,
-        "regionX": 46,
-        "regionY": 40,
-        "z": 0,
-        "releaseDate": 20010104,
-        "removalDate": 20010123,
-        "comment": "Varrock west bank south door"
-      },
-      {
-        "regionId": 12597,
-        "regionX": 47,
-        "regionY": 40,
-        "z": 0,
-        "releaseDate": 20010104,
-        "removalDate": 20010123,
-        "comment": "Varrock west bank south door"
-      },
-      {
-        "regionId": 12597,
-        "regionX": 47,
-        "regionY": 56,
-        "z": 0,
-        "releaseDate": 20010104,
-        "removalDate": 20010123,
-        "comment": "Varrock west bank north door"
-      },
-      {
-        "regionId": 12597,
-        "regionX": 46,
-        "regionY": 56,
-        "z": 0,
-        "releaseDate": 20010104,
-        "removalDate": 20010123,
-        "comment": "Varrock west bank north door"
-      },
-      {
-        "regionId": 12597,
-        "regionX": 52,
-        "regionY": 34,
-        "z": 0,
-        "releaseDate": 20010104,
-        "removalDate": 20010123,
-        "comment": "Varrock west anvils"
-      },
-      {
-        "regionId": 12597,
-        "regionX": 52,
-        "regionY": 32,
-        "z": 0,
-        "releaseDate": 20010104,
-        "removalDate": 20010123,
-        "comment": "Varrock west anvils"
-      },
-      {
-        "regionId": 12597,
-        "regionX": 52,
-        "regionY": 30,
-        "z": 0,
-        "releaseDate": 20010104,
-        "removalDate": 20010123,
-        "comment": "Varrock west anvils"
-      },
-      {
-        "regionId": 12596,
-        "regionX": 55,
-        "regionY": 35,
-        "z": 0,
-        "releaseDate": 20010104,
-        "removalDate": 20010213,
-        "comment": "Champions guild entrance"
-      }
-    ],
-    "20010105":
-    [
-      {
-        "regionId": 12954,
-        "regionX": 10,
-        "regionY": 43,
-        "z": 0,
-        "releaseDate": 20010105,
-        "removalDate": 20010106,
-        "comment": ""
-      }
-    ]
+  "12597":
+  [
+    {
+      "regionId": 12597,
+      "regionX": 46,
+      "regionY": 40,
+      "z": 0,
+      "removalDate": 20010123,
+      "comment": "Varrock west bank south door"
+    },
+    {
+      "regionId": 12597,
+      "regionX": 47,
+      "regionY": 40,
+      "z": 0,
+      "removalDate": 20010123,
+      "comment": "Varrock west bank south door"
+    },
+    {
+      "regionId": 12597,
+      "regionX": 47,
+      "regionY": 56,
+      "z": 0,
+      "removalDate": 20010123,
+      "comment": "Varrock west bank north door"
+    },
+    {
+      "regionId": 12597,
+      "regionX": 46,
+      "regionY": 56,
+      "z": 0,
+      "removalDate": 20010123,
+      "comment": "Varrock west bank north door"
+    },
+    {
+      "regionId": 12597,
+      "regionX": 52,
+      "regionY": 34,
+      "z": 0,
+      "removalDate": 20010123,
+      "comment": "Varrock west anvils"
+    },
+    {
+      "regionId": 12597,
+      "regionX": 52,
+      "regionY": 32,
+      "z": 0,
+      "removalDate": 20010123,
+      "comment": "Varrock west anvils"
+    },
+    {
+      "regionId": 12597,
+      "regionX": 52,
+      "regionY": 30,
+      "z": 0,
+      "removalDate": 20010123,
+      "comment": "Varrock west anvils"
+    }
+  ],
+  "12596":
+  [
+    {
+      "regionId": 12596,
+      "regionX": 55,
+      "regionY": 35,
+      "z": 0,
+      "removalDate": 20010213,
+      "comment": "Champions guild entrance"
+    }
+  ],
+  "12340":
+  [
+    {
+      "regionId": 12340,
+      "regionX": 36,
+      "regionY": 25,
+      "z": 0,
+      "removalDate": 20010121,
+      "comment": "Draynor Manor Entrance"
+    },
+    {
+      "regionId": 12340,
+      "regionX": 37,
+      "regionY": 25,
+      "z": 0,
+      "removalDate": 20010121,
+      "comment": "Draynor Manor Entrance"
+    }
+  ],
+  "12338":
+  [
+    {
+      "regionId": 12338,
+      "regionX": 20,
+      "regionY": 47,
+      "z": 0,
+      "removalDate": 20010818,
+      "comment": "Draynor bank"
+    },
+    {
+      "regionId": 12338,
+      "regionX": 21,
+      "regionY": 47,
+      "z": 0,
+      "removalDate": 20010818,
+      "comment": "Draynor bank"
+    }
+  ],
+  "12954":
+  [
+    {
+      "regionId": 12954,
+      "regionX": 10,
+      "regionY": 43,
+      "z": 0,
+      "removalDate": 20010205,
+      "comment": "Varrock Sewer expansion"
+    }
+  ],
+  "12084":
+  [
+    {
+      "regionId": 12084,
+      "regionX": 4,
+      "regionY": 31,
+      "z": 0,
+      "removalDate": 20011208,
+      "comment": "Falador east bank"
+    },
+    {
+      "regionId": 12084,
+      "regionX": 5,
+      "regionY": 31,
+      "z": 0,
+      "removalDate": 20011208,
+      "comment": "Falador east bank"
+    },
+    {
+      "regionId": 12084,
+      "regionX": 12,
+      "regionY": 11,
+      "z": 0,
+      "removalDate": 20010813,
+      "comment": "Falador mining guild ladder"
+    },
+    {
+      "regionId": 12084,
+      "regionX": 10,
+      "regionY": 11,
+      "z": 0,
+      "removalDate": 20010813,
+      "comment": "Falador mining guild ladder"
+    },
+    {
+      "regionId": 12084,
+      "regionX": 11,
+      "regionY": 12,
+      "z": 0,
+      "removalDate": 20010813,
+      "comment": "Falador mining guild ladder"
+    },
+    {
+      "regionId": 12084,
+      "regionX": 11,
+      "regionY": 10,
+      "z": 0,
+      "removalDate": 20010813,
+      "comment": "Falador mining guild ladder"
+    },
+    {
+      "regionId": 12084,
+      "regionX": 53,
+      "regionY": 48,
+      "z": 0,
+      "removalDate": 20021114,
+      "comment": "Falador mines stairs"
+    }
+  ],
+  "12184":
+  [
+    {
+      "regionId": 12184,
+      "regionX": 38,
+      "regionY": 29,
+      "z": 0,
+      "removalDate": 20010813,
+      "comment": "Mining guild door"
+    },
+    {
+      "regionId": 12184,
+      "regionX": 32,
+      "regionY": 8,
+      "z": 0,
+      "removalDate": 20170622,
+      "comment": "Mining guild ore"
+    },
+    {
+      "regionId": 12184,
+      "regionX": 26,
+      "regionY": 4,
+      "z": 0,
+      "removalDate": 20170622,
+      "comment": "Mining guild ore"
+    },
+    {
+      "regionId": 12184,
+      "regionX": 24,
+      "regionY": 11,
+      "z": 0,
+      "removalDate": 20170622,
+      "comment": "Mining guild ore"
+    },
+    {
+      "regionId": 12184,
+      "regionX": 24,
+      "regionY": 9,
+      "z": 0,
+      "removalDate": 20170622,
+      "comment": "Mining guild ore"
+    },
+    {
+      "regionId": 12184,
+      "regionX": 25,
+      "regionY": 9,
+      "z": 0,
+      "removalDate": 20170622,
+      "comment": "Mining guild ore"
+    },
+    {
+      "regionId": 12184,
+      "regionX": 26,
+      "regionY": 10,
+      "z": 0,
+      "removalDate": 20170622,
+      "comment": "Mining guild ore"
+    },
+    {
+      "regionId": 12184,
+      "regionX": 50,
+      "regionY": 48,
+      "z": 0,
+      "removalDate": 20021114,
+      "comment": "Mining guild stairs"
+    }
+  ]
 }

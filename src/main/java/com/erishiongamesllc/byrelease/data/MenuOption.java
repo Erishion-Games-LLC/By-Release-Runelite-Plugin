@@ -25,6 +25,7 @@ public enum MenuOption
 	COLLECT("Collect"),
 	TRADE("Trade"),
 	CLIMB_DOWN("Climb-down"),
+	USE("Use"),
 
 	;
 

@@ -13,7 +13,10 @@ import com.erishiongamesllc.byrelease.data.ByReleaseStandardSpell;
 import com.erishiongamesllc.byrelease.data.ByReleaseTree;
 import com.erishiongamesllc.byrelease.data.MenuOption;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import javax.inject.Inject;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -25,6 +28,14 @@ import net.runelite.client.util.Text;
 
 public class MenuOptionClickedHandler
 {
+	/* things to filter
+	all things in skills
+	ores in the world
+	shops
+	people you can talk to i.e. slayer masters
+	entrances i.e. doors, caves. only places that actually matter
+	*/
+
 	@Inject
 	private ByReleasePlugin byReleasePlugin;
 	@Inject
@@ -38,6 +49,9 @@ public class MenuOptionClickedHandler
 	private MenuOptionClicked menuOptionClicked;
 	private String menuTarget;
 	private MenuOption option;
+
+	private Set<String> bankerTypes = new HashSet<>(Arrays.asList("Banker", "Banker tutor", "Fadli"));
+	private Set<String> roamingBankers = new HashSet<>(Arrays.asList("Fadli"));
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked clicked) throws ParseException
@@ -56,6 +70,10 @@ public class MenuOptionClickedHandler
 
 		switch (option)
 		{
+			case USE:
+				handleUse();
+				break;
+
 			case TRADE:
 				handleTrade();
 				break;
@@ -130,6 +148,14 @@ public class MenuOptionClickedHandler
 		}
 	}
 
+	private void handleUse()
+	{
+		if (menuTarget.contains("Bank"))
+		{
+			handleBank();
+		}
+	}
+
 	private void handleTrade()
 	{
 		int currentDate = byReleasePlugin.getCurrentDate();
@@ -168,9 +194,19 @@ public class MenuOptionClickedHandler
 
 	private void handleBank()
 	{
+		int currentDate = byReleasePlugin.getCurrentDate();
 		WorldPoint location;
-		if (menuTarget.equals("Banker"))
+		if (bankerTypes.contains(menuTarget))
 		{
+			if (roamingBankers.contains(menuTarget))
+			{
+				if (menuTarget.equals("Fadli") && currentDate < 20040325)
+				{
+					menuOptionClicked.consume();
+					createUnavailableTileObjectMessage(ByReleaseBank.ARENA_BANKER_1);
+					return;
+				}
+			}
 			location = Objects.requireNonNull(menuOptionClicked.getMenuEntry().getNpc()).getWorldLocation();
 		}
 		else
@@ -181,7 +217,7 @@ public class MenuOptionClickedHandler
 
 		for (ByReleaseBank bank : ByReleaseBank.values())
 		{
-			if (location.equals(bank.getLocation()) && bank.getReleaseDate() > byReleasePlugin.getCurrentDate())
+			if (location.equals(bank.getLocation()) && bank.getReleaseDate() > currentDate)
 			{
 				menuOptionClicked.consume();
 				createUnavailableTileObjectMessage(bank);
@@ -192,7 +228,7 @@ public class MenuOptionClickedHandler
 
 	private void handleTalkTo()
 	{
-		if (menuTarget.equals("Banker"))
+		if (bankerTypes.contains(menuTarget))
 		{
 			handleBank();
 			return;

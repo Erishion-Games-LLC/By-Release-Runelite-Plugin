@@ -23,20 +23,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.erishiongamesllc.groundmarker;
+package com.erishiongamesllc.groundmarkers;
 
-import lombok.Data;
-import lombok.Setter;
+import java.awt.Color;
+import javax.annotation.Nullable;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 
-@Data
-public class GroundMarkerPoint
+/**
+ * Used for serialization of ground marker points.
+ */
+@Value
+@EqualsAndHashCode(exclude = { "color", "label" })
+class GroundMarkerPoint
 {
-	int regionId;
-	int regionX;
-	int regionY;
-	int z;
-
-	@Setter
-	String label;
-	int removalDate;
+	private int regionId;
+	private int regionX;
+	private int regionY;
+	private int z;
+	@Nullable
+	private Color color;
+	@Nullable
+	private String label;
 }

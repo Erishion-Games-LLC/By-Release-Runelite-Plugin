@@ -24,9 +24,9 @@
  */
 package com.erishiongamesllc.byrelease;
 
-import com.erishiongamesllc.groundmarker.GroundMarkerHandler;
-import com.erishiongamesllc.groundmarker.GroundMarkerMinimapOverlay;
-import com.erishiongamesllc.groundmarker.GroundMarkerOverlay;
+//import com.erishiongamesllc.groundmarkers.GroundMarkerHandler;
+//import com.erishiongamesllc.groundmarkers.GroundMarkerMinimapOverlay;
+//import com.erishiongamesllc.groundmarkers.GroundMarkerOverlay;
 import static com.erishiongamesllc.byrelease.ByReleasePlugin.PLUGIN_NAME;
 import com.erishiongamesllc.byrelease.data.ByReleaseItem;
 import com.erishiongamesllc.byrelease.data.ByReleaseQuest;
@@ -63,7 +63,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 @Slf4j
 @PluginDescriptor
 	(
-	name = PLUGIN_NAME
+		name = PLUGIN_NAME
 	)
 public class ByReleasePlugin extends Plugin
 {
@@ -84,15 +84,15 @@ public class ByReleasePlugin extends Plugin
 	private RegionLockerOverlay regionLockerOverlay;
 	@Inject
 	private RegionBorderOverlay regionBorderOverlay;
-	@Inject
-	private GroundMarkerOverlay groundMarkerOverlay;
-	@Inject
-	private GroundMarkerMinimapOverlay groundMarkerMinimapOverlay;
+//	@Inject
+//	private GroundMarkerOverlay groundMarkerOverlay;
+//	@Inject
+//	private GroundMarkerMinimapOverlay groundMarkerMinimapOverlay;
 
 	@Inject
 	private MenuOptionClickedHandler menuOptionClickedHandler;
-	@Inject
-	private GroundMarkerHandler groundMarkerHandler;
+//	@Inject
+//	private GroundMarkerHandler groundMarkerHandler;
 	@Inject
 	private WidgetHandler widgetHandler;
 	@Inject
@@ -121,9 +121,9 @@ public class ByReleasePlugin extends Plugin
 
 		eventBus.register(menuOptionClickedHandler);
 		eventBus.register(widgetHandler);
-		eventBus.register(groundMarkerHandler);
-
-		groundMarkerHandler.loadPoints();
+//		eventBus.register(groundMarkerHandler);
+//
+//		groundMarkerHandler.loadPoints();
 
 		addOverlays();
 	}
@@ -133,7 +133,7 @@ public class ByReleasePlugin extends Plugin
 	{
 		eventBus.unregister(menuOptionClickedHandler);
 		eventBus.unregister(widgetHandler);
-		eventBus.unregister(groundMarkerHandler);
+//		eventBus.unregister(groundMarkerHandler);
 
 		removeOverlays();
 
@@ -147,7 +147,7 @@ public class ByReleasePlugin extends Plugin
 		clientThread.invokeLater(widgetHandler::restoreDefaultPrayerWidgets);
 //		clientThread.invokeLater(this::restoreDefaultSpellWidgets);
 
-		groundMarkerHandler.clearPoints();
+//		groundMarkerHandler.clearPoints();
 	}
 
 	private void addOverlays()
@@ -156,8 +156,8 @@ public class ByReleasePlugin extends Plugin
 		overlayManager.add(itemOverlay);
 		overlayManager.add(regionLockerOverlay);
 		overlayManager.add(regionBorderOverlay);
-		overlayManager.add(groundMarkerOverlay);
-		overlayManager.add(groundMarkerMinimapOverlay);
+//		overlayManager.add(groundMarkerOverlay);
+//		overlayManager.add(groundMarkerMinimapOverlay);
 		itemOverlay.invalidateCache();
 	}
 
@@ -167,8 +167,8 @@ public class ByReleasePlugin extends Plugin
 		overlayManager.remove(itemOverlay);
 		overlayManager.remove(regionLockerOverlay);
 		overlayManager.remove(regionBorderOverlay);
-		overlayManager.remove(groundMarkerOverlay);
-		overlayManager.remove(groundMarkerMinimapOverlay);
+//		overlayManager.remove(groundMarkerOverlay);
+//		overlayManager.remove(groundMarkerMinimapOverlay);
 
 		itemOverlay.invalidateCache();
 	}
@@ -284,7 +284,7 @@ public class ByReleasePlugin extends Plugin
 		{
 			byReleaseQuest.setQuestState
 				(
-				byReleaseQuest.getQuest().getState(client)
+					byReleaseQuest.getQuest().getState(client)
 				);
 		}
 	}

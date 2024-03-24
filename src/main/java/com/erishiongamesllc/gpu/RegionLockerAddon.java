@@ -13,8 +13,7 @@ public class RegionLockerAddon
 	private Client client;
 
 	private static final int LOCKED_REGIONS_SIZE = 16;
-	private final int[] loadedLockedRegions = new int[LOCKED_REGIONS_SIZE];
-	private int uniUseGray;
+	private final int[] loadedLockedRegions = new int[LOCKED_REGIONS_SIZE];	private int uniUseGray;
 	private int uniUseHardBorder;
 	private int uniGrayAmount;
 	private int uniGrayColor;
@@ -48,21 +47,6 @@ public class RegionLockerAddon
 		return false;
 	}
 
-	public void beforeDrawRegionLockerGpu() {
-		GL43C.glUniform1i(uniUseHardBorder, RegionLocker.hardBorder ? 1 : 0);
-		GL43C.glUniform1f(uniGrayAmount, RegionLocker.grayAmount / 255f);
-		GL43C.glUniform4f(uniGrayColor, RegionLocker.grayColor.getRed() / 255f, RegionLocker.grayColor.getGreen() / 255f, RegionLocker.grayColor.getBlue() / 255f, RegionLocker.grayColor.getAlpha() / 255f);
-		if (!RegionLocker.renderLockedRegions || (client.isInInstancedRegion() && instanceRegionUnlocked()))
-		{
-			GL43C.glUniform1i(uniUseGray, 0);
-		}
-		else
-		{
-			GL43C.glUniform1i(uniUseGray, 1);
-			initRegionLockerGpu();
-		}
-	}
-
 	private void initRegionLockerGpu()
 	{
 		int bx, by;
@@ -87,5 +71,20 @@ public class RegionLockerAddon
 		GL43C.glUniform1i(uniBaseX, bx);
 		GL43C.glUniform1i(uniBaseY, by);
 		GL43C.glUniform1iv(uniLockedRegions, loadedLockedRegions);
+	}
+
+	public void beforeDrawRegionLockerGpu() {
+		GL43C.glUniform1i(uniUseHardBorder, RegionLocker.hardBorder ? 1 : 0);
+		GL43C.glUniform1f(uniGrayAmount, RegionLocker.grayAmount / 255f);
+		GL43C.glUniform4f(uniGrayColor, RegionLocker.grayColor.getRed() / 255f, RegionLocker.grayColor.getGreen() / 255f, RegionLocker.grayColor.getBlue() / 255f, RegionLocker.grayColor.getAlpha() / 255f);
+		if (!RegionLocker.renderLockedRegions || (client.isInInstancedRegion() && instanceRegionUnlocked()))
+		{
+			GL43C.glUniform1i(uniUseGray, 0);
+		}
+		else
+		{
+			GL43C.glUniform1i(uniUseGray, 1);
+			initRegionLockerGpu();
+		}
 	}
 }

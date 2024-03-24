@@ -50,8 +50,8 @@ public class MenuOptionClickedHandler
 	private String menuTarget;
 	private MenuOption option;
 
-	private Set<String> bankerTypes = new HashSet<>(Arrays.asList("Banker", "Banker tutor", "Fadli"));
-	private Set<String> roamingBankers = new HashSet<>(Arrays.asList("Fadli"));
+	private final Set<String> bankerTypes = new HashSet<>(Arrays.asList("Banker", "Banker tutor", "Fadli"));
+	private final Set<String> roamingBankers = new HashSet<>(Arrays.asList("Fadli"));
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked clicked) throws ParseException

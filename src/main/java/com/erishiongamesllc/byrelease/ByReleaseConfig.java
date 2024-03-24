@@ -36,56 +36,56 @@ import net.runelite.client.config.Range;
 public interface ByReleaseConfig extends Config
 {
 	@ConfigSection
-	(
-		name = "By Release Settings",
-		description = "Configure your playstyle",
-		position = -1
-	)
+		(
+			name = "By Release Settings",
+			description = "Configure your playstyle",
+			position = -1
+		)
 	String releaseSettings = "releaseSettings";
 
 	@ConfigItem
-	(
-		keyName = "spellsFromInitialRSC",
-		name = "Enable spells from initial RSC Spells",
-		description = "Spellbook was reworked on 24 May 2001. Mark this true to enable corrosponding magic, if not you can't use any spells until 24 May 2001",
-		section = releaseSettings
-	)
+		(
+			keyName = "spellsFromInitialRSC",
+			name = "Enable spells from initial RSC Spells",
+			description = "Spellbook was reworked on 24 May 2001. Mark this true to enable corrosponding magic, if not you can't use any spells until 24 May 2001",
+			section = releaseSettings
+		)
 	default boolean spellsFromInitialRSC()
 	{
 		return true;
 	}
 
 	@ConfigItem
-	(
-		keyName = "prayersFromMagicRSC",
-		name = "Enable prayers from initial RSC Spells",
-		description = "Prayers did not exist until 24 May 2001. The original spellbook had spells that are equivalent to these prayers.",
-		section = releaseSettings
-	)
+		(
+			keyName = "prayersFromMagicRSC",
+			name = "Enable prayers from initial RSC Spells",
+			description = "Prayers did not exist until 24 May 2001. The original spellbook had spells that are equivalent to these prayers.",
+			section = releaseSettings
+		)
 	default boolean prayersFromMagicRSC()
 	{
 		return true;
 	}
 
 	@ConfigItem
-	(
-		keyName = "filterAnvils",
-		name = "Filter anvils by release date",
-		description = "limit anvils available based on release date",
-		section = releaseSettings
-	)
+		(
+			keyName = "filterAnvils",
+			name = "Filter anvils by release date",
+			description = "limit anvils available based on release date",
+			section = releaseSettings
+		)
 	default boolean filterAnvils()
 	{
 		return true;
 	}
 
 	@ConfigItem
-	(
-		keyName = "filterShops",
-		name = "Filter shops by release date",
-		description = "",
-		section = releaseSettings
-	)
+		(
+			keyName = "filterShops",
+			name = "Filter shops by release date",
+			description = "",
+			section = releaseSettings
+		)
 	default boolean filterShops()
 	{
 		return true;
@@ -93,60 +93,60 @@ public interface ByReleaseConfig extends Config
 
 
 	@ConfigItem
-	(
-		keyName = "allowPickup",
-		name = "Enable pickup/withdraw",
-		description = "Allow you to pickup and withdraw items that are not released yet for future use",
-		section = releaseSettings
-	)
+		(
+			keyName = "allowPickup",
+			name = "Enable pickup/withdraw",
+			description = "Allow you to pickup and withdraw items that are not released yet for future use",
+			section = releaseSettings
+		)
 	default boolean allowPickup()
 	{
 		return true;
 	}
 
 	@ConfigItem
-	(
-		keyName = "filterFurnaces",
-		name = "Filter furnces by release date",
-		description = "limit furnaces available based on release date",
-		section = releaseSettings
-	)
+		(
+			keyName = "filterFurnaces",
+			name = "Filter furnces by release date",
+			description = "limit furnaces available based on release date",
+			section = releaseSettings
+		)
 	default boolean filterFurnaces()
 	{
 		return true;
 	}
 
 	@ConfigItem
-	(
-		keyName = "filterDiaryTeleports",
-		name = "Enable diary teleports",
-		description = "limit diary teleports based on release date",
-		section = releaseSettings
-	)
+		(
+			keyName = "filterDiaryTeleports",
+			name = "Enable diary teleports",
+			description = "limit diary teleports based on release date",
+			section = releaseSettings
+		)
 	default boolean filterDiaryTeleports()
 	{
 		return true;
 	}
 
 	@ConfigItem
-	(
-		keyName = "overrideDate",
-		name = "Override Date",
-		description = "",
-		section = releaseSettings
-	)
+		(
+			keyName = "overrideDate",
+			name = "Override Date",
+			description = "",
+			section = releaseSettings
+		)
 	default boolean overrideDate()
 	{
 		return true;
 	}
 
 	@ConfigItem
-	(
-		keyName = "date",
-		name = "date",
-		description = "",
-		section = releaseSettings
-	)
+		(
+			keyName = "date",
+			name = "date",
+			description = "",
+			section = releaseSettings
+		)
 	default int date()
 	{
 		return 20010104;
@@ -161,50 +161,59 @@ public interface ByReleaseConfig extends Config
 
 
 
+
+
+
+
+
+
+
+
+
 	//Ground Marker Settings
 	@ConfigSection
-	(
-		name = "Ground Tile Looks",
-		description = "Settings relating to ground tiles",
-		position = 0
-	)
+		(
+			name = "Ground Tile Looks",
+			description = "Settings relating to ground tiles",
+			position = 0
+		)
 	String tileSettings = "tileSettings";
 
 	@ConfigItem
-	(
-		keyName = "borderWidth",
-		name = "Border Width",
-		description = "Width of the marked tile border",
-		section = tileSettings
-	)
+		(
+			keyName = "borderWidth",
+			name = "Border Width",
+			description = "Width of the marked tile border",
+			section = tileSettings
+		)
 	default double borderWidth()
 	{
 		return 2;
 	}
 
 	@ConfigItem
-	(
-		keyName = "drawOnMinimap",
-		name = "Draw tiles on minimap",
-		description = "Configures whether marked tiles should be drawn on minimap",
-		section = tileSettings
-	)
+		(
+			keyName = "drawOnMinimap",
+			name = "Draw tiles on minimap",
+			description = "Configures whether marked tiles should be drawn on minimap",
+			section = tileSettings
+		)
 	default boolean drawTileOnMinimmap()
 	{
 		return false;
 	}
 
 	@ConfigItem
-	(
-		keyName = "fillOpacity",
-		name = "Fill Opacity",
-		description = "Opacity of the tile fill color",
-		section = tileSettings
-	)
+		(
+			keyName = "fillOpacity",
+			name = "Fill Opacity",
+			description = "Opacity of the tile fill color",
+			section = tileSettings
+		)
 	@Range
-	(
-		max = 255
-	)
+		(
+			max = 255
+		)
 	default int fillOpacity()
 	{
 		return 50;
@@ -213,23 +222,38 @@ public interface ByReleaseConfig extends Config
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//Region Locker Settings
 	@ConfigSection
-	(
-		name = "Environment Looks",
-		description = "Settings relating to locked regions look",
-		position = 1
-	)
+		(
+			name = "Environment Looks",
+			description = "Settings relating to locked regions look",
+			position = 1
+		)
 	String environmentSettings = "environmentSettings";
 	// Environment Looks
 	@ConfigItem
-	(
-		keyName = "renderLockedRegions",
-		name = "Locked chunk shader",
-		description = "Adds graphical change to all chunk that are locked",
-		position = 21,
-		section = environmentSettings
-	)
+		(
+			keyName = "renderLockedRegions",
+			name = "Locked chunk shader",
+			description = "Adds graphical change to all chunk that are locked",
+			position = 21,
+			section = environmentSettings
+		)
 	default boolean renderLockedRegions()
 	{
 		return true;
@@ -237,13 +261,13 @@ public interface ByReleaseConfig extends Config
 
 	@Alpha
 	@ConfigItem
-	(
-		keyName = "shaderGrayColor",
-		name = "Chunk shader color",
-		description = "The color of the locked chunks in the shader",
-		position = 22,
-		section = environmentSettings
-	)
+		(
+			keyName = "shaderGrayColor",
+			name = "Chunk shader color",
+			description = "The color of the locked chunks in the shader",
+			position = 22,
+			section = environmentSettings
+		)
 	default Color shaderGrayColor()
 	{
 		return new Color(0, 31, 77, 204);
@@ -251,52 +275,52 @@ public interface ByReleaseConfig extends Config
 
 	@Alpha
 	@ConfigItem
-	(
-		keyName = "shaderGrayAmount",
-		name = "Chunk shader opacity",
-		description = "The amount of gray scale that is applied to a locked chunk in the shader (alpha only)",
-		position = 23,
-		section = environmentSettings
-	)
+		(
+			keyName = "shaderGrayAmount",
+			name = "Chunk shader opacity",
+			description = "The amount of gray scale that is applied to a locked chunk in the shader (alpha only)",
+			position = 23,
+			section = environmentSettings
+		)
 	default Color shaderGrayAmount()
 	{
 		return new Color(0, 0, 0, 204);
 	}
 
 	@ConfigItem
-	(
-		keyName = "hardBorder",
-		name = "Hard chunk border",
-		description = "True = hard border cutoff, False = chunk border gradient",
-		position = 24,
-		section = environmentSettings
-	)
+		(
+			keyName = "hardBorder",
+			name = "Hard chunk border",
+			description = "True = hard border cutoff, False = chunk border gradient",
+			position = 24,
+			section = environmentSettings
+		)
 	default boolean hardBorder()
 	{
 		return true;
 	}
 
 	@ConfigItem
-	(
-		keyName = "renderRegionBorders",
-		name = "Draw chunk border lines",
-		description = "Draw the chunk borders in the environment marked by lines",
-		position = 25,
-		section = environmentSettings
-	)
+		(
+			keyName = "renderRegionBorders",
+			name = "Draw chunk border lines",
+			description = "Draw the chunk borders in the environment marked by lines",
+			position = 25,
+			section = environmentSettings
+		)
 	default boolean renderRegionBorders()
 	{
 		return false;
 	}
 
 	@ConfigItem
-	(
-		keyName = "regionBorderWidth",
-		name = "Chunk border width",
-		description = "How wide the region border will be",
-		position = 26,
-		section = environmentSettings
-	)
+		(
+			keyName = "regionBorderWidth",
+			name = "Chunk border width",
+			description = "How wide the region border will be",
+			position = 26,
+			section = environmentSettings
+		)
 	default int regionBorderWidth()
 	{
 		return 1;
@@ -304,13 +328,13 @@ public interface ByReleaseConfig extends Config
 
 	@Alpha
 	@ConfigItem
-	(
-		keyName = "regionBorderColor",
-		name = "Chunk border color",
-		description = "The color of the chunk borders",
-		position = 27,
-		section = environmentSettings
-	)
+		(
+			keyName = "regionBorderColor",
+			name = "Chunk border color",
+			description = "The color of the chunk borders",
+			position = 27,
+			section = environmentSettings
+		)
 	default Color regionBorderColor()
 	{
 		return new Color(0, 200, 83, 200);
@@ -326,13 +350,13 @@ public interface ByReleaseConfig extends Config
 	String mapSettings = "mapSettings";
 
 	@ConfigItem
-	(
-		keyName = "drawMapOverlay",
-		name = "Draw chunks on map",
-		description = "Draw a color overlay for each locked/unlocked chunk",
-		position = 28,
-		section = mapSettings
-	)
+		(
+			keyName = "drawMapOverlay",
+			name = "Draw chunks on map",
+			description = "Draw a color overlay for each locked/unlocked chunk",
+			position = 28,
+			section = mapSettings
+		)
 	default boolean drawMapOverlay()
 	{
 		return true;
@@ -340,39 +364,39 @@ public interface ByReleaseConfig extends Config
 
 	@Alpha
 	@ConfigItem
-	(
-		keyName = "mapOverlayColor",
-		name = "Map overlay color",
-		description = "The color the map overlay will draw the chunks in",
-		position = 30,
-		section = mapSettings
-	)
+		(
+			keyName = "mapOverlayColor",
+			name = "Map overlay color",
+			description = "The color the map overlay will draw the chunks in",
+			position = 30,
+			section = mapSettings
+		)
 	default Color mapOverlayColor()
 	{
 		return new Color(200, 16, 0, 100);
 	}
 
 	@ConfigItem
-	(
-		keyName = "drawMapGrid",
-		name = "Draw map grid",
-		description = "Draw the grid of chunks on the map",
-		position = 33,
-		section = mapSettings
-	)
+		(
+			keyName = "drawMapGrid",
+			name = "Draw map grid",
+			description = "Draw the grid of chunks on the map",
+			position = 33,
+			section = mapSettings
+		)
 	default boolean drawMapGrid()
 	{
 		return true;
 	}
 
 	@ConfigItem
-	(
-		keyName = "drawRegionId",
-		name = "Draw region IDs",
-		description = "Draw the chunk ID for each chunk on the map",
-		position = 34,
-		section = mapSettings
-	)
+		(
+			keyName = "drawRegionId",
+			name = "Draw region IDs",
+			description = "Draw the chunk ID for each chunk on the map",
+			position = 34,
+			section = mapSettings
+		)
 	default boolean drawRegionId()
 	{
 		return true;

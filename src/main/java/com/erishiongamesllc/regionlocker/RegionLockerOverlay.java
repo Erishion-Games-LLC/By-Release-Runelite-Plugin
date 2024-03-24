@@ -35,9 +35,9 @@ import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
-import net.runelite.api.RenderOverview;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.worldmap.WorldMap;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -49,7 +49,7 @@ public class RegionLockerOverlay extends Overlay
 	private static final int LABEL_PADDING = 4;
 	private static final int REGION_SIZE = 1 << 6;
 	// Bitmask to return first coordinate in region
-	private static final int REGION_TRUNCATE = ~((1 << 6) - 1);
+	private static final int REGION_TRUNCATE = ~0x3F;
 
 	private final Client client;
 	private final ByReleaseConfig config;
@@ -58,7 +58,7 @@ public class RegionLockerOverlay extends Overlay
 	private RegionLockerOverlay(Client client, ByReleaseConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
-		setPriority(OverlayPriority.HIGHEST);
+		setPriority(PRIORITY_HIGHEST);
 		setLayer(OverlayLayer.ALWAYS_ON_TOP);
 		this.client = client;
 		this.config = config;
@@ -76,19 +76,19 @@ public class RegionLockerOverlay extends Overlay
 
 	private void drawRegionOverlay(Graphics2D graphics)
 	{
-		Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
+		Widget map = client.getWidget(ComponentID.WORLD_MAP_MAPVIEW);
 
 		if (map == null) return;
 
-		RenderOverview ro = client.getRenderOverview();
-		float pixelsPerTile = ro.getWorldMapZoom();
+		WorldMap worldMap = client.getWorldMap();
+		float pixelsPerTile = worldMap.getWorldMapZoom();
 		Rectangle worldMapRect = map.getBounds();
 		graphics.setClip(worldMapRect);
 
 		int widthInTiles = (int) Math.ceil(worldMapRect.getWidth() / pixelsPerTile);
 		int heightInTiles = (int) Math.ceil(worldMapRect.getHeight() / pixelsPerTile);
 
-		Point worldMapPosition = ro.getWorldMapPosition();
+		Point worldMapPosition = worldMap.getWorldMapPosition();
 
 		// Offset in tiles from anchor sides
 		int yTileMin = worldMapPosition.getY() - heightInTiles / 2;
@@ -97,6 +97,8 @@ public class RegionLockerOverlay extends Overlay
 		int yRegionMin = (yTileMin & REGION_TRUNCATE);
 		int yRegionMax = ((worldMapPosition.getY() + heightInTiles / 2) & REGION_TRUNCATE) + REGION_SIZE;
 		int regionPixelSize = (int) Math.ceil(REGION_SIZE * pixelsPerTile);
+
+		Point mousePos = client.getMouseCanvasPosition();
 
 		graphics.setColor(WHITE_TRANSLUCENT);
 		for (int x = xRegionMin; x < xRegionMax; x += REGION_SIZE)
@@ -140,6 +142,8 @@ public class RegionLockerOverlay extends Overlay
 
 		int currentId = client.getLocalPlayer().getWorldLocation().getRegionID();
 		String regionText = String.valueOf(currentId);
+		FontMetrics fm = graphics.getFontMetrics();
+		Rectangle2D textBounds = fm.getStringBounds(regionText, graphics);
 		if (config.drawRegionId())
 		{
 			graphics.drawString("Player chunk: " + regionText, (int) worldMapRect.getX() + LABEL_PADDING, (int) (worldMapRect.getY() + worldMapRect.getHeight()) - LABEL_PADDING);

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2019, Slay to Stay <https://github.com/slaytostay>
+ * Copyright (c) 2024, ErishionGamesLLC <https://github.com/Erishion-Games-LLC>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

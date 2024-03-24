@@ -40,7 +40,6 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
 
 public class RegionBorderOverlay extends Overlay
 {
@@ -56,7 +55,7 @@ public class RegionBorderOverlay extends Overlay
 	private RegionBorderOverlay(Client client, ByReleaseConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
-		setPriority(OverlayPriority.HIGH);
+		setPriority(PRIORITY_HIGH);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.client = client;
 		this.config = config;
@@ -65,10 +64,7 @@ public class RegionBorderOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (config.renderRegionBorders())
-		{
-			renderMapSquares(graphics);
-		}
+		if (config.renderRegionBorders()) renderMapSquares(graphics);
 
 		return null;
 	}
@@ -95,8 +91,8 @@ public class RegionBorderOverlay extends Overlay
 			for (int y = lp1.getY(); y <= lp2.getY(); y += LOCAL_TILE_SIZE)
 			{
 				Point p = Perspective.localToCanvas(client,
-					new LocalPoint(lp1.getX() - LOCAL_TILE_SIZE / 2, y - LOCAL_TILE_SIZE / 2),
-					client.getPlane());
+						new LocalPoint(lp1.getX() - LOCAL_TILE_SIZE / 2, y - LOCAL_TILE_SIZE / 2),
+						client.getPlane());
 				if (p != null)
 				{
 					if (first)
@@ -120,8 +116,8 @@ public class RegionBorderOverlay extends Overlay
 			for (int x = lp1.getX(); x <= lp2.getX(); x += LOCAL_TILE_SIZE)
 			{
 				Point p = Perspective.localToCanvas(client,
-					new LocalPoint(x - LOCAL_TILE_SIZE / 2, lp1.getY() - LOCAL_TILE_SIZE / 2),
-					client.getPlane());
+						new LocalPoint(x - LOCAL_TILE_SIZE / 2, lp1.getY() - LOCAL_TILE_SIZE / 2),
+						client.getPlane());
 				if (p != null)
 				{
 					if (first)

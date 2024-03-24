@@ -25,12 +25,12 @@
  */
 package com.erishiongamesllc.gpu;
 
+import com.erishiongamesllc.gpu.template.Template;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import com.erishiongamesllc.gpu.template.Template;
 import org.lwjgl.opengl.GL43C;
 
 public class Shader

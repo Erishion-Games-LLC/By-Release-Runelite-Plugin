@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, TheLonelyDev <https://github.com/TheLonelyDev>
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2023, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,20 +22,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.erishiongamesllc.groundmarker;
+package com.erishiongamesllc.gpu.regions;
 
-import java.awt.Color;
-import javax.annotation.Nullable;
-import lombok.Value;
-import net.runelite.api.coords.WorldPoint;
-
-@Value
-public class ColorTileMarker
+class Region
 {
-	WorldPoint worldPoint;
-	@Nullable
-	Color color;
-	@Nullable
-	String label;
-	int removalDate;
+	int id;
+	int cx1;
+	int cy1;
+	int cx2;
+	int cy2;
 }

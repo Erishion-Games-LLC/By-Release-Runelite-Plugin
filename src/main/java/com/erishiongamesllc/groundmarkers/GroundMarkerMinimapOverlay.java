@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, TheLonelyDev <https://github.com/TheLonelyDev>
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019, Benjamin <https://github.com/genetic-soybean>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,10 +22,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.erishiongamesllc.groundmarker;
+package com.erishiongamesllc.groundmarkers;
 
-import com.erishiongamesllc.byrelease.ByReleaseConfig;
-import com.google.common.base.Strings;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -34,7 +31,6 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Stroke;
 import java.util.Collection;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
@@ -44,38 +40,33 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
-import net.runelite.client.ui.overlay.OverlayUtil;
 
-public class GroundMarkerOverlay extends Overlay
+class GroundMarkerMinimapOverlay extends Overlay
 {
-	private static final int MAX_DRAW_DISTANCE = 32;
-
 	private final Client client;
-	private final ByReleaseConfig config;
-	private final GroundMarkerHandler markerHandler;
+	private final GroundMarkerConfig config;
+	private final GroundMarkerPlugin plugin;
 
 	@Inject
-	private GroundMarkerOverlay(Client client, ByReleaseConfig config, GroundMarkerHandler markerHandler)
+	private GroundMarkerMinimapOverlay(Client client, GroundMarkerConfig config, GroundMarkerPlugin plugin)
 	{
 		this.client = client;
 		this.config = config;
-		this.markerHandler = markerHandler;
+		this.plugin = plugin;
 		setPosition(OverlayPosition.DYNAMIC);
-		setPriority(OverlayPriority.LOW);
-		setLayer(OverlayLayer.ABOVE_SCENE);
+		setPriority(PRIORITY_LOW);
+		setLayer(OverlayLayer.ABOVE_WIDGETS);
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		final Collection<ColorTileMarker> points = markerHandler.getPoints();
-		if (points.isEmpty())
+		if (!config.drawTileOnMinimmap())
 		{
 			return null;
 		}
 
-		Stroke stroke = new BasicStroke((float) config.borderWidth());
+		final Collection<ColorTileMarker> points = plugin.getPoints();
 		for (final ColorTileMarker point : points)
 		{
 			WorldPoint worldPoint = point.getWorldPoint();
@@ -88,41 +79,47 @@ public class GroundMarkerOverlay extends Overlay
 			if (tileColor == null)
 			{
 				// If this is an old tile which has no color, use marker color
-				tileColor = Color.RED;
+				tileColor = config.markerColor();
 			}
-			drawTile(graphics, worldPoint, tileColor, point.getLabel(), stroke);
+
+			drawOnMinimap(graphics, worldPoint, tileColor);
 		}
+
 		return null;
 	}
 
-	private void drawTile(Graphics2D graphics, WorldPoint point, Color color, @Nullable String label, Stroke borderStroke)
+	private void drawOnMinimap(Graphics2D graphics, WorldPoint point, Color color)
 	{
-		WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
-
-		if (point.distanceTo(playerLocation) >= MAX_DRAW_DISTANCE)
+		if (!point.isInScene(client))
 		{
 			return;
 		}
 
-		LocalPoint lp = LocalPoint.fromWorld(client, point);
-		if (lp == null)
+		int x = point.getX() - client.getBaseX();
+		int y = point.getY() - client.getBaseY();
+
+		x <<= Perspective.LOCAL_COORD_BITS;
+		y <<= Perspective.LOCAL_COORD_BITS;
+
+		Point mp1 = Perspective.localToMinimap(client, new LocalPoint(x, y));
+		Point mp2 = Perspective.localToMinimap(client, new LocalPoint(x, y + Perspective.LOCAL_TILE_SIZE));
+		Point mp3 = Perspective.localToMinimap(client, new LocalPoint(x + Perspective.LOCAL_TILE_SIZE, y + Perspective.LOCAL_TILE_SIZE));
+		Point mp4 = Perspective.localToMinimap(client, new LocalPoint(x + Perspective.LOCAL_TILE_SIZE, y));
+
+		if (mp1 == null || mp2 == null || mp3 == null || mp4 == null)
 		{
 			return;
 		}
 
-		Polygon poly = Perspective.getCanvasTilePoly(client, lp);
-		if (poly != null)
-		{
-			OverlayUtil.renderPolygon(graphics, poly, color, new Color(0, 0, 0, config.fillOpacity()), borderStroke);
-		}
+		Polygon poly = new Polygon();
+		poly.addPoint(mp1.getX(), mp1.getY());
+		poly.addPoint(mp2.getX(), mp2.getY());
+		poly.addPoint(mp3.getX(), mp3.getY());
+		poly.addPoint(mp4.getX(), mp4.getY());
 
-		if (!Strings.isNullOrEmpty(label))
-		{
-			Point canvasTextLocation = Perspective.getCanvasTextLocation(client, graphics, lp, label, 0);
-			if (canvasTextLocation != null)
-			{
-				OverlayUtil.renderTextLocation(graphics, canvasTextLocation, label, color);
-			}
-		}
+		Stroke stroke = new BasicStroke(1f);
+		graphics.setStroke(stroke);
+		graphics.setColor(color);
+		graphics.drawPolygon(poly);
 	}
 }

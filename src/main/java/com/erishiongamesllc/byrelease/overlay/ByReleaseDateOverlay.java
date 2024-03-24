@@ -44,6 +44,10 @@ public class ByReleaseDateOverlay extends OverlayPanel
 	public Dimension render(Graphics2D graphics2D)
 	{
 		String releaseDate = formatDate(plugin.getCurrentDate());
+		if (!(releaseDate.length() > 1))
+		{
+			releaseDate = "error";
+		}
 
 		panelComponent.getChildren().add(TitleComponent.builder()
 			.text(releaseDate)

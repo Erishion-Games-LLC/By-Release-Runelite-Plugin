@@ -300,45 +300,13 @@ public interface ByReleaseConfig extends Config
 		return true;
 	}
 
-	@ConfigItem
-		(
-			keyName = "renderRegionBorders",
-			name = "Draw chunk border lines",
-			description = "Draw the chunk borders in the environment marked by lines",
-			position = 25,
-			section = environmentSettings
-		)
-	default boolean renderRegionBorders()
-	{
-		return false;
-	}
 
-	@ConfigItem
-		(
-			keyName = "regionBorderWidth",
-			name = "Chunk border width",
-			description = "How wide the region border will be",
-			position = 26,
-			section = environmentSettings
-		)
-	default int regionBorderWidth()
-	{
-		return 1;
-	}
 
-	@Alpha
-	@ConfigItem
-		(
-			keyName = "regionBorderColor",
-			name = "Chunk border color",
-			description = "The color of the chunk borders",
-			position = 27,
-			section = environmentSettings
-		)
-	default Color regionBorderColor()
-	{
-		return new Color(0, 200, 83, 200);
-	}
+
+
+
+
+
 
 	// Map Settings
 	@ConfigSection

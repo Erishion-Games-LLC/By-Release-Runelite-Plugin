@@ -1,4 +1,5 @@
 /* BSD 2-Clause License
+ * Copyright (c) 2023, IdylRS
  * Copyright (c) 2023, Erishion Games LLC <https://github.com/Erishion-Games-LLC>
  * All rights reserved.
  *
@@ -24,8 +25,7 @@
  */
 package com.erishiongamesllc.byrelease.overlay;
 
-import com.erishiongamesllc.byrelease.ByReleasePlugin;
-import com.erishiongamesllc.byrelease.data.ByReleaseItem;
+import com.erishiongamesllc.byrelease.managers.DataManager;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.awt.Color;
@@ -34,6 +34,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.text.ParseException;
 import javax.inject.Inject;
+import lombok.Setter;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.WidgetItemOverlay;
@@ -43,15 +44,15 @@ import net.runelite.client.util.ImageUtil;
 //https://github.com/IdylRS/chrono-plugin/blob/main/src/main/java/com/chrono/ChronoItemOverlay.java
 public class ByReleaseItemOverlay extends WidgetItemOverlay
 {
-	private final ByReleasePlugin byReleasePlugin;
 	private final ItemManager itemManager;
 	private final Cache<Long, Image> imageCache;
+	@Setter
+	private int currentDate = 20010104;
 
 	@Inject
-	private ByReleaseItemOverlay(ItemManager itemManager, ByReleasePlugin byReleasePlugin)
+	private ByReleaseItemOverlay(ItemManager itemManager)
 	{
 		this.itemManager = itemManager;
-		this.byReleasePlugin = byReleasePlugin;
 		showOnEquipment();
 		showOnInventory();
 		showOnBank();
@@ -67,7 +68,7 @@ public class ByReleaseItemOverlay extends WidgetItemOverlay
 	{
 		try
 		{
-			if (!ByReleaseItem.isItemUnlocked(itemId, byReleasePlugin.getCurrentDate()))
+			if (!DataManager.isItemUnlocked(itemId, currentDate))
 			{
 				Rectangle bounds = widgetItem.getCanvasBounds();
 				final Image image = createFillImage(itemId, widgetItem.getQuantity());
@@ -76,6 +77,7 @@ public class ByReleaseItemOverlay extends WidgetItemOverlay
 		}
 		catch (ParseException e)
 		{
+			System.out.println("Rendering the locked item overlay has failed. See below stack trace:");
 			e.printStackTrace();
 		}
 	}

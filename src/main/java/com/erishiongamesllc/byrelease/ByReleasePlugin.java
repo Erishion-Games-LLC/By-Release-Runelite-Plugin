@@ -24,17 +24,15 @@
  */
 package com.erishiongamesllc.byrelease;
 
-//import com.erishiongamesllc.groundmarkers.GroundMarkerHandler;
-//import com.erishiongamesllc.groundmarkers.GroundMarkerMinimapOverlay;
-//import com.erishiongamesllc.groundmarkers.GroundMarkerOverlay;
 import static com.erishiongamesllc.byrelease.ByReleasePlugin.PLUGIN_NAME;
-import com.erishiongamesllc.byrelease.data.ByReleaseItem;
-import com.erishiongamesllc.byrelease.data.ByReleaseQuest;
-import com.erishiongamesllc.byrelease.overlay.ByReleaseItemOverlay;
-import com.erishiongamesllc.byrelease.overlay.ByReleaseDateOverlay;
-import com.erishiongamesllc.regionlocker.RegionBorderOverlay;
+import com.erishiongamesllc.byrelease.data.classes.ByReleaseItem;
+import com.erishiongamesllc.byrelease.handlers.MenuOptionClickedHandler;
+import com.erishiongamesllc.byrelease.handlers.OverlayHandler;
+import com.erishiongamesllc.byrelease.handlers.WidgetHandler;
+import com.erishiongamesllc.byrelease.managers.DataManager;
+import com.erishiongamesllc.byrelease.managers.DateManager;
+import com.erishiongamesllc.byrelease.managers.QuestManager;
 import com.erishiongamesllc.regionlocker.RegionLocker;
-import com.erishiongamesllc.regionlocker.RegionLockerOverlay;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
@@ -43,14 +41,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import javax.inject.Inject;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.QuestState;
-import net.runelite.api.ScriptID;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ScriptPostFired;
-import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
@@ -58,7 +49,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor
@@ -68,64 +58,44 @@ import net.runelite.client.ui.overlay.OverlayManager;
 public class ByReleasePlugin extends Plugin
 {
 	@Inject
-	private Client client;
-	@Inject
-	private ByReleaseConfig config;
-	@Inject
 	private ClientThread clientThread;
-	@Inject
-	private OverlayManager overlayManager;
-
-	@Inject
-	private ByReleaseDateOverlay dateOverlay;
-	@Inject
-	private ByReleaseItemOverlay itemOverlay;
-	@Inject
-	private RegionLockerOverlay regionLockerOverlay;
-	@Inject
-	private RegionBorderOverlay regionBorderOverlay;
-//	@Inject
-//	private GroundMarkerOverlay groundMarkerOverlay;
-//	@Inject
-//	private GroundMarkerMinimapOverlay groundMarkerMinimapOverlay;
-
-	@Inject
-	private MenuOptionClickedHandler menuOptionClickedHandler;
-//	@Inject
-//	private GroundMarkerHandler groundMarkerHandler;
-	@Inject
-	private WidgetHandler widgetHandler;
 	@Inject
 	private EventBus eventBus;
 	@Inject
 	private Gson gson;
 
+	@Inject
+	private OverlayHandler overlayHandler;
+	@Inject
+	private MenuOptionClickedHandler menuOptionClickedHandler;
+	@Inject
+	private WidgetHandler widgetHandler;
+	@Inject
+	private DateManager dateManager;
+	@Inject
+	private ByReleaseConfig byReleaseConfig;
 
-	public static final String PLUGIN_NAME = "By Release";
-	public static final String CONFIG_GROUP = "byrelease";
+	@Inject
 	private RegionLocker regionLocker;
+	@Inject
+	private QuestManager questManager;
 
-	private boolean setUpCompleted = false;
-
-	@Getter
-	private int currentDate = 20010104;
-	private int previousDate = 0;
-
+	public static final String PLUGIN_NAME = "ByRelease";
+	public static final String CONFIG_GROUP = "byrelease";
 
 
 	@Override
 	protected void startUp() throws Exception
 	{
-		regionLocker = new RegionLocker(config);
 		loadDefinitions();
 
 		eventBus.register(menuOptionClickedHandler);
 		eventBus.register(widgetHandler);
-//		eventBus.register(groundMarkerHandler);
-//
-//		groundMarkerHandler.loadPoints();
+		eventBus.register(overlayHandler);
+		eventBus.register(dateManager);
 
-		addOverlays();
+		overlayHandler.startUp();
+		questManager.startUp();
 	}
 
 	@Override
@@ -133,116 +103,43 @@ public class ByReleasePlugin extends Plugin
 	{
 		eventBus.unregister(menuOptionClickedHandler);
 		eventBus.unregister(widgetHandler);
-//		eventBus.unregister(groundMarkerHandler);
+		eventBus.unregister(overlayHandler);
+		eventBus.unregister(dateManager);
 
-		removeOverlays();
-
-		clientThread.invokeLater(widgetHandler::removeSkillWidgets);
-		previousDate = 0;
-		setUpCompleted = false;
-
-		widgetHandler.shutDown();
-
-		currentDate = 20010104;
-		clientThread.invokeLater(widgetHandler::restoreDefaultPrayerWidgets);
-//		clientThread.invokeLater(this::restoreDefaultSpellWidgets);
-
-//		groundMarkerHandler.clearPoints();
-	}
-
-	private void addOverlays()
-	{
-		overlayManager.add(dateOverlay);
-		overlayManager.add(itemOverlay);
-		overlayManager.add(regionLockerOverlay);
-		overlayManager.add(regionBorderOverlay);
-//		overlayManager.add(groundMarkerOverlay);
-//		overlayManager.add(groundMarkerMinimapOverlay);
-		itemOverlay.invalidateCache();
-	}
-
-	private void removeOverlays()
-	{
-		overlayManager.remove(dateOverlay);
-		overlayManager.remove(itemOverlay);
-		overlayManager.remove(regionLockerOverlay);
-		overlayManager.remove(regionBorderOverlay);
-//		overlayManager.remove(groundMarkerOverlay);
-//		overlayManager.remove(groundMarkerMinimapOverlay);
-
-		itemOverlay.invalidateCache();
-	}
-
-	@Subscribe
-	public void onGameTick(GameTick gameTick)
-	{
-		if (!setUpCompleted)
-		{
-			clientThread.invokeLater(this::setUp);
-		}
-	}
-
-	@Subscribe
-	public void onScriptPostFired(ScriptPostFired scriptPostFired)
-	{
-		if (!setUpCompleted)
-		{
-			return;
-		}
-
-		final int clientScriptQuestListDrawID = 1340;
-
-		switch (scriptPostFired.getScriptId())
-		{
-			//quests
-			case clientScriptQuestListDrawID:
-			case ScriptID.QUESTLIST_INIT:
-				clientThread.invokeLater(this::update);
-				break;
-
-			//prayers
-			case 461:
-			case 2760:
-			case ScriptID.PRAYER_UPDATEBUTTON:
-			case ScriptID.PRAYER_REDRAW:
-			case ScriptID.QUICKPRAYER_INIT:
-				widgetHandler.updatePrayerWidgets();
-				break;
-
-			//spells
-//			case 2262:
-//			case 2607:
-//			case 2609:
-//			case 2610:
-//			case 2617:
-//				updateSpellWidgets();
-		}
-	}
-
-	@Subscribe
-	public void onVarbitChanged(VarbitChanged varbitChanged)
-	{
-		if (varbitChanged.getVarbitId() == 4070)
-		{
-			widgetHandler.updateSpellWidgets();
-		}
+		overlayHandler.shutDown();
+		clientThread.invokeLater(widgetHandler::shutDown);
+		dateManager.shutDown();
+		questManager.shutDown();
 	}
 
 	@Subscribe
 	public void onConfigChanged(ConfigChanged configChanged)
 	{
-		if (configChanged.getGroup().equals(CONFIG_GROUP))
+		if (!configChanged.getGroup().equals(CONFIG_GROUP))
 		{
-			regionLocker.readConfig();
-			updateCurrentDate();
-			System.out.println("CONFIG HAS CHANGED");
-			switch (configChanged.getKey())
-			{
-				case "spellsFromInitialRSC":
-				case "prayersFromMagicRSC":
-					clientThread.invokeLater(this::setUp);
-					break;
-			}
+			return;
+		}
+
+		switch (configChanged.getKey())
+		{
+			case "renderLockedRegions":
+			case "grayColor":
+			case "grayAmount":
+			case "hardBorder":
+				regionLocker.readConfig();
+				break;
+
+			case "date":
+				if (byReleaseConfig.overrideDate())
+				{
+					dateManager.updateCurrentDate();
+				}
+				break;
+
+			case "spellsFromInitialRSC":
+			case "prayersFromMagicRSC":
+				clientThread.invokeLater(widgetHandler::update);
+				break;
 		}
 	}
 
@@ -252,94 +149,21 @@ public class ByReleasePlugin extends Plugin
 		return configManager.getConfig(ByReleaseConfig.class);
 	}
 
-	//only call on client thread
-	private void setUp()
-	{
-		updateQuestList();
-
-		updateCurrentDate();
-
-		widgetHandler.setUp();
-
-		setUpCompleted = true;
-	}
-
-	//only call on client thread
-	private void update()
-	{
-		updateQuestList();
-		updateCurrentDate();
-		if (previousDate < currentDate)
-		{
-			//this is where every thing would be updated.
-
-			widgetHandler.update();
-			itemOverlay.invalidateCache();
-		}
-	}
-
-	private void updateQuestList()
-	{
-		for (ByReleaseQuest byReleaseQuest: ByReleaseQuest.values())
-		{
-			byReleaseQuest.setQuestState
-				(
-					byReleaseQuest.getQuest().getState(client)
-				);
-		}
-	}
-
-	private void updateCurrentDate()
-	{
-		if (config.overrideDate())
-		{
-			currentDate = config.date();
 
 
-			ByReleaseQuest temp = null;
-			for (ByReleaseQuest quest : ByReleaseQuest.values())
-			{
-				if (quest.getReleaseDate() <= currentDate)
-				{
-					temp = quest;
-				}
-				else
-				{
-					break;
-				}
-			}
-			if (temp != null)
-			{
-				System.out.println(temp.getName());
-				previousDate = currentDate;
-				RegionLocker.updateReleasedRegions(currentDate);
-				return;
-			}
-			return;
-		}
-		ByReleaseQuest previousQuest = null;
-		for (ByReleaseQuest quest : ByReleaseQuest.values())
-		{
-			if (quest.getQuestState() != QuestState.FINISHED)
-			{
-				if (previousQuest != null && previousQuest.getQuestState() == QuestState.FINISHED)
-				{
-					previousDate = currentDate;
-					currentDate = quest.getReleaseDate();
-					RegionLocker.updateReleasedRegions(currentDate);
-					return;
-				}
-			}
-			previousQuest = quest;
-		}
-	}
+
+
+
 
 	//https://github.com/IdylRS/chrono-plugin/blob/main/src/main/java/com/chrono/ChronoPlugin.java#L171
 	private <T> T loadDefinitionResource(Type type, String resource)
 	{
 		// Load the resource as a stream and wrap it in a reader
 		InputStream resourceStream = ByReleasePlugin.class.getResourceAsStream(resource);
-		assert resourceStream != null;
+		if (resourceStream == null)
+		{
+			throw new IllegalArgumentException("The following resource is missing from the ByRelease Plugin. Please leave an issue on github.: " + resource);
+		}
 		InputStreamReader definitionReader = new InputStreamReader(resourceStream);
 
 		return gson.fromJson(definitionReader, type);
@@ -348,6 +172,6 @@ public class ByReleasePlugin extends Plugin
 	private void loadDefinitions()
 	{
 		Type defMapType = new TypeToken<HashMap<Integer, ByReleaseItem>>() {}.getType();
-		ByReleaseItem.itemDefinitions = loadDefinitionResource(defMapType, "combined_items.json");
+		DataManager.itemDefinitions = loadDefinitionResource(defMapType, "combined_items.json");
 	}
 }

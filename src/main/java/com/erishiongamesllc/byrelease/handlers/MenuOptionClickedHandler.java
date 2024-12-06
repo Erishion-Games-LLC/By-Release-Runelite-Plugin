@@ -1,0 +1,411 @@
+package com.erishiongamesllc.byrelease.handlers;
+
+import com.erishiongamesllc.byrelease.ByReleaseConfig;
+import com.erishiongamesllc.byrelease.ByReleasePlugin;
+import com.erishiongamesllc.byrelease.managers.DataManager;
+import com.erishiongamesllc.byrelease.managers.DateManager;
+import com.erishiongamesllc.byrelease.data.enums.ByReleaseAchievementDiaryTeleports;
+import com.erishiongamesllc.byrelease.data.enums.ByReleaseAnvil;
+import com.erishiongamesllc.byrelease.data.enums.ByReleaseBank;
+import com.erishiongamesllc.byrelease.data.enums.ByReleaseEntrance;
+import com.erishiongamesllc.byrelease.data.enums.ByReleaseFurnace;
+import com.erishiongamesllc.byrelease.data.interfaces.ByReleaseInfo;
+import com.erishiongamesllc.byrelease.data.classes.ByReleaseItem;
+import com.erishiongamesllc.byrelease.data.enums.ByReleasePrayer;
+import com.erishiongamesllc.byrelease.data.enums.ByReleaseShop;
+import com.erishiongamesllc.byrelease.data.enums.ByReleaseStandardSpell;
+import com.erishiongamesllc.byrelease.data.enums.ByReleaseTree;
+import com.erishiongamesllc.byrelease.data.enums.MenuOption;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import javax.inject.Inject;
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.Client;
+import net.runelite.api.Tile;
+import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.util.Text;
+
+public class MenuOptionClickedHandler
+{
+	/* things to filter
+	all things in skills
+	ores in the world
+	shops
+	people you can talk to i.e. slayer masters
+	entrances i.e. doors, caves. only places that actually matter
+	*/
+
+	@Inject
+	private ByReleasePlugin byReleasePlugin;
+	@Inject
+	private Client client;
+	@Inject
+	private ByReleaseConfig config;
+	@Inject
+	private WidgetHandler widgetHandler;
+	@Inject
+	private DateManager dateManager;
+
+	private int itemID;
+	private MenuOptionClicked menuOptionClicked;
+	private String menuTarget;
+	private MenuOption option;
+
+	private final Set<String> bankerTypes = new HashSet<>(Arrays.asList("Banker", "Banker tutor", "Fadli"));
+	private final Set<String> roamingBankers = new HashSet<>(Arrays.asList("Fadli"));
+
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked clicked) throws ParseException
+	{
+		menuOptionClicked = clicked;
+		option = getMenuOption(menuOptionClicked.getMenuOption());
+
+		if (option == null)
+		{
+			return;
+		}
+
+		menuTarget = Text.removeTags(menuOptionClicked.getMenuTarget());
+		itemID = menuOptionClicked.getItemId();
+
+
+		switch (option)
+		{
+			case USE:
+				handleUse();
+				break;
+
+			case TRADE:
+				handleTrade();
+				break;
+
+			case COLLECT:
+			case BANK:
+				handleBank();
+				break;
+
+			case TALK_TO:
+				handleTalkTo();
+				break;
+
+			case CLIMB_DOWN:
+			case OPEN:
+				handleOpen();
+				break;
+
+			//Item is leaving or exiting inventory
+			case TAKE:
+			case WITHDRAW:
+			case DEPOSIT:
+			case DROP:
+				handlePickupOrDrop();
+				break;
+
+
+			//Prayer and quick prayer
+			case ACTIVATE:
+			case TOGGLE:
+				if (widgetHandler.getNonReleasedPrayerNames().contains(menuTarget))
+				{
+					createUnavailableMessage();
+					menuOptionClicked.consume();
+				}
+				break;
+
+
+			case CAST:
+				if (widgetHandler.getNonReleasedSpellNames().contains(menuTarget))
+				{
+					createUnavailableMessage();
+					menuOptionClicked.consume();
+				}
+				break;
+
+
+			case SEERS:
+			case YANILLE:
+			case GRAND_EXCHANGE:
+				handleAlternateDiaryTeleports();
+				break;
+
+
+			case SMELT:
+				handleSmelt();
+				break;
+
+			case CHOP_DOWN:
+				handleChopDown();
+				break;
+			case SMITH:
+				handleSmith();
+				break;
+
+			case PICKPOCKET:
+				if (widgetHandler.getNonReleasedSkillNames().contains("Thieving"))
+				{
+					menuOptionClicked.consume();
+				}
+				break;
+		}
+	}
+
+	private void handleUse()
+	{
+		if (menuTarget.contains("Bank"))
+		{
+			handleBank();
+		}
+	}
+
+	private void handleTrade()
+	{
+		int currentDate = dateManager.getCurrentDate();
+
+		for (ByReleaseShop shop : ByReleaseShop.values())
+		{
+			if (shop.getOwner().equals(menuTarget) && shop.getReleaseDate() > currentDate)
+			{
+				menuOptionClicked.consume();
+				createUnavailableMessage();
+				break;
+			}
+		}
+	}
+
+	private void handleOpen()
+	{
+		if (menuTarget.equals("Map"))
+		{
+			System.out.println("Opened Map Link");
+			return;
+		}
+		final Tile tile = client.getScene().getTiles()[client.getPlane()][menuOptionClicked.getParam0()][menuOptionClicked.getParam1()];
+		final WorldPoint location = tile.getWorldLocation();
+
+		for (ByReleaseEntrance entrance : ByReleaseEntrance.values())
+		{
+			if (location.equals(entrance.getLocation()) && entrance.getReleaseDate() > dateManager.getCurrentDate())
+			{
+				menuOptionClicked.consume();
+				createUnavailableTileObjectMessage(entrance);
+				break;
+			}
+		}
+	}
+
+	private void handleBank()
+	{
+		int currentDate = dateManager.getCurrentDate();
+		WorldPoint location;
+		if (bankerTypes.contains(menuTarget))
+		{
+			if (roamingBankers.contains(menuTarget))
+			{
+				if (menuTarget.equals("Fadli") && currentDate < 20040325)
+				{
+					menuOptionClicked.consume();
+					createUnavailableTileObjectMessage(ByReleaseBank.ARENA_BANKER_1);
+					return;
+				}
+			}
+			location = Objects.requireNonNull(menuOptionClicked.getMenuEntry().getNpc()).getWorldLocation();
+		}
+		else
+		{
+			final Tile tile = client.getScene().getTiles()[client.getPlane()][menuOptionClicked.getParam0()][menuOptionClicked.getParam1()];
+			location = tile.getWorldLocation();
+		}
+
+		for (ByReleaseBank bank : ByReleaseBank.values())
+		{
+			if (location.equals(bank.getLocation()) && bank.getReleaseDate() > currentDate)
+			{
+				menuOptionClicked.consume();
+				createUnavailableTileObjectMessage(bank);
+				break;
+			}
+		}
+	}
+
+	private void handleTalkTo()
+	{
+		if (bankerTypes.contains(menuTarget))
+		{
+			handleBank();
+			return;
+		}
+		//make a collection of every shop owner name and say if menuTarget is in that collection, then handle trade
+		handleTrade();
+	}
+
+	private void handlePickupOrDrop() throws ParseException
+	{
+		if (itemID >= 0)
+		{
+			if (config.allowPickup())
+			{
+				return;
+			}
+			else if (!DataManager.isItemUnlocked(itemID, dateManager.getCurrentDate()))
+			{
+				menuOptionClicked.consume();
+				createUnavailableMessage();
+			}
+		}
+	}
+
+	public void createUnavailableMessage()
+	{
+		String unavailable = " is unavailable until: ";
+		ByReleaseInfo[] values = null;
+
+		switch (option)
+		{
+			case ACTIVATE:
+			case TOGGLE:
+				values = ByReleasePrayer.values();
+				break;
+
+			case CAST:
+				//only works with standard spellbook atm
+				values = ByReleaseStandardSpell.values();
+				break;
+
+			case CHOP_DOWN:
+				values = ByReleaseTree.values();
+				break;
+
+			//message will say varrock/camelot instead of seers etc
+			case SEERS:
+			case YANILLE:
+			case GRAND_EXCHANGE:
+				values = ByReleaseAchievementDiaryTeleports.values();
+				break;
+
+			case TAKE:
+			case DROP:
+			case DEPOSIT:
+			case WITHDRAW:
+				ByReleaseItem item = DataManager.itemDefinitions.get(itemID);
+				createMessage(item.getName() + unavailable + item.getReleaseDate());
+				break;
+		}
+
+		if (values == null)
+		{
+			return;
+		}
+
+		for (ByReleaseInfo value : values)
+		{
+			System.out.println(value.getName());
+			System.out.println(menuTarget);
+			if (value.getName().equals(menuTarget))
+			{
+				createMessage(value.getName() + unavailable + value.getReleaseDate());
+				break;
+			}
+		}
+	}
+
+	private void createUnavailableTileObjectMessage(ByReleaseInfo object)
+	{
+		String unavailable = " is unavailable until: ";
+		createMessage(object.getName() + unavailable + object.getReleaseDate());
+	}
+
+	private void handleAlternateDiaryTeleports()
+	{
+		if (!config.filterDiaryTeleports())
+		{
+			return;
+		}
+
+		int currentDate = dateManager.getCurrentDate();
+		ByReleaseAchievementDiaryTeleports diaryTeleport = ByReleaseAchievementDiaryTeleports.valueOf(option.name());
+
+
+		if (currentDate < diaryTeleport.getReleaseDate())
+		{
+			createUnavailableMessage();
+			menuOptionClicked.consume();
+		}
+	}
+
+	private void handleSmelt()
+	{
+		if (menuTarget.equals("Furnace") && config.filterFurnaces())
+		{
+			final Tile tile = client.getScene().getTiles()[client.getPlane()][menuOptionClicked.getParam0()][menuOptionClicked.getParam1()];
+			final WorldPoint location = tile.getWorldLocation();
+
+			for (ByReleaseFurnace furnace : ByReleaseFurnace.values())
+			{
+				//find the corrosponding furnace by its location, and check if its available
+				if (location.equals(furnace.getLocation()) && furnace.getReleaseDate() > dateManager.getCurrentDate())
+				{
+					menuOptionClicked.consume();
+					createUnavailableTileObjectMessage(furnace);
+					break;
+				}
+			}
+		}
+	}
+
+	//loops through the tree enum twice, once here and once in create unavailable message
+	//need to fix that
+	private void handleChopDown()
+	{
+		for (ByReleaseTree tree : ByReleaseTree.values())
+		{
+			if (tree.getName().equals(menuTarget) && tree.getReleaseDate() > dateManager.getCurrentDate())
+			{
+				menuOptionClicked.consume();
+				createUnavailableMessage();
+				break;
+			}
+		}
+	}
+
+	private void handleSmith()
+	{
+		if (menuTarget.equals("Anvil") && config.filterAnvils())
+		{
+			final Tile tile = client.getScene().getTiles()[client.getPlane()][menuOptionClicked.getParam0()][menuOptionClicked.getParam1()];
+			final WorldPoint location = tile.getWorldLocation();
+
+			for (ByReleaseAnvil anvil : ByReleaseAnvil.values())
+			{
+				//find the corrosponding anvil by its location, and check if its available
+				if (location.equals(anvil.getLocation()) && anvil.getReleaseDate() > dateManager.getCurrentDate())
+				{
+					menuOptionClicked.consume();
+					createUnavailableTileObjectMessage(anvil);
+					break;
+				}
+			}
+		}
+	}
+
+	private MenuOption getMenuOption(String menuOption)
+	{
+		for (MenuOption option : MenuOption.values())
+		{
+			if (option.getMenuOption().equals(menuOption))
+			{
+				return option;
+			}
+		}
+		return null;
+	}
+
+	private void createMessage(String message)
+	{
+		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", message, null);
+	}
+}

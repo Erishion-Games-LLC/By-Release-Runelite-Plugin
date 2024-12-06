@@ -1,6 +1,6 @@
 /*
  *  BSD 2-Clause License
- *  * Copyright (c) 2023, Erishion Games LLC <https://github.com/Erishion-Games-LLC>
+ *  * Copyright (c) 2024, Erishion Games LLC <https://github.com/Erishion-Games-LLC>
  *  * All rights reserved.
  *  *
  *  * Redistribution and use in source and binary forms, with or without
@@ -24,49 +24,50 @@
  *  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.erishiongamesllc.byrelease.overlay;
+package com.erishiongamesllc.byrelease.managers;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
+import com.erishiongamesllc.byrelease.data.enums.ByReleaseQuest;
+import java.util.HashMap;
+
+import javax.inject.Inject;
 import javax.inject.Singleton;
-import lombok.Setter;
-import net.runelite.client.ui.overlay.OverlayPanel;
-import net.runelite.client.ui.overlay.components.TitleComponent;
+import net.runelite.api.Client;
+import net.runelite.api.QuestState;
 
 @Singleton
-public class ByReleaseDateOverlay extends OverlayPanel
+public class QuestManager
 {
-	@Setter
-	private int currentDate = 20010104;
+	@Inject
+	private Client client;
 
-	@Override
-	public Dimension render(Graphics2D graphics2D)
+	private final HashMap<ByReleaseQuest, QuestState> questStates = new HashMap<>();
+
+	public void startUp()
 	{
-		String releaseDate = formatDate(currentDate);
-		if (!(releaseDate.length() > 7))
+		for (ByReleaseQuest byReleaseQuest : ByReleaseQuest.values())
 		{
-			releaseDate = "error";
+			questStates.put(byReleaseQuest, QuestState.NOT_STARTED);
 		}
-
-		panelComponent.getChildren().add(TitleComponent.builder()
-			.text(releaseDate)
-			.color(Color.WHITE)
-			.build());
-
-		panelComponent.setPreferredSize(new Dimension(
-			graphics2D.getFontMetrics().stringWidth(releaseDate) + 10,
-			0));
-
-		return super.render(graphics2D);
 	}
 
-	private String formatDate(int releaseDate)
+	public void shutDown()
 	{
-		String dateString = String.valueOf(releaseDate);
-		String year = dateString.substring(0, 4);
-		String month = dateString.substring(4, 6);
-		String day = dateString.substring(6, 8);
-		return year + "-" + month + "-" + day;
+		for (ByReleaseQuest byReleaseQuest : ByReleaseQuest.values())
+		{
+			questStates.put(byReleaseQuest, QuestState.NOT_STARTED);
+		}
+	}
+
+	public void updateQuestList()
+	{
+		for (ByReleaseQuest byReleaseQuest : ByReleaseQuest.values())
+		{
+			questStates.put(byReleaseQuest, byReleaseQuest.getQuest().getState(client));
+		}
+	}
+
+	public QuestState getQuestState(ByReleaseQuest quest)
+	{
+		return questStates.get(quest);
 	}
 }

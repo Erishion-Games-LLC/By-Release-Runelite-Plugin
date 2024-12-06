@@ -24,49 +24,35 @@
  *  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.erishiongamesllc.byrelease.overlay;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import javax.inject.Singleton;
-import lombok.Setter;
-import net.runelite.client.ui.overlay.OverlayPanel;
-import net.runelite.client.ui.overlay.components.TitleComponent;
+package com.erishiongamesllc.byrelease.data.enums;
 
-@Singleton
-public class ByReleaseDateOverlay extends OverlayPanel
+import com.erishiongamesllc.byrelease.data.interfaces.ByReleaseInfo;
+import lombok.Getter;
+
+@Getter
+public enum ByReleaseShop implements ByReleaseInfo
 {
-	@Setter
-	private int currentDate = 20010104;
+	SCAVVO_RUNE_STORE(20010726, "Scavvo"),
+	FORTUNATO(20060410, "Fortunato"),
+	DIANGO(20040401, "Diango"),
+	DRAYNOR_SEED_MARKET(20050606, "Olivia"),
 
-	@Override
-	public Dimension render(Graphics2D graphics2D)
+
+	;
+
+	private final int releaseDate;
+	private final String owner;
+
+	ByReleaseShop(int releaseDate, String owner)
 	{
-		String releaseDate = formatDate(currentDate);
-		if (!(releaseDate.length() > 7))
-		{
-			releaseDate = "error";
-		}
-
-		panelComponent.getChildren().add(TitleComponent.builder()
-			.text(releaseDate)
-			.color(Color.WHITE)
-			.build());
-
-		panelComponent.setPreferredSize(new Dimension(
-			graphics2D.getFontMetrics().stringWidth(releaseDate) + 10,
-			0));
-
-		return super.render(graphics2D);
+		this.releaseDate = releaseDate;
+		this.owner = owner;
 	}
 
-	private String formatDate(int releaseDate)
+	@Override
+	public String getName()
 	{
-		String dateString = String.valueOf(releaseDate);
-		String year = dateString.substring(0, 4);
-		String month = dateString.substring(4, 6);
-		String day = dateString.substring(6, 8);
-		return year + "-" + month + "-" + day;
+		return "Shop";
 	}
 }

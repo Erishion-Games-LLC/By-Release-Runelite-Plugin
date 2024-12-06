@@ -28,6 +28,7 @@ package com.erishiongamesllc.regionlocker;
 import com.erishiongamesllc.byrelease.ByReleaseConfig;
 import java.awt.Color;
 import java.util.*;
+import javax.inject.Inject;
 
 public class RegionLocker
 {
@@ -39,6 +40,7 @@ public class RegionLocker
 	public static int grayAmount;
 	public static boolean hardBorder;
 
+	@Inject
 	public RegionLocker(ByReleaseConfig config)
 	{
 		this.config = config;

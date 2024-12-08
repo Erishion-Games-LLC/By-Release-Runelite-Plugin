@@ -132,7 +132,7 @@ public class ByReleasePlugin extends Plugin
 			case "date":
 				if (byReleaseConfig.overrideDate())
 				{
-					dateManager.updateCurrentDate();
+					clientThread.invokeLater(dateManager::update);
 				}
 				break;
 

@@ -40,9 +40,9 @@ public class OverlayHandler
 
 	public void update(int currentDate)
 	{
+		byReleaseItemOverlay.invalidateCache();
 		byReleaseDateOverlay.setCurrentDate(currentDate);
 		byReleaseItemOverlay.setCurrentDate(currentDate);
-		byReleaseItemOverlay.invalidateCache();
 	}
 
 	public void startUp()

@@ -58,6 +58,7 @@ public class QuestManager
 		}
 	}
 
+	//only call on clientThread
 	public void updateQuestStates()
 	{
 		for (ByReleaseQuest byReleaseQuest : ByReleaseQuest.values())

@@ -118,7 +118,7 @@ public class DateManager
 	}
 
 	//only call on client thread
-	private void update()
+	public void update()
 	{
 		questManager.updateQuestStates();
 		updateCurrentDate();

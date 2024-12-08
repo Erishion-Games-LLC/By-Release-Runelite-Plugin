@@ -40,13 +40,13 @@ public class QuestManager
 	@Inject
 	private Client client;
 
-	private final HashMap<ByReleaseQuest, QuestState> questStates = new HashMap<>();
+	private final HashMap<ByReleaseQuest, QuestState> questStateHashMap = new HashMap<>();
 
 	public void startUp()
 	{
 		for (ByReleaseQuest byReleaseQuest : ByReleaseQuest.values())
 		{
-			questStates.put(byReleaseQuest, QuestState.NOT_STARTED);
+			questStateHashMap.put(byReleaseQuest, QuestState.NOT_STARTED);
 		}
 	}
 
@@ -54,20 +54,20 @@ public class QuestManager
 	{
 		for (ByReleaseQuest byReleaseQuest : ByReleaseQuest.values())
 		{
-			questStates.put(byReleaseQuest, QuestState.NOT_STARTED);
+			questStateHashMap.put(byReleaseQuest, QuestState.NOT_STARTED);
 		}
 	}
 
-	public void updateQuestList()
+	public void updateQuestStates()
 	{
 		for (ByReleaseQuest byReleaseQuest : ByReleaseQuest.values())
 		{
-			questStates.put(byReleaseQuest, byReleaseQuest.getQuest().getState(client));
+			questStateHashMap.put(byReleaseQuest, byReleaseQuest.getQuest().getState(client));
 		}
 	}
 
-	public QuestState getQuestState(ByReleaseQuest quest)
+	public QuestState getQuestStates(ByReleaseQuest quest)
 	{
-		return questStates.get(quest);
+		return questStateHashMap.get(quest);
 	}
 }

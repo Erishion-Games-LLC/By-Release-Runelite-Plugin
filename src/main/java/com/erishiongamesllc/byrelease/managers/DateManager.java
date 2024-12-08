@@ -87,7 +87,7 @@ public class DateManager
 		{
 			return;
 		}
-		questManager.updateQuestList();
+		questManager.updateQuestStates();
 		updateCurrentDate();
 		overlayHandler.update(currentDate);
 		widgetHandler.setUp(currentDate);
@@ -120,7 +120,7 @@ public class DateManager
 	//only call on client thread
 	private void update()
 	{
-		questManager.updateQuestList();
+		questManager.updateQuestStates();
 		updateCurrentDate();
 		//if current date does not match previous date, then we have the potential to have unlocked new things. Signal the other sections to run their checks with the new date
 		//in normal play it will only ever increase, however current date could be less than previous date if using the date override setting in config
@@ -161,20 +161,20 @@ public class DateManager
 		for (ByReleaseQuest quest : ByReleaseQuest.values())
 		{
 			//if the quest is finished, save a reference to it and continue through the loop until you find the first incomplete quest
-			if (questManager.getQuestState(quest) == QuestState.FINISHED)
+			if (questManager.getQuestStates(quest) == QuestState.FINISHED)
 			{
 				lastCompletedQuest = quest;
 				continue;
 			}
 
 			//if latest quest is equal to null, that means that the first quest is not completed. So set the currentDate to the starting date.
-			if (questManager.getQuestState(quest) != QuestState.FINISHED && lastCompletedQuest == null)
+			if (questManager.getQuestStates(quest) != QuestState.FINISHED && lastCompletedQuest == null)
 			{
 				currentDate = startingDate;
 				return;
 			}
 
-			if (questManager.getQuestState(quest) != QuestState.FINISHED)
+			if (questManager.getQuestStates(quest) != QuestState.FINISHED)
 			//if latest quest is not equal to null, then we have found the first noncompleted quest after a completed quest. So we should set the current date to be equal to the last completed quest
 			{
 				//asset lastCompletedQuest is not null to make the compiler happy. It cannot ever be null at this point, as it would be caught in the above code block.

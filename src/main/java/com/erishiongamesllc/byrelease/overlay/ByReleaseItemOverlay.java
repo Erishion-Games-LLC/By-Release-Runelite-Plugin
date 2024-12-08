@@ -68,12 +68,16 @@ public class ByReleaseItemOverlay extends WidgetItemOverlay
 	{
 		try
 		{
-			if (!DataManager.isItemUnlocked(itemId, currentDate))
+			//if it is unlocked, don't change the sprite.
+			if (DataManager.isItemUnlocked(itemId, currentDate))
 			{
-				Rectangle bounds = widgetItem.getCanvasBounds();
-				final Image image = createFillImage(itemId, widgetItem.getQuantity());
-				graphics.drawImage(image, (int) bounds.getX(), (int) bounds.getY(), null);
+				return;
 			}
+
+			//item isn't unlocked, change the sprite to the desaturated locked version
+			Rectangle bounds = widgetItem.getCanvasBounds();
+			final Image image = createFillImage(itemId, widgetItem.getQuantity());
+			graphics.drawImage(image, (int) bounds.getX(), (int) bounds.getY(), null);
 		}
 		catch (ParseException e)
 		{

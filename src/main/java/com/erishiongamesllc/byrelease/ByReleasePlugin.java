@@ -61,8 +61,7 @@ public class ByReleasePlugin extends Plugin
 	private ClientThread clientThread;
 	@Inject
 	private EventBus eventBus;
-	@Inject
-	private Gson gson;
+
 
 	@Inject
 	private OverlayHandler overlayHandler;
@@ -70,6 +69,8 @@ public class ByReleasePlugin extends Plugin
 	private MenuOptionClickedHandler menuOptionClickedHandler;
 	@Inject
 	private WidgetHandler widgetHandler;
+	@Inject
+	private DataManager dataManager;
 	@Inject
 	private DateManager dateManager;
 	@Inject
@@ -87,13 +88,12 @@ public class ByReleasePlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		loadDefinitions();
-
 		eventBus.register(menuOptionClickedHandler);
 		eventBus.register(widgetHandler);
 		eventBus.register(overlayHandler);
 		eventBus.register(dateManager);
 
+		dataManager.startUp();
 		overlayHandler.startUp();
 		questManager.startUp();
 	}
@@ -108,6 +108,7 @@ public class ByReleasePlugin extends Plugin
 
 		overlayHandler.shutDown();
 		clientThread.invokeLater(widgetHandler::shutDown);
+		dataManager.shutDown();
 		dateManager.shutDown();
 		questManager.shutDown();
 	}
@@ -147,31 +148,5 @@ public class ByReleasePlugin extends Plugin
 	ByReleaseConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(ByReleaseConfig.class);
-	}
-
-
-
-
-
-
-
-	//https://github.com/IdylRS/chrono-plugin/blob/main/src/main/java/com/chrono/ChronoPlugin.java#L171
-	private <T> T loadDefinitionResource(Type type, String resource)
-	{
-		// Load the resource as a stream and wrap it in a reader
-		InputStream resourceStream = ByReleasePlugin.class.getResourceAsStream(resource);
-		if (resourceStream == null)
-		{
-			throw new IllegalArgumentException("The following resource is missing from the ByRelease Plugin. Please leave an issue on github.: " + resource);
-		}
-		InputStreamReader definitionReader = new InputStreamReader(resourceStream);
-
-		return gson.fromJson(definitionReader, type);
-	}
-
-	private void loadDefinitions()
-	{
-		Type defMapType = new TypeToken<HashMap<Integer, ByReleaseItem>>() {}.getType();
-		DataManager.itemDefinitions = loadDefinitionResource(defMapType, "combined_items.json");
 	}
 }

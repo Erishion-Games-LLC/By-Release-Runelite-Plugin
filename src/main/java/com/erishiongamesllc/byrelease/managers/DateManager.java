@@ -104,12 +104,14 @@ public class DateManager
 	@Subscribe
 	public void onScriptPostFired(ScriptPostFired scriptPostFired)
 	{
+		//if initial setup is not completed, we do not care to check if a quest has been updated as it will error out
 		if (!isSetUpCompleted)
 		{
 			return;
 		}
 		switch (scriptPostFired.getScriptId())
 		{
+			//if the quest scripts are rerun, a quest might have been completed. run update to check
 			case ScriptIds.CLIENT_QUEST_LIST_DRAW:
 			case ScriptID.QUESTLIST_INIT:
 				clientThread.invokeLater(this::update);

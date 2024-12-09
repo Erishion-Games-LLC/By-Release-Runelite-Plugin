@@ -25,9 +25,6 @@ import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.api.widgets.WidgetType;
 import net.runelite.client.eventbus.Subscribe;
 
 @Singleton
@@ -54,7 +51,7 @@ public class WidgetHandler
 	private int currentDate = startingDate;
 
 
-		@Inject
+	@Inject
 	private WidgetHandler(Client client, ByReleasePlugin byReleasePlugin, ByReleaseConfig byReleaseConfig)
 	{
 		this.client = client;
@@ -92,7 +89,7 @@ public class WidgetHandler
 
 		switch (scriptPostFired.getScriptId())
 		{
-			//prayers
+			//prayer widgets could have been overwritten, reupdate just in case
 			case ScriptID.PRAYER_UPDATEBUTTON:
 			case ScriptID.PRAYER_REDRAW:
 			case ScriptID.QUICKPRAYER_INIT:
@@ -120,31 +117,32 @@ public class WidgetHandler
 
 	public void setUp(int currentDate)
 	{
+		this.currentDate = currentDate;
 		updatePrayerWidgets();
-//		createHiddenSkillWidgets();
-//		updateSkillWidgetsVisibility();
+		updateSkillWidgets();
 //		updateSpellWidgets();
 		isSetUpCompleted = true;
 	}
 
-	public void update()
+	public void update(int currentDate)
 	{
+		this.currentDate = currentDate;
 		updatePrayerWidgets();
-//		updateSkillWidgetsVisibility();
+		updateSkillWidgets();
 //		updateSpellWidgets();
 	}
 
 	public void shutDown()
 	{
 		restoreDefaultPrayerWidgets();
+		restoreDefaultSkillWidgets();
 		nonReleasedPrayerNames.clear();
 		nonReleasedSkillNames.clear();
 		nonReleasedSpellNames.clear();
-//		removeSkillWidgets();
 		//restoreDefaultSpellWidgets();
 	}
 
-	public void updatePrayerWidgets()
+	private void updatePrayerWidgets()
 	{
 		for (ByReleasePrayer prayer : ByReleasePrayer.values())
 		{
@@ -158,13 +156,13 @@ public class WidgetHandler
 
 			boolean isReleased = prayer.getReleaseDate() <= currentDate;
 
-			updatePrayerVisibility(individualPrayerWidgetContainer, prayer, isReleased);
+			updatePrayersVisibility(individualPrayerWidgetContainer, prayer, isReleased);
 
 			individualPrayerWidgetContainer.revalidate();
 		}
 	}
 
-	private void updatePrayerVisibility(Widget prayerWidget, ByReleasePrayer prayer, boolean isReleased)
+	private void updatePrayersVisibility(Widget prayerWidget, ByReleasePrayer prayer, boolean isReleased)
 	{
 		String name = prayer.getName();
 		//if it is released, we do not need to hide it
@@ -185,20 +183,18 @@ public class WidgetHandler
 		else if (prayersFromMagicRSC.contains(prayer))
 		{
 			prayerWidget.setHidden(false);
-			nonReleasedPrayerNames.remove(name);
-		}
+			nonReleasedPrayerNames.remove(name);		}
 		//Here, the prayer is not released, we have enabled the prayersFromMagicRSC option but the prayer is not one of them.
 		//so we set it to be hidden.
 		else
 		{
 			prayerWidget.setHidden(true);
-			nonReleasedPrayerNames.add(name);
-		}
+			nonReleasedPrayerNames.add(name);		}
 	}
 
-	public void restoreDefaultPrayerWidgets()
+	private void restoreDefaultPrayerWidgets()
 	{
-		Widget widget = client.getWidget(35454976);
+		Widget widget = client.getWidget(ComponentID.PRAYER_PARENT);
 		if (widget == null)
 		{
 			return;
@@ -206,87 +202,52 @@ public class WidgetHandler
 		client.createScriptEvent(widget.getOnLoadListener()).setSource(widget).run();
 	}
 
-//	private void createHiddenSkillWidgets()
-//	{
-//		for (ByReleaseSkill skill : ByReleaseSkill.values())
-//		{
-//			Widget skillWidget = client.getWidget(skill.getWidgetID());
-//
-//			if (skillWidget == null)
-//			{
-//				return;
-//			}
-//
-//			ArrayList<Widget> skillWidgetChildren = new ArrayList<>();
-//
-//			Widget skillIconWidget = createWidget(skillWidget, 50, 174, -2, -2,36, 36, 90, true);
-//			Widget skillLevelWidget = createWidget(skillWidget, 51, 176, 28, -2,36, 36, 90, true);
-//
-//			skillWidgetChildren.add(skillIconWidget);
-//			skillWidgetChildren.add(skillLevelWidget);
-//
-//			skillWidgets.put(skill.getName(), skillWidgetChildren);
-//		}
-//	}
+	private void updateSkillWidgets()
+	{
+		for (ByReleaseSkill skill : ByReleaseSkill.values())
+		{
+			Widget individualSkillWidgetContainer = client.getWidget(skill.getWidgetID());
+			if (individualSkillWidgetContainer == null)
+			{
+				continue;
+			}
 
-//	private Widget createWidget(Widget parent, int index, int spriteId, int posX, int posY, int size1, int size2, int opacity, boolean hidden)
-//	{
-//		Widget childWidget = parent.createChild(index, WidgetType.GRAPHIC);
-//		childWidget.setSpriteId(spriteId);
-//		childWidget.setSize(size1, size2);
-//		childWidget.setPos(posX, posY);
-//		childWidget.setOpacity(opacity);
-//		childWidget.setHidden(hidden);
-//		return childWidget;
-//	}
-//
-//	private void updateSkillWidgetsVisibility()
-//	{
-//				for (ByReleaseSkill skill : ByReleaseSkill.values())
-//		{
-//			boolean isReleased = skill.getReleaseDate() <= currentDate;
-//
-//			for (Widget skillWidgetChild : skillWidgets.get(skill.getName()))
-//			{
-//				skillWidgetChild.setHidden(!isReleased);
-//				updateNonReleasedSkillNames(skill.getName(), isReleased);
-//			}
-//		}
-//	}
-//
-//	private void updateNonReleasedSkillNames(String skillName, boolean isReleased)
-//	{
-//		if (isReleased)
-//		{
-//			nonReleasedSkillNames.remove(skillName);
-//		} else
-//		{
-//			nonReleasedSkillNames.add(skillName);
-//		}
-//	}
-//
-//	public void removeSkillWidgets()
-//	{
-//		for (ByReleaseSkill skill : ByReleaseSkill.values())
-//		{
-//			Widget skillWidget = client.getWidget(skill.getWidgetID());
-//			if (skillWidget == null)
-//			{
-//				continue;
-//			}
-//			skillWidget.deleteAllChildren();
-//			client.createScriptEvent(skillWidget.getOnLoadListener()).setSource(skillWidget).run();
-//		}
-//		skillWidgets.clear();
-//	}
-//
-//
+			boolean isReleased = skill.getReleaseDate() <= currentDate;
 
-//
+			updateSkillsVisibility(individualSkillWidgetContainer, skill, isReleased);
 
-//
+			individualSkillWidgetContainer.revalidate();
+		}
+	}
 
-//
+	private void updateSkillsVisibility(Widget skillWidget, ByReleaseSkill skill, boolean isReleased)
+	{
+		String name = skill.getName();
+		if (isReleased)
+		{
+			skillWidget.setHidden(false);
+			nonReleasedSkillNames.remove(name);		}
+		else
+		{
+			skillWidget.setHidden(true);
+			nonReleasedSkillNames.add(name);
+		}
+	}
+
+	private void restoreDefaultSkillWidgets()
+	{
+		for (ByReleaseSkill skill : ByReleaseSkill.values())
+		{
+			Widget skillWidget = client.getWidget(skill.getWidgetID());
+			if (skillWidget == null)
+			{
+				continue;
+			}
+			skillWidget.setHidden(false);
+			skillWidget.revalidate();
+		}
+	}
+
 //	//Varbit 4070
 //	//0 standard
 //	//1 ancient

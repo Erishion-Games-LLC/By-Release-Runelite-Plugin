@@ -129,7 +129,7 @@ public class DateManager
 		if (currentDate != previousDate)
 		{
 			RegionLocker.updateReleasedRegions(currentDate);
-			widgetHandler.update();
+			widgetHandler.update(currentDate);
 			overlayHandler.update(currentDate);
 		}
 	}

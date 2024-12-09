@@ -132,7 +132,10 @@ public class ByReleasePlugin extends Plugin
 
 			case "spellsFromInitialRSC":
 			case "prayersFromMagicRSC":
-				clientThread.invokeLater(widgetHandler::update);
+				//this only needs to call widgetHandler::update(currentDate), however widgetHandler needs the currentDate
+				//and the plugin no longer holds it. trying to figure out a way to do this the correct way keeps giving circular dependencies.
+				//it works it just runs extra code that doesn't need to run but it doesn't hurt anything
+				clientThread.invokeLater(dateManager::update);
 				break;
 		}
 	}

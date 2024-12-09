@@ -352,7 +352,7 @@ public class WidgetHandler
 //			}
 //			else
 //			{
-+////				spellWidget.setSpriteId(spell.getUnlockedSpriteID());
+////				spellWidget.setSpriteId(spell.getUnlockedSpriteID());
 //				nonReleasedSpellNames.remove(spell.getName());
 //			}
 //		}

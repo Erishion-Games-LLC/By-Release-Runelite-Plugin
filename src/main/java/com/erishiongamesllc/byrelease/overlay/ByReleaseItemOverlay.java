@@ -47,7 +47,8 @@ public class ByReleaseItemOverlay extends WidgetItemOverlay
 	private final ItemManager itemManager;
 	private final Cache<Long, Image> imageCache;
 	@Setter
-	private int currentDate = 20010104;
+	private int currentDate;
+
 
 	@Inject
 	private ByReleaseItemOverlay(ItemManager itemManager)
@@ -59,7 +60,7 @@ public class ByReleaseItemOverlay extends WidgetItemOverlay
 		showOnInterfaces();
 		imageCache = CacheBuilder.newBuilder()
 			.concurrencyLevel(1)
-			.maximumSize(48)
+			.maximumSize(300)
 			.build();
 	}
 
@@ -73,7 +74,6 @@ public class ByReleaseItemOverlay extends WidgetItemOverlay
 			{
 				return;
 			}
-
 			//item isn't unlocked, change the sprite to the desaturated locked version
 			Rectangle bounds = widgetItem.getCanvasBounds();
 			final Image image = createFillImage(itemId, widgetItem.getQuantity());

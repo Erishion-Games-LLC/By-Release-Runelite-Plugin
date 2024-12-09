@@ -19,22 +19,22 @@ public class DataManager
 	@Inject
 	private Gson gson;
 
-	public static HashMap<Integer, ByReleaseItem> itemDefinitions;
+	public static HashMap<Integer, ByReleaseItem> itemHashMap;
 
 	public void startUp()
 	{
-		loadDefinitions();
+		fillDataHashMaps();
 	}
 
 	public void shutDown()
 	{
-		itemDefinitions = null;
+		itemHashMap = null;
 	}
 
-	private void loadDefinitions()
+	private void fillDataHashMaps()
 	{
 		Type defMapType = new TypeToken<HashMap<Integer, ByReleaseItem>>() {}.getType();
-		DataManager.itemDefinitions = loadDefinitionResource(defMapType, "combined_items.json");
+		DataManager.itemHashMap = loadDefinitionResource(defMapType, "combined_items.json");
 	}
 
 	//https://github.com/IdylRS/chrono-plugin/blob/main/src/main/java/com/chrono/ChronoPlugin.java#L171
@@ -55,15 +55,15 @@ public class DataManager
 
 	public static boolean isItemUnlocked(int itemId, int currentDate) throws ParseException
 	{
-		ByReleaseItem def = itemDefinitions.get(itemId);
+		ByReleaseItem item = itemHashMap.get(itemId);
 
-		if (def == null) {
+		if (item == null) {
 			System.out.println("Item being checked is not in the list of items: " + itemId);
 			return false;
 		}
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date releaseDate = dateFormat.parse(def.getReleaseDate());
+		Date releaseDate = dateFormat.parse(item.getReleaseDate());
 
 		// Convert releaseDate to an integer format (yyyyMMdd)
 		int releaseDateAsInt = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(releaseDate));

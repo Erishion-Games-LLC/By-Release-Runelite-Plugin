@@ -291,7 +291,7 @@ public class MenuOptionClickedHandler
 			case DROP:
 			case DEPOSIT:
 			case WITHDRAW:
-				ByReleaseItem item = DataManager.itemDefinitions.get(itemID);
+				ByReleaseItem item = DataManager.itemHashMap.get(itemID);
 				createMessage(item.getName() + unavailable + item.getReleaseDate());
 				break;
 		}

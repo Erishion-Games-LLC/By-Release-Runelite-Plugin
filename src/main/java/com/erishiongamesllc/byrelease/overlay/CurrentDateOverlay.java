@@ -26,6 +26,7 @@
  */
 package com.erishiongamesllc.byrelease.overlay;
 
+import com.erishiongamesllc.byrelease.data.enums.ByReleaseQuest;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -35,10 +36,11 @@ import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 
 @Singleton
-public class ByReleaseDateOverlay extends OverlayPanel
+public class CurrentDateOverlay extends OverlayPanel
 {
+	private final int startingDate = ByReleaseQuest.COOKS_ASSISTANT.getReleaseDate();
 	@Setter
-	private int currentDate = 20010104;
+	private int currentDate = startingDate;
 
 	@Override
 	public Dimension render(Graphics2D graphics2D)

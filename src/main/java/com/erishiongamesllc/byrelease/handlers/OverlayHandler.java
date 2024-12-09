@@ -1,7 +1,7 @@
 package com.erishiongamesllc.byrelease.handlers;
 
-import com.erishiongamesllc.byrelease.overlay.ByReleaseDateOverlay;
-import com.erishiongamesllc.byrelease.overlay.ByReleaseItemOverlay;
+import com.erishiongamesllc.byrelease.overlay.CurrentDateOverlay;
+import com.erishiongamesllc.byrelease.overlay.LockedItemOverlay;
 import com.erishiongamesllc.regionlocker.RegionLockerOverlay;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -11,40 +11,40 @@ import net.runelite.client.ui.overlay.OverlayManager;
 public class OverlayHandler
 {
 	private final OverlayManager overlayManager;
-	private final ByReleaseDateOverlay byReleaseDateOverlay;
-	private final ByReleaseItemOverlay byReleaseItemOverlay;
+	private final CurrentDateOverlay currentDateOverlay;
+	private final LockedItemOverlay lockedItemOverlay;
 	private final RegionLockerOverlay regionLockerOverlay;
 
 	@Inject
-	private OverlayHandler(OverlayManager overlayManager, ByReleaseDateOverlay byReleaseDateOverlay, ByReleaseItemOverlay byReleaseItemOverlay, RegionLockerOverlay regionLockerOverlay)
+	private OverlayHandler(OverlayManager overlayManager, CurrentDateOverlay currentDateOverlay, LockedItemOverlay lockedItemOverlay, RegionLockerOverlay regionLockerOverlay)
 	{
 		this.overlayManager = overlayManager;
-		this.byReleaseDateOverlay = byReleaseDateOverlay;
-		this.byReleaseItemOverlay = byReleaseItemOverlay;
+		this.currentDateOverlay = currentDateOverlay;
+		this.lockedItemOverlay = lockedItemOverlay;
 		this.regionLockerOverlay = regionLockerOverlay;
 	}
 
 	public void addOverlays()
 	{
-		overlayManager.add(byReleaseDateOverlay);
-		overlayManager.add(byReleaseItemOverlay);
+		overlayManager.add(currentDateOverlay);
+		overlayManager.add(lockedItemOverlay);
 		overlayManager.add(regionLockerOverlay);
-		byReleaseItemOverlay.invalidateCache();
+		lockedItemOverlay.invalidateCache();
 	}
 
 	public void removeOverlays()
 	{
-		overlayManager.remove(byReleaseDateOverlay);
-		overlayManager.remove(byReleaseItemOverlay);
+		overlayManager.remove(currentDateOverlay);
+		overlayManager.remove(lockedItemOverlay);
 		overlayManager.remove(regionLockerOverlay);
-		byReleaseItemOverlay.invalidateCache();
+		lockedItemOverlay.invalidateCache();
 	}
 
 	public void update(int currentDate)
 	{
-		byReleaseItemOverlay.invalidateCache();
-		byReleaseDateOverlay.setCurrentDate(currentDate);
-		byReleaseItemOverlay.setCurrentDate(currentDate);
+		lockedItemOverlay.invalidateCache();
+		currentDateOverlay.setCurrentDate(currentDate);
+		lockedItemOverlay.setCurrentDate(currentDate);
 	}
 
 	public void startUp()

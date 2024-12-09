@@ -42,7 +42,7 @@ import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.ImageUtil;
 
 //https://github.com/IdylRS/chrono-plugin/blob/main/src/main/java/com/chrono/ChronoItemOverlay.java
-public class ByReleaseItemOverlay extends WidgetItemOverlay
+public class LockedItemOverlay extends WidgetItemOverlay
 {
 	private final ItemManager itemManager;
 	private final Cache<Long, Image> imageCache;
@@ -51,7 +51,7 @@ public class ByReleaseItemOverlay extends WidgetItemOverlay
 
 
 	@Inject
-	private ByReleaseItemOverlay(ItemManager itemManager)
+	private LockedItemOverlay(ItemManager itemManager)
 	{
 		this.itemManager = itemManager;
 		showOnEquipment();

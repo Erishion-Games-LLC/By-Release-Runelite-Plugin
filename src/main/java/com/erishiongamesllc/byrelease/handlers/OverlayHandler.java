@@ -4,8 +4,10 @@ import com.erishiongamesllc.byrelease.overlay.ByReleaseDateOverlay;
 import com.erishiongamesllc.byrelease.overlay.ByReleaseItemOverlay;
 import com.erishiongamesllc.regionlocker.RegionLockerOverlay;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import net.runelite.client.ui.overlay.OverlayManager;
 
+@Singleton
 public class OverlayHandler
 {
 	private final OverlayManager overlayManager;

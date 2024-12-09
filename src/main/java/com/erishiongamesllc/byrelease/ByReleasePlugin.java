@@ -25,7 +25,6 @@
 package com.erishiongamesllc.byrelease;
 
 import static com.erishiongamesllc.byrelease.ByReleasePlugin.PLUGIN_NAME;
-import com.erishiongamesllc.byrelease.data.classes.ByReleaseItem;
 import com.erishiongamesllc.byrelease.handlers.MenuOptionClickedHandler;
 import com.erishiongamesllc.byrelease.handlers.OverlayHandler;
 import com.erishiongamesllc.byrelease.handlers.WidgetHandler;
@@ -33,13 +32,7 @@ import com.erishiongamesllc.byrelease.managers.DataManager;
 import com.erishiongamesllc.byrelease.managers.DateManager;
 import com.erishiongamesllc.byrelease.managers.QuestManager;
 import com.erishiongamesllc.regionlocker.RegionLocker;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.util.HashMap;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.callback.ClientThread;

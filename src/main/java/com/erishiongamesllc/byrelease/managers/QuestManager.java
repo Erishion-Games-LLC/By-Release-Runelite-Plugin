@@ -39,7 +39,6 @@ public class QuestManager
 {
 	@Inject
 	private Client client;
-
 	private final HashMap<ByReleaseQuest, QuestState> questStateHashMap = new HashMap<>();
 
 	public void startUp()

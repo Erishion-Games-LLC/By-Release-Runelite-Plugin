@@ -123,9 +123,12 @@ public class ByReleasePlugin extends Plugin
 				regionLocker.readConfig();
 				break;
 
+			case "overrideDate":
+				clientThread.invokeLater(dateManager::update);
 			case "date":
 				if (byReleaseConfig.overrideDate())
 				{
+					System.out.println("date was changed in config");
 					clientThread.invokeLater(dateManager::update);
 				}
 				break;

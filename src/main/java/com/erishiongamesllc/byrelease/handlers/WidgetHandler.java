@@ -6,11 +6,11 @@ import com.erishiongamesllc.byrelease.data.enums.ByReleasePrayer;
 import com.erishiongamesllc.byrelease.data.enums.ByReleaseQuest;
 import com.erishiongamesllc.byrelease.data.enums.ByReleaseSkill;
 import com.erishiongamesllc.byrelease.data.enums.ByReleaseStandardSpell;
+import com.erishiongamesllc.byrelease.data.interfaces.ByReleaseInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,6 +19,7 @@ import lombok.Setter;
 import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
 import net.runelite.api.Varbits;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
@@ -34,9 +35,13 @@ public class WidgetHandler
 	private final ByReleasePlugin byReleasePlugin;
 	private final ByReleaseConfig byReleaseConfig;
 
-	private final HashMap<String, List<Widget>> skillWidgets = new HashMap<>();
 	private final ArrayList<ByReleasePrayer> prayersFromMagicRSC = new ArrayList<>(Arrays.asList(ByReleasePrayer.THICK_SKIN, ByReleasePrayer.BURST_OF_STRENGTH, ByReleasePrayer.ROCK_SKIN));
-	private final ArrayList<ByReleaseStandardSpell> spellsFromInitialRSC = new ArrayList<>(Arrays.asList(ByReleaseStandardSpell.WIND_STRIKE, ByReleaseStandardSpell.CONFUSE, ByReleaseStandardSpell.WATER_STRIKE));
+	private final ArrayList<String> spellsFromInitialRSC = new ArrayList<>(Arrays.asList(ByReleaseStandardSpell.WIND_STRIKE.getName(), ByReleaseStandardSpell.CONFUSE.getName(), ByReleaseStandardSpell.WATER_STRIKE.getName()));
+	private final ArrayList<String> enchantmentSpells = new ArrayList<>(Arrays.asList(
+		ByReleaseStandardSpell.LVL_1_ENCHANT.getName(), ByReleaseStandardSpell.LVL_2_ENCHANT.getName(),
+		ByReleaseStandardSpell.LVL_3_ENCHANT.getName(), ByReleaseStandardSpell.LVL_4_ENCHANT.getName(),
+		ByReleaseStandardSpell.LVL_5_ENCHANT.getName(), ByReleaseStandardSpell.LVL_6_ENCHANT.getName(), ByReleaseStandardSpell.LVL_7_ENCHANT.getName()));
+	private final HashMap<ByReleaseInfo, Integer> f2pLockSpellIconsHashMap = new HashMap<>();
 
 	@Getter
 	private final Set<String> nonReleasedSkillNames = new HashSet<>();
@@ -49,7 +54,6 @@ public class WidgetHandler
 	private final int startingDate = ByReleaseQuest.COOKS_ASSISTANT.getReleaseDate();
 	@Setter
 	private int currentDate = startingDate;
-
 
 	@Inject
 	private WidgetHandler(Client client, ByReleasePlugin byReleasePlugin, ByReleaseConfig byReleaseConfig)
@@ -86,7 +90,6 @@ public class WidgetHandler
 		{
 			return;
 		}
-
 		switch (scriptPostFired.getScriptId())
 		{
 			//prayer widgets could have been overwritten, reupdate just in case
@@ -97,12 +100,14 @@ public class WidgetHandler
 				break;
 
 			//spells
-//			case 2262:
-//			case 2607:
-//			case 2609:
-//			case 2610:
-//			case 2617:
-//				updateSpellWidgets();
+			case 2262:
+			case 2607:
+			case 2609:
+			case 2610:
+			case 2617:
+				System.out.println("UPDATE SPELL WIDGETS FROM: onScriptPostFired");
+				updateSpellWidgets();
+				break;
 		}
 	}
 
@@ -111,16 +116,17 @@ public class WidgetHandler
 	{
 		if (varbitChanged.getVarbitId() == Varbits.SPELLBOOK)
 		{
-//			updateSpellWidgets();
+			updateSpellWidgets();
 		}
 	}
 
 	public void setUp(int currentDate)
 	{
 		this.currentDate = currentDate;
+		fillF2pLockSpellIconsHashMap();
 		updatePrayerWidgets();
 		updateSkillWidgets();
-//		updateSpellWidgets();
+		updateSpellWidgets();
 		isSetUpCompleted = true;
 	}
 
@@ -129,7 +135,7 @@ public class WidgetHandler
 		this.currentDate = currentDate;
 		updatePrayerWidgets();
 		updateSkillWidgets();
-//		updateSpellWidgets();
+		updateSpellWidgets();
 	}
 
 	public void shutDown()
@@ -139,7 +145,21 @@ public class WidgetHandler
 		nonReleasedPrayerNames.clear();
 		nonReleasedSkillNames.clear();
 		nonReleasedSpellNames.clear();
-		//restoreDefaultSpellWidgets();
+		restoreDefaultSpellWidgets();
+	}
+
+	private void fillF2pLockSpellIconsHashMap()
+	{
+		f2pLockSpellIconsHashMap.put(ByReleaseStandardSpell.CROSSBOW_BOLT_ENCHANTMENTS, 0);
+		f2pLockSpellIconsHashMap.put(ByReleaseStandardSpell.TELEPORT_TO_HOUSE, 1);
+		f2pLockSpellIconsHashMap.put(ByReleaseStandardSpell.CAMELOT_TELEPORT, 2);
+		f2pLockSpellIconsHashMap.put(ByReleaseStandardSpell.KOUREND_CASTLE_TELEPORT, 3);
+		f2pLockSpellIconsHashMap.put(ByReleaseStandardSpell.ARDOUGNE_TELEPORT, 4);
+		f2pLockSpellIconsHashMap.put(ByReleaseStandardSpell.CIVITAS_ILLA_FORTIS_TELEPORT, 5);
+		f2pLockSpellIconsHashMap.put(ByReleaseStandardSpell.WATCHTOWER_TELEPORT, 6);
+		f2pLockSpellIconsHashMap.put(ByReleaseStandardSpell.BONES_TO_PEACHES, 7);
+		f2pLockSpellIconsHashMap.put(ByReleaseStandardSpell.TROLLHEIM_TELEPORT, 8);
+		f2pLockSpellIconsHashMap.put(ByReleaseStandardSpell.ENTANGLE, 9);
 	}
 
 	private void updatePrayerWidgets()
@@ -155,9 +175,7 @@ public class WidgetHandler
 			}
 
 			boolean isReleased = prayer.getReleaseDate() <= currentDate;
-
 			updatePrayersVisibility(individualPrayerWidgetContainer, prayer, isReleased);
-
 			individualPrayerWidgetContainer.revalidate();
 		}
 	}
@@ -171,25 +189,19 @@ public class WidgetHandler
 			prayerWidget.setHidden(false);
 			nonReleasedPrayerNames.remove(name);
 		}
-		//if its not released, we check if we have enabled the option to use the original spells that were turned into prayers
-		//if we haven't enabled it and its also not released, we set it to hidden
-		else if (!byReleaseConfig.prayersFromMagicRSC())
+		//if its not released, and we have enabled the option to use the original spells that were turned into prayers
+		//check if this prayer is one of the prayers from the original magic RSC system. If it is, we should not hide the prayer
+		else if (byReleaseConfig.prayersFromMagicRSC() && prayersFromMagicRSC.contains(prayer))
+		{
+			prayerWidget.setHidden(false);
+			nonReleasedPrayerNames.remove(name);
+		}
+		//Here, the prayer is not released, and its not in the special cases, so set it hidden
+		else
 		{
 			prayerWidget.setHidden(true);
 			nonReleasedPrayerNames.add(name);
 		}
-		//if its not released, and we have enabled the option to use the original spells that were turned into prayers
-		//check if this prayer is one of the prayers from the original magic RSC system. If it is, we should not hide the prayer
-		else if (prayersFromMagicRSC.contains(prayer))
-		{
-			prayerWidget.setHidden(false);
-			nonReleasedPrayerNames.remove(name);		}
-		//Here, the prayer is not released, we have enabled the prayersFromMagicRSC option but the prayer is not one of them.
-		//so we set it to be hidden.
-		else
-		{
-			prayerWidget.setHidden(true);
-			nonReleasedPrayerNames.add(name);		}
 	}
 
 	private void restoreDefaultPrayerWidgets()
@@ -248,74 +260,135 @@ public class WidgetHandler
 		}
 	}
 
-//	//Varbit 4070
-//	//0 standard
-//	//1 ancient
-//	//2 lunar
-//	//3 arceuus
-//	public void updateSpellWidgets()
-//	{
-//		System.out.println("update spell widgets");
-//		switch (client.getVarbitValue(4070))
-//		{
-//			case 0:
-//				updateStandardSpellbook();
-//				break;
-//			case 1:
-//
-//				break;
-//		}
-//	}
-//
-//	//works, need to fix issue where spells are not being displayed properly if dont have runes but is past released date
-//	private void restoreDefaultSpellWidgets()
-//	{
-//		Widget widget = client.getWidget(14286848);
-//		if (widget == null)
-//		{
-//			return;
-//		}
-//		client.createScriptEvent(widget.getOnLoadListener()).setSource(widget).run();
-//	}
-//
-//	private void updateStandardSpellbook()
-//	{
-//		System.out.println("updated standard spell book");
-//		for (ByReleaseStandardSpell spell : ByReleaseStandardSpell.values())
-//		{
-//			Widget spellWidget = client.getWidget(spell.getWidgetID());
-//			if (spellWidget == null)
-//			{
-//				System.out.println("spell widget is null for: " + spell.getName());
-//				continue;
-//			}
-//			//spell is not released
-//			if (spell.getReleaseDate() > currentDate)
-//			{
-//				if(byReleaseConfig.spellsFromInitialRSC() && spellsFromInitialRSC.contains(spell))
-//				{
-//					if (spell == ByReleaseStandardSpell.WATER_STRIKE && currentDate < 20010127)
-//					{
-////						spellWidget.setSpriteId(spell.getLockedSpriteID());
-//						nonReleasedSpellNames.add(spell.getName());
-//					}
-//					else
-//					{
-////						spellWidget.setSpriteId(spell.getUnlockedSpriteID());
-//						nonReleasedSpellNames.remove(spell.getName());
-//					}
-//				}
-//				else
-//				{
-////					spellWidget.setSpriteId(spell.getLockedSpriteID());
-//					nonReleasedSpellNames.add(spell.getName());
-//				}
-//			}
-//			else
-//			{
-////				spellWidget.setSpriteId(spell.getUnlockedSpriteID());
-//				nonReleasedSpellNames.remove(spell.getName());
-//			}
-//		}
-//	}
+	public void updateSpellWidgets()
+	{
+		System.out.println("update spell widgets");
+		switch (client.getVarbitValue(Varbits.SPELLBOOK))
+		{
+			//0 standard
+			//1 ancient
+			//2 lunar
+			//3 arceuus
+			case 0:
+				updateStandardSpellbookWidgets();
+				break;
+			case 1:
+
+				break;
+		}
+	}
+
+	private void updateStandardSpellbookWidgets()
+	{
+		for (ByReleaseStandardSpell spell : ByReleaseStandardSpell.values())
+		{
+
+			Widget spellWidget = client.getWidget(spell.getWidgetID());
+
+			if (spellWidget == null)
+			{
+				continue;
+			}
+
+			boolean isReleased = spell.getReleaseDate() <= currentDate;
+			updateSpellsVisibility(spellWidget, spell, isReleased);
+			spellWidget.revalidate();
+		}
+	}
+
+	private void updateSpellsVisibility(Widget spellWidget, ByReleaseInfo spell, boolean isReleased)
+	{
+		String name = spell.getName();
+		//if it is released, we don't need to hide it
+		if (isReleased)
+		{
+			spellWidget.setHidden(false);
+			nonReleasedSpellNames.remove(name);
+		}
+		//if it is not released, check if we are using the spells from RSC before the rework in may 2001.
+		//if we are and these are the spells being updated, set them to visible
+		else if (byReleaseConfig.spellsFromInitialRSC() && spellsFromInitialRSC.contains(name))
+		{
+			spellWidget.setHidden(false);
+			nonReleasedSpellNames.remove(name);
+		}
+		else
+		{
+			//lastly, it's not released, and it's not in the special cases, so set it hidden
+			spellWidget.setHidden(true);
+			nonReleasedSpellNames.add(name);
+		}
+
+		int spellbookSubMenu = client.getVarbitValue(Varbits.SPELLBOOK_SUBMENU);
+
+		//if the subspell enchantment menu is not open, and the spell being updated is an enchantment spell, set it hidden.
+		if (spellbookSubMenu == 0 && enchantmentSpells.contains(spell.getName()))
+		{
+
+			spellWidget.setHidden(true);
+		}
+		//if the subspell enchantment menu is open, and the spell being updated is not enchantment spell, set it hidden.
+		else if (spellbookSubMenu == 1 && !enchantmentSpells.contains(spell.getName()))
+		{
+			spellWidget.setHidden(true);
+		}
+
+		if (f2pLockSpellIconsHashMap.containsKey(spell) && spellWidget.isHidden())
+		{
+			int spellContainerWidgetID = 14286851;
+			Widget spellContainerWidget = client.getWidget(spellContainerWidgetID);
+			if (spellContainerWidget == null)
+			{
+				return;
+			}
+			Widget lockSpellIcon = spellContainerWidget.getChild(f2pLockSpellIconsHashMap.get(spell));
+			if (lockSpellIcon == null)
+			{
+				return;
+			}
+			lockSpellIcon.setHidden(true);
+		}
+	}
+	
+	private void restoreDefaultSpellWidgets()
+	{
+		for (ByReleaseStandardSpell spell: ByReleaseStandardSpell.values())
+		{
+			Widget spellWidget = client.getWidget(spell.getWidgetID());
+			if (spellWidget == null)
+			{
+				continue;
+			}
+
+			if (f2pLockSpellIconsHashMap.containsKey(spell) && spellWidget.isHidden())
+			{
+				int spellContainerWidgetID = 14286851;
+				Widget spellContainerWidget = client.getWidget(spellContainerWidgetID);
+				if (spellContainerWidget == null)
+				{
+					return;
+				}
+				Widget lockSpellIcon = spellContainerWidget.getChild(f2pLockSpellIconsHashMap.get(spell));
+				if (lockSpellIcon == null)
+				{
+					return;
+				}
+				lockSpellIcon.setHidden(false);
+			}
+
+			int spellbookSubMenu = client.getVarbitValue(Varbits.SPELLBOOK_SUBMENU);
+			//plugin was turned off when enchantment menu was closed and the spell is an enchantment spell that should be displayed on the main page. set it hidden
+			if (spellbookSubMenu == 0 && enchantmentSpells.contains(spell.getName()))
+			{
+				spellWidget.setHidden(true);
+				spellWidget.revalidate();
+			}
+			//plugin was turned off when enchantment menu was closed and the spell is not an enchantment spell. it should be displayed on main page, set it visible.
+			else if (spellbookSubMenu == 0 && !enchantmentSpells.contains(spell.getName()))
+			{
+				spellWidget.setHidden(false);
+				spellWidget.revalidate();
+			}
+		}
+	}
 }
